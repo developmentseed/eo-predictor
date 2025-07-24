@@ -1,38 +1,45 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-
 import { Button } from "@/components/ui/button";
+import Map, { useControl } from "react-map-gl/maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
+import { MapboxOverlay } from "@deck.gl/mapbox";
+import type { DeckProps } from "@deck.gl/core";
+import { ScatterplotLayer } from "@deck.gl/layers";
+
+interface DeckGLOverlayProps extends DeckProps {
+  interleaved?: boolean;
+}
+
+function DeckGLOverlay(props: DeckGLOverlayProps) {
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+  overlay.setProps(props);
+  return null;
+}
 
 function App() {
-  const [count, setCount] = useState(0);
+  const layers = [
+    new ScatterplotLayer({
+      id: "scatter-plot",
+      data: [{ position: [-122.4, 37.8] }],
+      getPosition: (d) => d.position,
+      getFillColor: [255, 0, 0],
+      getRadius: 100,
+    }),
+  ];
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <div className="flex min-h-svh flex-col items-center justify-center">
-        <Button>Click me</Button>
-      </div>
+      <Map
+        initialViewState={{
+          longitude: -122.4,
+          latitude: 37.8,
+          zoom: 14,
+        }}
+        style={{ width: "100vw", height: "90vh" }}
+        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+      >
+        <DeckGLOverlay layers={layers} interleaved />
+      </Map>
+      <Button variant="outline">Outline</Button>
     </>
   );
 }
