@@ -1,9 +1,11 @@
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import Map, { useControl } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import type { DeckProps } from "@deck.gl/core";
-import { ScatterplotLayer } from "@deck.gl/layers";
+import { GeoArrowPolygonLayer } from "@geoarrow/deck.gl-layers";
+import init, { readParquet } from "parquet-wasm";
+import { tableFromIPC } from "apache-arrow";
 
 interface DeckGLOverlayProps extends DeckProps {
   interleaved?: boolean;
@@ -16,31 +18,47 @@ function DeckGLOverlay(props: DeckGLOverlayProps) {
 }
 
 function App() {
-  const layers = [
-    new ScatterplotLayer({
-      id: "scatter-plot",
-      data: [{ position: [-122.4, 37.8] }],
-      getPosition: (d) => d.position,
+  const [table, setTable] = useState(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      // Initialize the WASM module
+      await init("/parquet_wasm_bg.wasm");
+
+      const resp = await fetch("/Utah@1.parquet");
+      const arrayBuffer = await resp.arrayBuffer();
+      const wasmTable = readParquet(new Uint8Array(arrayBuffer));
+      const newTable = tableFromIPC(wasmTable.intoIPCStream());
+      setTable(newTable);
+      console.log(newTable);
+    };
+
+    loadData();
+  }, []);
+
+  const layers = [];
+  if (table) {
+    const deckLayer = new GeoArrowPolygonLayer({
+      id: "geo-arrow-polygon-layer",
+      data: table,
+      getPolygon: table.getChild("GEOMETRY"),
       getFillColor: [255, 0, 0],
-      getRadius: 100,
-    }),
-  ];
+    });
+    layers.push(deckLayer);
+  }
 
   return (
-    <>
-      <Map
-        initialViewState={{
-          longitude: -122.4,
-          latitude: 37.8,
-          zoom: 14,
-        }}
-        style={{ width: "100vw", height: "90vh" }}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-      >
-        <DeckGLOverlay layers={layers} interleaved />
-      </Map>
-      <Button variant="outline">Outline</Button>
-    </>
+    <Map
+      initialViewState={{
+        longitude: -111.7,
+        latitude: 39.3,
+        zoom: 5,
+      }}
+      style={{ width: "100vw", height: "100vh" }}
+      mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+    >
+      <DeckGLOverlay layers={layers} interleaved />
+    </Map>
   );
 }
 
