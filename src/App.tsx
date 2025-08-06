@@ -136,7 +136,7 @@ function App() {
         onClick={handleMapClick}
         interactiveLayerIds={["sar"]}
       >
-        <Source type="vector" url="pmtiles:///sar.pmtiles">
+        <Source type="vector" url="pmtiles://src/assets/sar.pmtiles">
           <Layer
             id="sar"
             source-layer="sar"
