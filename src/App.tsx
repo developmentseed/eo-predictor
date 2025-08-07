@@ -18,39 +18,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const minTime = new Date("2025-08-06T09:02:34Z").getTime();
-const maxTime = new Date("2025-08-08T08:59:34Z").getTime();
-
-const satellites = [
-  "ICEYE-X15",
-  "ICEYE-X17",
-  "ICEYE-X26",
-  "ICEYE-X27",
-  "ICEYE-X30",
-  "ICEYE-X33",
-  "ICEYE-X34",
-  "ICEYE-X36",
-  "ICEYE-X37",
-  "ICEYE-X39",
-  "ICEYE-X4",
-  "ICEYE-X40",
-  "ICEYE-X41",
-  "ICEYE-X42",
-  "ICEYE-X43",
-  "ICEYE-X44",
-  "ICEYE-X45",
-  "ICEYE-X47",
-  "ICEYE-X49",
-  "ICEYE-X5",
-  "RISAT-1",
-  "SENTINEL-1C",
-];
-
 const Controls = ({
   timeRange,
   onTimeChange,
   selectedSatellite,
   onSatelliteChange,
+  satellites,
+  minTime,
+  maxTime,
 }) => {
   return (
     <div className="absolute top-5 left-5 bg-white/80 p-5 rounded-lg flex flex-col gap-5">
@@ -90,13 +65,24 @@ const Controls = ({
 };
 
 function App() {
-  const [timeRange, setTimeRange] = useState([minTime, maxTime]);
+  const [timeRange, setTimeRange] = useState([0, 0]);
   const [selectedSatellite, setSelectedSatellite] = useState("all");
   const [clickedFeature, setClickedFeature] = useState(null);
+  const [metadata, setMetadata] = useState({ satellites: [], minTime: 0, maxTime: 0 });
 
   useEffect(() => {
     const protocol = new pmtiles.Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
+
+    fetch("/satellite_paths_metadata.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const min = new Date(data.minTime).getTime();
+        const max = new Date(data.maxTime).getTime();
+        setMetadata({ ...data, minTime: min, maxTime: max });
+        setTimeRange([min, max]);
+      });
+
     return () => {
       maplibregl.removeProtocol("pmtiles");
     };
@@ -140,11 +126,11 @@ function App() {
         mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
         projection={{ type: "globe" }}
         onClick={handleMapClick}
-        interactiveLayerIds={["sar"]}
+        interactiveLayerIds={["satellite_paths"]}
       >
         <Source
           type="vector"
-          url="pmtiles://src/assets/satellite_paths.pmtiles"
+          url="pmtiles:///satellite_paths.pmtiles"
         >
           <Layer
             id="satellite_paths"
@@ -171,7 +157,6 @@ function App() {
               </h3>
               <p>Start Time: {clickedFeature.start_time}</p>
               <p>End Time: {clickedFeature.end_time}</p>
-              <p>Length: {clickedFeature.length_m}m</p>
             </div>
           </Popup>
         )}
@@ -183,6 +168,9 @@ function App() {
         onTimeChange={handleTimeChange}
         selectedSatellite={selectedSatellite}
         onSatelliteChange={handleSatelliteChange}
+        satellites={metadata.satellites}
+        minTime={metadata.minTime}
+        maxTime={metadata.maxTime}
       />
     </>
   );

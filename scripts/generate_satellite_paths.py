@@ -1,10 +1,23 @@
 import requests
 import subprocess
+import json
+import os
 from skyfield.api import load, wgs84, Timescale
 from datetime import datetime, timedelta, timezone
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point, LineString
+
+# Get the absolute path of the script's directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Get the absolute path of the project root
+project_root = os.path.dirname(script_dir)
+
+# Define absolute paths for output files
+public_dir = os.path.join(project_root, "public")
+metadata_path = os.path.join(public_dir, "satellite_paths_metadata.json")
+pmtiles_path = os.path.join(public_dir, "satellite_paths.pmtiles")
+geojson_path = os.path.join(script_dir, "satellite_paths.geojson")
 
 # List of satellite TLE data URLs from Celestrak
 urls = [
@@ -13,7 +26,7 @@ urls = [
 
 # Fetch and combine TLE data
 print("Fetching TLE data...")
-with open("combined_tle.txt", "w") as outfile:
+with open(os.path.join(script_dir, "combined_tle.txt"), "w") as outfile:
     for url in urls:
         print(f"  Fetching from {url}")
         response = requests.get(url)
@@ -24,7 +37,7 @@ with open("combined_tle.txt", "w") as outfile:
 
 # Load satellites from the TLE file
 print("Loading satellites from TLE file...")
-satellites = load.tle_file("combined_tle.txt")
+satellites = load.tle_file(os.path.join(script_dir, "combined_tle.txt"))
 print(f"{len(satellites)} satellites loaded.")
 
 # Set up the time range for the prediction
@@ -78,11 +91,24 @@ for sat_name, group in positions_df.groupby('satellite'):
 if not path_segments:
     print("\nNo satellite paths were generated. Exiting.")
 else:
-    # Convert to a GeoDataFrame and save as GeoJSON
-    print("\nSaving paths to GeoJSON file...")
+    # Convert to a GeoDataFrame
     path_gdf = gpd.GeoDataFrame(path_segments, geometry='geometry', crs='EPSG:4326')
-    path_gdf.to_file("satellite_paths.geojson", driver='GeoJSON')
-    print("\nSuccessfully generated satellite_paths.geojson")
+
+    # Save metadata
+    print("\nSaving metadata...")
+    metadata = {
+        "satellites": path_gdf['satellite'].unique().tolist(),
+        "minTime": path_gdf['start_time'].min().isoformat(),
+        "maxTime": path_gdf['end_time'].max().isoformat(),
+    }
+    with open(metadata_path, "w") as f:
+        json.dump(metadata, f)
+    print(f"\nSuccessfully generated {metadata_path}")
+
+    # Save GeoJSON
+    print("\nSaving paths to GeoJSON file...")
+    path_gdf.to_file(geojson_path, driver='GeoJSON')
+    print(f"\nSuccessfully generated {geojson_path}")
 
     # Generate PMTiles from the GeoJSON
     print("\nGenerating PMTiles from GeoJSON...")
@@ -93,8 +119,8 @@ else:
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
         "-o",
-        "satellite_paths.pmtiles",
-        "satellite_paths.geojson",
+        pmtiles_path,
+        geojson_path,
         "--force"
     ])
-    print("\nSuccessfully generated satellite_paths.pmtiles")
+    print(f"\nSuccessfully generated {pmtiles_path}")
