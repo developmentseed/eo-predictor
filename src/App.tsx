@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import Map, { Source, Layer, Popup } from "react-map-gl/maplibre";
+import Map, {
+  Source,
+  Layer,
+  Popup,
+  NavigationControl,
+  GeolocateControl,
+} from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import * as pmtiles from "pmtiles";
 import maplibregl from "maplibre-gl";
@@ -166,6 +172,8 @@ function App() {
             </div>
           </Popup>
         )}
+        <NavigationControl position="bottom-right" visualizePitch={true} />
+        <GeolocateControl position="bottom-right" trackUserLocation={true} />
       </Map>
       <Controls
         timeRange={timeRange}
