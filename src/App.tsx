@@ -68,7 +68,11 @@ function App() {
   const [timeRange, setTimeRange] = useState([0, 0]);
   const [selectedSatellite, setSelectedSatellite] = useState("all");
   const [clickedFeature, setClickedFeature] = useState(null);
-  const [metadata, setMetadata] = useState({ satellites: [], minTime: 0, maxTime: 0 });
+  const [metadata, setMetadata] = useState({
+    satellites: [],
+    minTime: 0,
+    maxTime: 0,
+  });
 
   useEffect(() => {
     const protocol = new pmtiles.Protocol();
@@ -128,10 +132,7 @@ function App() {
         onClick={handleMapClick}
         interactiveLayerIds={["satellite_paths"]}
       >
-        <Source
-          type="vector"
-          url="pmtiles:///satellite_paths.pmtiles"
-        >
+        <Source type="vector" url="pmtiles:///satellite_paths.pmtiles">
           <Layer
             id="satellite_paths"
             source-layer="satellite_paths"

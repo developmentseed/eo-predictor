@@ -66,7 +66,7 @@ print("\nCalculating satellite positions...")
 all_positions = []
 for i, sat in enumerate(satellites):
     print(f"  ({i+1}/{len(satellites)}) Calculating positions for {sat.name}")
-    all_positions.extend(get_satellite_positions(sat, time_1, time_2, 3))
+    all_positions.extend(get_satellite_positions(sat, time_1, time_2, 5))
 
 # Create a DataFrame from the positions
 print("\nCreating DataFrame from positions...")
@@ -80,6 +80,11 @@ for sat_name, group in positions_df.groupby('satellite'):
     for i in range(len(group) - 1):
         pt0 = group.loc[i, 'coordinates']
         pt1 = group.loc[i + 1, 'coordinates']
+
+        # Skip segments that cross the antimeridian
+        if abs(pt0.x - pt1.x) > 180:
+            continue
+
         line = LineString([pt0, pt1])
         path_segments.append({
             'satellite': sat_name,
