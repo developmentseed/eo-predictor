@@ -99,6 +99,12 @@ else:
     # Convert to a GeoDataFrame
     path_gdf = gpd.GeoDataFrame(path_segments, geometry='geometry', crs='EPSG:4326')
 
+    # Buffer the lines to create polygons
+    print("\nBuffering paths to create polygons...")
+    path_gdf_proj = path_gdf.to_crs("EPSG:3395")
+    path_gdf_proj['geometry'] = path_gdf_proj.geometry.buffer(10000) # 10km buffer
+    path_gdf = path_gdf_proj.to_crs("EPSG:4326")
+
     # Save metadata
     print("\nSaving metadata...")
     metadata = {

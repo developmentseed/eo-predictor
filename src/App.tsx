@@ -136,11 +136,10 @@ function App() {
           <Layer
             id="satellite_paths"
             source-layer="satellite_paths"
-            type="line"
+            type="fill"
             paint={{
-              "line-color": "red",
-              "line-width": 3,
-              "line-opacity": 0.25,
+              "fill-color": "red",
+              "fill-opacity": 0.25,
             }}
             filter={filter}
           />
