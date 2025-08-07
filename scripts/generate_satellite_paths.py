@@ -19,26 +19,47 @@ metadata_path = os.path.join(public_dir, "satellite_paths_metadata.json")
 pmtiles_path = os.path.join(public_dir, "satellite_paths.pmtiles")
 geojson_path = os.path.join(script_dir, "satellite_paths.geojson")
 
+# Load satellite list from JSON
+with open(os.path.join(script_dir, "satellite-list.json"), "r") as f:
+    satellite_info = json.load(f)
+
 # List of satellite TLE data URLs from Celestrak
-urls = [
-    "https://celestrak.org/NORAD/elements/gp.php?GROUP=planet&FORMAT=tle",
-]
+urls = []
+for sat in satellite_info:
+    urls.append(f"https://celestrak.org/NORAD/elements/gp.php?CATNR={sat['norad_id']}&FORMAT=tle")
 
 # Fetch and combine TLE data
 print("Fetching TLE data...")
+combined_tle_content = ""
+for url in urls:
+    print(f"  Fetching from {url}")
+    response = requests.get(url)
+    if response.status_code == 200:
+        combined_tle_content += response.text.strip() + "\n"
+    else:
+        print(f"  Failed to fetch {url} (status: {response.status_code})")
+
 with open(os.path.join(script_dir, "combined_tle.txt"), "w") as outfile:
-    for url in urls:
-        print(f"  Fetching from {url}")
-        response = requests.get(url)
-        if response.status_code == 200:
-            outfile.write(response.text.strip() + "\n")
-        else:
-            print(f"  Failed to fetch {url} (status: {response.status_code})")
+    outfile.write(combined_tle_content)
 
 # Load satellites from the TLE file
 print("Loading satellites from TLE file...")
 satellites = load.tle_file(os.path.join(script_dir, "combined_tle.txt"))
-print(f"{len(satellites)} satellites loaded.")
+
+# Create a mapping from NORAD ID to satellite name and swath_km from your JSON
+satellite_data_map = {str(sat["norad_id"]): {"name": sat["name"], "swath_km": sat["swath_km"]} for sat in satellite_info}
+
+# Filter satellites to only include those from your JSON list and rename them
+filtered_satellites = []
+for sat in satellites:
+    # Skyfield's sat.model.satnum is the NORAD ID
+    if str(sat.model.satnum) in satellite_data_map:
+        sat.name = satellite_data_map[str(sat.model.satnum)]["name"]
+        sat.swath_km = satellite_data_map[str(sat.model.satnum)]["swath_km"]
+        filtered_satellites.append(sat)
+satellites = filtered_satellites
+
+print(f"{len(satellites)} satellites loaded and filtered.")
 
 # Set up the time range for the prediction
 ts = load.timescale()
@@ -56,7 +77,8 @@ def get_satellite_positions(sat, start_time, end_time, step_minutes):
         positions.append({
             "satellite": sat.name,
             "timestamp": current_time,
-            "coordinates": Point(lon.degrees, lat.degrees)
+            "coordinates": Point(lon.degrees, lat.degrees),
+            "swath_km": sat.swath_km
         })
         current_time += timedelta(minutes=step_minutes)
     return positions
@@ -70,7 +92,7 @@ for i, sat in enumerate(satellites):
 
 # Create a DataFrame from the positions
 print("\nCreating DataFrame from positions...")
-positions_df = pd.DataFrame(all_positions, columns=["satellite", "timestamp", "coordinates"])
+positions_df = pd.DataFrame(all_positions, columns=["satellite", "timestamp", "coordinates", "swath_km"])
 
 # Create LineString paths for each satellite
 print("Creating LineString paths for each satellite...")
@@ -90,7 +112,8 @@ for sat_name, group in positions_df.groupby('satellite'):
             'satellite': sat_name,
             'start_time': group.loc[i, 'timestamp'],
             'end_time': group.loc[i + 1, 'timestamp'],
-            'geometry': line
+            'geometry': line,
+            'swath_km': group.loc[i, 'swath_km'] # Add swath_km to path segments
         })
 
 if not path_segments:
@@ -102,7 +125,8 @@ else:
     # Buffer the lines to create polygons
     print("\nBuffering paths to create polygons...")
     path_gdf_proj = path_gdf.to_crs("EPSG:3395")
-    path_gdf_proj['geometry'] = path_gdf_proj.geometry.buffer(10000) # 10km buffer
+    # Use swath_km for buffering, converting km to meters
+    path_gdf_proj['geometry'] = path_gdf_proj.apply(lambda row: row.geometry.buffer(row['swath_km'] * 500), axis=1) # Half of swath_km for buffer
     path_gdf = path_gdf_proj.to_crs("EPSG:4326")
 
     # Save metadata
@@ -126,7 +150,7 @@ else:
     subprocess.run([
         "tippecanoe",
         "-Z0",
-        "-z8",
+        "-z8", # Changed from -z12 to -z8
         "--simplification=10",
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",

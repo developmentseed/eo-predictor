@@ -1,0 +1,110 @@
+[
+  {
+    "name": "Sentinel-1A",
+    "operator": "ESA",
+    "constellation": "Sentinel-1",
+    "sensor_type": "SAR",
+    "spatial_res_cm": 500,
+    "swath_km": 410,
+    "altitude_km": 693,
+    "off_nadir_deg": 33,
+    "data_access": "open",
+    "norad_id": 39634
+  },
+  {
+    "name": "Sentinel-1C",
+    "operator": "ESA",
+    "constellation": "Sentinel-1",
+    "sensor_type": "SAR",
+    "spatial_res_cm": 500,
+    "swath_km": 410,
+    "altitude_km": 693,
+    "off_nadir_deg": 33,
+    "data_access": "open",
+    "norad_id": 62261
+  },
+  {
+    "name": "Sentinel-2A",
+    "operator": "ESA",
+    "constellation": "Sentinel-2",
+    "sensor_type": "optical",
+    "spatial_res_cm": 1000,
+    "swath_km": 290,
+    "altitude_km": 786,
+    "off_nadir_deg": 0,
+    "data_access": "open",
+    "norad_id": 40697
+  },
+  {
+    "name": "Sentinel-2B",
+    "operator": "ESA",
+    "constellation": "Sentinel-2",
+    "sensor_type": "optical",
+    "spatial_res_cm": 1000,
+    "swath_km": 290,
+    "altitude_km": 786,
+    "off_nadir_deg": 0,
+    "data_access": "open",
+    "norad_id": 42063
+  },
+  {
+    "name": "Sentinel-2C",
+    "operator": "ESA",
+    "constellation": "Sentinel-2",
+    "sensor_type": "optical",
+    "spatial_res_cm": 1000,
+    "swath_km": 290,
+    "altitude_km": 786,
+    "off_nadir_deg": 0,
+    "data_access": "open",
+    "norad_id": 60989
+  },
+  {
+    "name": "Sentinel-3A",
+    "operator": "ESA",
+    "constellation": "Sentinel-3",
+    "sensor_type": "optical",
+    "spatial_res_cm": 30000,
+    "swath_km": 1270,
+    "altitude_km": 814,
+    "off_nadir_deg": 0,
+    "data_access": "open",
+    "norad_id": 41335
+  },
+  {
+    "name": "Sentinel-3B",
+    "operator": "ESA",
+    "constellation": "Sentinel-3",
+    "sensor_type": "optical",
+    "spatial_res_cm": 30000,
+    "swath_km": 1270,
+    "altitude_km": 814,
+    "off_nadir_deg": 0,
+    "data_access": "open",
+    "norad_id": 43437
+  },
+  {
+    "name": "Landsat-8",
+    "operator": "NASA/USGS",
+    "constellation": "Landsat",
+    "sensor_type": "optical",
+    "spatial_res_cm": 1500,
+    "swath_km": 185,
+    "altitude_km": 705,
+    "off_nadir_deg": 0,
+    "data_access": "open",
+    "norad_id": 39084
+  },
+  {
+    "name": "Landsat-9",
+    "operator": "NASA/USGS",
+    "constellation": "Landsat",
+    "sensor_type": "optical",
+    "spatial_res_cm": 1500,
+    "swath_km": 185,
+    "altitude_km": 705,
+    "off_nadir_deg": 0,
+    "data_access": "open",
+    "norad_id": 49260
+  }
+]
