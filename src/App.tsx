@@ -52,7 +52,7 @@ const Controls = ({
           min={minTime}
           max={maxTime}
           step={3600000} // 1 hour
-          onValueChange={onTimeChange}
+          onValueCommit={onTimeChange}
           className="w-full"
         />
         <div className="flex justify-between text-xs">
@@ -65,14 +65,10 @@ const Controls = ({
 };
 
 function App() {
-  const [timeRange, setTimeRange] = useState([0, 0]);
+  const [timeRange, setTimeRange] = useState<number[] | undefined>(undefined);
   const [selectedSatellite, setSelectedSatellite] = useState("all");
   const [clickedFeature, setClickedFeature] = useState(null);
-  const [metadata, setMetadata] = useState({
-    satellites: [],
-    minTime: 0,
-    maxTime: 0,
-  });
+  const [metadata, setMetadata] = useState(null);
 
   useEffect(() => {
     const protocol = new pmtiles.Protocol();
@@ -107,6 +103,10 @@ function App() {
       setClickedFeature(null);
     }
   };
+
+  if (!metadata || !timeRange) {
+    return <div>Loading...</div>;
+  }
 
   const filter: any[] = [
     "all",
