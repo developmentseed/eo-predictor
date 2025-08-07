@@ -142,10 +142,13 @@ function App() {
         onClick={handleMapClick}
         interactiveLayerIds={["sar"]}
       >
-        <Source type="vector" url="pmtiles://src/assets/sar.pmtiles">
+        <Source
+          type="vector"
+          url="pmtiles://src/assets/satellite_paths.pmtiles"
+        >
           <Layer
-            id="sar"
-            source-layer="sar"
+            id="satellite_paths"
+            source-layer="satellite_paths"
             type="line"
             paint={{
               "line-color": "red",

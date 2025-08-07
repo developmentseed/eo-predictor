@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 public/
+scripts/SAR-satellite-location.ipynb
+scripts/combined_tle.txt
+src/assets/satellite_paths.pmtiles
+scripts/satellite_paths.pmtiles
+scripts/satellite_paths.geojson

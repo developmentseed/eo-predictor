@@ -1,4 +1,5 @@
 import requests
+import subprocess
 from skyfield.api import load, wgs84, Timescale
 from datetime import datetime, timedelta, timezone
 import geopandas as gpd
@@ -20,13 +21,6 @@ with open("combined_tle.txt", "w") as outfile:
             outfile.write(response.text.strip() + "\n")
         else:
             print(f"  Failed to fetch {url} (status: {response.status_code})")
-
-# Read and print the content of the TLE file for debugging
-with open("combined_tle.txt", "r") as infile:
-    tle_content = infile.read()
-    print("\n--- TLE File Content ---")
-    print(tle_content)
-    print("--- End TLE File Content ---\n")
 
 # Load satellites from the TLE file
 print("Loading satellites from TLE file...")
@@ -89,3 +83,18 @@ else:
     path_gdf = gpd.GeoDataFrame(path_segments, geometry='geometry', crs='EPSG:4326')
     path_gdf.to_file("satellite_paths.geojson", driver='GeoJSON')
     print("\nSuccessfully generated satellite_paths.geojson")
+
+    # Generate PMTiles from the GeoJSON
+    print("\nGenerating PMTiles from GeoJSON...")
+    subprocess.run([
+        "tippecanoe",
+        "-Z0",
+        "-z8",
+        "--drop-densest-as-needed",
+        "--extend-zooms-if-still-dropping",
+        "-o",
+        "satellite_paths.pmtiles",
+        "satellite_paths.geojson",
+        "--force"
+    ])
+    print("\nSuccessfully generated satellite_paths.pmtiles")
