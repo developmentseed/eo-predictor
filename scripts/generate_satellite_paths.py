@@ -129,6 +129,7 @@ else:
         "-z8",
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
+        "--detect-longitude-wraparound",
         "-o",
         pmtiles_path,
         geojson_path,
