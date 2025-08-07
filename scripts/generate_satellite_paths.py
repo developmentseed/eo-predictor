@@ -127,6 +127,7 @@ else:
         "tippecanoe",
         "-Z0",
         "-z8",
+        "--simplification=10",
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
         "--detect-longitude-wraparound",
