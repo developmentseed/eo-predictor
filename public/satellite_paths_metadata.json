@@ -1,1 +1,1 @@
-{"satellites": ["Landsat-8", "Landsat-9", "Sentinel-1A", "Sentinel-1C", "Sentinel-2A", "Sentinel-2B", "Sentinel-2C", "Sentinel-3A", "Sentinel-3B"], "minTime": "2025-08-07T14:36:21.460184+00:00", "maxTime": "2025-08-09T14:36:21.460184+00:00"}
+{"satellites": ["Landsat-8", "Landsat-9", "Sentinel-1A", "Sentinel-1C", "Sentinel-2A", "Sentinel-2B", "Sentinel-2C", "Sentinel-3A", "Sentinel-3B"], "constellations": ["Landsat", "Sentinel-1", "Sentinel-2", "Sentinel-3"], "minTime": "2025-08-07T14:50:07.259594+00:00", "maxTime": "2025-08-09T14:50:07.259594+00:00"}

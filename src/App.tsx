@@ -21,25 +21,25 @@ import {
 const Controls = ({
   timeRange,
   onTimeChange,
-  selectedSatellite,
-  onSatelliteChange,
-  satellites,
+  selectedConstellation,
+  onConstellationChange,
+  constellations,
   minTime,
   maxTime,
 }) => {
   return (
     <div className="absolute top-5 left-5 bg-white/80 p-5 rounded-lg flex flex-col gap-5">
       <div>
-        <label className="font-bold">Satellite</label>
-        <Select onValueChange={onSatelliteChange} value={selectedSatellite}>
+        <label className="font-bold">Constellation</label>
+        <Select onValueChange={onConstellationChange} value={selectedConstellation}>
           <SelectTrigger>
-            <SelectValue placeholder="Select a satellite" />
+            <SelectValue placeholder="Select a constellation" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            {satellites.map((sat) => (
-              <SelectItem key={sat} value={sat}>
-                {sat}
+            {constellations.map((constellation) => (
+              <SelectItem key={constellation} value={constellation}>
+                {constellation}
               </SelectItem>
             ))}
           </SelectContent>
@@ -66,7 +66,7 @@ const Controls = ({
 
 function App() {
   const [timeRange, setTimeRange] = useState<number[] | undefined>(undefined);
-  const [selectedSatellite, setSelectedSatellite] = useState("all");
+  const [selectedConstellation, setSelectedConstellation] = useState("all");
   const [clickedFeature, setClickedFeature] = useState(null);
   const [metadata, setMetadata] = useState(null);
 
@@ -92,8 +92,8 @@ function App() {
     setTimeRange(value);
   };
 
-  const handleSatelliteChange = (value: string) => {
-    setSelectedSatellite(value);
+  const handleConstellationChange = (value: string) => {
+    setSelectedConstellation(value);
   };
 
   const handleMapClick = (e) => {
@@ -114,8 +114,8 @@ function App() {
     ["<=", ["get", "end_time"], new Date(timeRange[1]).toISOString()],
   ];
 
-  if (selectedSatellite !== "all") {
-    filter.push(["==", ["get", "satellite"], selectedSatellite]);
+  if (selectedConstellation !== "all") {
+    filter.push(["==", ["get", "constellation"], selectedConstellation]);
   }
 
   return (
@@ -155,6 +155,7 @@ function App() {
               <h3 className="font-bold mb-1">
                 Satellite: {clickedFeature.satellite}
               </h3>
+              <p>Constellation: {clickedFeature.constellation}</p>
               <p>Start Time: {clickedFeature.start_time}</p>
               <p>End Time: {clickedFeature.end_time}</p>
             </div>
@@ -166,9 +167,9 @@ function App() {
       <Controls
         timeRange={timeRange}
         onTimeChange={handleTimeChange}
-        selectedSatellite={selectedSatellite}
-        onSatelliteChange={handleSatelliteChange}
-        satellites={metadata.satellites}
+        selectedConstellation={selectedConstellation}
+        onConstellationChange={handleConstellationChange}
+        constellations={metadata.constellations}
         minTime={metadata.minTime}
         maxTime={metadata.maxTime}
       />

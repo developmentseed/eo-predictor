@@ -46,8 +46,8 @@ with open(os.path.join(script_dir, "combined_tle.txt"), "w") as outfile:
 print("Loading satellites from TLE file...")
 satellites = load.tle_file(os.path.join(script_dir, "combined_tle.txt"))
 
-# Create a mapping from NORAD ID to satellite name and swath_km from your JSON
-satellite_data_map = {str(sat["norad_id"]): {"name": sat["name"], "swath_km": sat["swath_km"]} for sat in satellite_info}
+# Create a mapping from NORAD ID to satellite name, constellation, and swath_km from your JSON
+satellite_data_map = {str(sat["norad_id"]): {"name": sat["name"], "constellation": sat["constellation"], "swath_km": sat["swath_km"]} for sat in satellite_info}
 
 # Filter satellites to only include those from your JSON list and rename them
 filtered_satellites = []
@@ -55,6 +55,7 @@ for sat in satellites:
     # Skyfield's sat.model.satnum is the NORAD ID
     if str(sat.model.satnum) in satellite_data_map:
         sat.name = satellite_data_map[str(sat.model.satnum)]["name"]
+        sat.constellation = satellite_data_map[str(sat.model.satnum)]["constellation"]
         sat.swath_km = satellite_data_map[str(sat.model.satnum)]["swath_km"]
         filtered_satellites.append(sat)
 satellites = filtered_satellites
@@ -78,7 +79,8 @@ def get_satellite_positions(sat, start_time, end_time, step_minutes):
             "satellite": sat.name,
             "timestamp": current_time,
             "coordinates": Point(lon.degrees, lat.degrees),
-            "swath_km": sat.swath_km
+            "swath_km": sat.swath_km,
+            "constellation": sat.constellation
         })
         current_time += timedelta(minutes=step_minutes)
     return positions
@@ -92,7 +94,7 @@ for i, sat in enumerate(satellites):
 
 # Create a DataFrame from the positions
 print("\nCreating DataFrame from positions...")
-positions_df = pd.DataFrame(all_positions, columns=["satellite", "timestamp", "coordinates", "swath_km"])
+positions_df = pd.DataFrame(all_positions, columns=["satellite", "timestamp", "coordinates", "swath_km", "constellation"])
 
 # Create LineString paths for each satellite
 print("Creating LineString paths for each satellite...")
@@ -113,7 +115,8 @@ for sat_name, group in positions_df.groupby('satellite'):
             'start_time': group.loc[i, 'timestamp'],
             'end_time': group.loc[i + 1, 'timestamp'],
             'geometry': line,
-            'swath_km': group.loc[i, 'swath_km'] # Add swath_km to path segments
+            'swath_km': group.loc[i, 'swath_km'],
+            'constellation': group.loc[i, 'constellation']
         })
 
 if not path_segments:
@@ -133,6 +136,7 @@ else:
     print("\nSaving metadata...")
     metadata = {
         "satellites": path_gdf['satellite'].unique().tolist(),
+        "constellations": path_gdf['constellation'].unique().tolist(),
         "minTime": path_gdf['start_time'].min().isoformat(),
         "maxTime": path_gdf['end_time'].max().isoformat(),
     }
