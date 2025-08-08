@@ -168,12 +168,26 @@ else:
 
     # Save metadata
     print("\nSaving metadata...")
+    
+    # Calculate spatial resolution ranges
+    spatial_resolutions = path_gdf['spatial_res_m'].unique()
+    spatial_resolution_ranges = []
+    for res in spatial_resolutions:
+        if res < 5:
+            range_category = "high"
+        elif res <= 30:
+            range_category = "medium"
+        else:
+            range_category = "low"
+        spatial_resolution_ranges.append(range_category)
+    
     metadata = {
         "satellites": path_gdf['satellite'].unique().tolist(),
         "constellations": path_gdf['constellation'].unique().tolist(),
         "operators": path_gdf['operator'].unique().tolist(),
         "sensor_types": path_gdf['sensor_type'].unique().tolist(),
         "data_access_options": path_gdf['data_access'].unique().tolist(),
+        "spatial_resolution_ranges": list(set(spatial_resolution_ranges)),
         "minTime": path_gdf['start_time'].min().isoformat(),
         "maxTime": path_gdf['end_time'].max().isoformat(),
     }
