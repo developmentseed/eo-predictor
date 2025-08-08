@@ -14,14 +14,14 @@ import { setupPMTilesProtocol, loadMapData } from "@/utils/mapUtils";
 function App() {
   const [clickedFeature, setClickedFeature] = useState(null);
   const mapRef = useRef<any>(null);
-  
-  const { 
-    metadata, 
-    timeRange, 
+
+  const {
+    metadata,
+    timeRange,
     mapFilter,
-    setMetadata, 
-    setSatelliteData, 
-    setTimeRange 
+    setMetadata,
+    setSatelliteData,
+    setTimeRange,
   } = useFilterStore();
 
   useEffect(() => {
@@ -40,7 +40,6 @@ function App() {
 
     return cleanupProtocol;
   }, [setMetadata, setSatelliteData, setTimeRange]);
-
 
   const handleMapClick = (e: any) => {
     if (e.features && e.features.length > 0) {
@@ -76,12 +75,22 @@ function App() {
             type="fill"
             paint={{
               "fill-color": "red",
-              "fill-opacity": 0.1,
+              "fill-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                2,
+                0, // Completely transparent at zoom 3
+                6,
+                0.05,
+                12,
+                0.1, // Full opacity at zoom 4
+              ],
             }}
             filter={mapFilter}
           />
         </Source>
-        <SatellitePopup 
+        <SatellitePopup
           clickedFeature={clickedFeature}
           onClose={() => setClickedFeature(null)}
         />
