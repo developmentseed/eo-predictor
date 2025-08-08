@@ -60,7 +60,7 @@ for sat in satellites:
         sat.swath_km = sat_props["swath_km"]
         sat.operator = sat_props["operator"]
         sat.sensor_type = sat_props["sensor_type"]
-        sat.spatial_res_cm = sat_props["spatial_res_cm"]
+        sat.spatial_res_m = sat_props["spatial_res_cm"] / 100 # Convert cm to meters
         sat.data_access = sat_props["data_access"]
         filtered_satellites.append(sat)
 satellites = filtered_satellites
@@ -88,7 +88,7 @@ def get_satellite_positions(sat, start_time, end_time, step_minutes):
             "constellation": sat.constellation,
             "operator": sat.operator,
             "sensor_type": sat.sensor_type,
-            "spatial_res_cm": sat.spatial_res_cm,
+            "spatial_res_m": sat.spatial_res_m, # Use meters
             "data_access": sat.data_access
         })
         current_time += timedelta(minutes=step_minutes)
@@ -105,7 +105,7 @@ for i, sat in enumerate(satellites):
 print("\nCreating DataFrame from positions...")
 positions_df = pd.DataFrame(all_positions, columns=[
     "satellite", "timestamp", "coordinates", "swath_km", "constellation",
-    "operator", "sensor_type", "spatial_res_cm", "data_access"
+    "operator", "sensor_type", "spatial_res_m", "data_access" # Use meters
 ])
 
 # Create LineString paths for each satellite
@@ -131,7 +131,7 @@ for sat_name, group in positions_df.groupby('satellite'):
             'constellation': group.loc[i, 'constellation'],
             'operator': group.loc[i, 'operator'],
             'sensor_type': group.loc[i, 'sensor_type'],
-            'spatial_res_cm': group.loc[i, 'spatial_res_cm'],
+            'spatial_res_m': group.loc[i, 'spatial_res_m'], # Use meters
             'data_access': group.loc[i, 'data_access']
         })
 

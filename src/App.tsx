@@ -159,6 +159,10 @@ function App() {
                 Satellite: {clickedFeature.satellite}
               </h3>
               <p>Constellation: {clickedFeature.constellation}</p>
+              <p>Operator: {clickedFeature.operator}</p>
+              <p>Sensor Type: {clickedFeature.sensor_type}</p>
+              <p>Spatial Resolution: {clickedFeature.spatial_res_m} m</p>
+              <p>Data Access: {clickedFeature.data_access}</p>
               <p>Start Time: {clickedFeature.start_time}</p>
               <p>End Time: {clickedFeature.end_time}</p>
             </div>
