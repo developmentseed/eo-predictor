@@ -31,7 +31,10 @@ const Controls = ({
     <div className="absolute top-5 left-5 bg-white/80 p-5 rounded-lg flex flex-col gap-5">
       <div>
         <label className="font-bold">Constellation</label>
-        <Select onValueChange={onConstellationChange} value={selectedConstellation}>
+        <Select
+          onValueChange={onConstellationChange}
+          value={selectedConstellation}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select a constellation" />
           </SelectTrigger>
@@ -139,7 +142,7 @@ function App() {
             type="fill"
             paint={{
               "fill-color": "red",
-              "fill-opacity": 0.25,
+              "fill-opacity": 0.1,
             }}
             filter={filter}
           />
