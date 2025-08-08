@@ -19,9 +19,9 @@ interface FilterState {
   timeRange: number[];
   selectedConstellation: string;
   selectedOperator: string;
-  selectedSensorTypes: string[];
-  selectedSpatialResolution: string[];
-  selectedDataAccess: string[];
+  selectedSensorType: string;
+  selectedSpatialResolution: string;
+  selectedDataAccess: string;
   
   // Computed/derived state
   availableConstellations: Array<{ value: string; disabled: boolean }>;
@@ -39,9 +39,9 @@ interface FilterState {
   setTimeRange: (range: number[]) => void;
   setConstellation: (value: string) => void;
   setOperator: (value: string) => void;
-  setSensorTypes: (values: string[]) => void;
-  setSpatialResolution: (values: string[]) => void;
-  setDataAccess: (values: string[]) => void;
+  setSensorType: (value: string) => void;
+  setSpatialResolution: (value: string) => void;
+  setDataAccess: (value: string) => void;
   
   // Computed filter logic
   getFilteredSatellites: () => SatelliteData[];
@@ -65,9 +65,9 @@ export const useFilterStore = create<FilterState>()(
       timeRange: [],
       selectedConstellation: 'all',
       selectedOperator: 'all',
-      selectedSensorTypes: [],
-      selectedSpatialResolution: [],
-      selectedDataAccess: [],
+      selectedSensorType: 'all',
+      selectedSpatialResolution: 'all',
+      selectedDataAccess: 'all',
       
       // Initial computed state
       availableConstellations: [],
@@ -94,86 +94,27 @@ export const useFilterStore = create<FilterState>()(
       },
       
       setConstellation: (value) => {
-        const currentState = get();
         set({ selectedConstellation: value });
-        
-        // Reset dependent filters that might become invalid
-        if (value !== 'all') {
-          const availableSats = currentState.satelliteData.filter(sat => sat.constellation === value);
-          const availableOperators = [...new Set(availableSats.map(sat => sat.operator))];
-          const availableSensorTypes = [...new Set(availableSats.map(sat => sat.sensor_type))];
-          
-          // Reset operator if it's not available for this constellation
-          if (currentState.selectedOperator !== 'all' && !availableOperators.includes(currentState.selectedOperator)) {
-            set({ selectedOperator: 'all' });
-          }
-          
-          // Reset sensor types if they're not available for this constellation
-          const validSensorTypes = currentState.selectedSensorTypes.filter(type => availableSensorTypes.includes(type));
-          if (validSensorTypes.length !== currentState.selectedSensorTypes.length) {
-            set({ selectedSensorTypes: validSensorTypes });
-          }
-        }
-        
         get().updateDerivedState();
       },
       
       setOperator: (value) => {
-        const currentState = get();
         set({ selectedOperator: value });
-        
-        // Reset dependent filters that might become invalid
-        if (value !== 'all') {
-          const availableSats = currentState.satelliteData.filter(sat => sat.operator === value);
-          const availableConstellations = [...new Set(availableSats.map(sat => sat.constellation))];
-          const availableSensorTypes = [...new Set(availableSats.map(sat => sat.sensor_type))];
-          
-          // Reset constellation if it's not available for this operator
-          if (currentState.selectedConstellation !== 'all' && !availableConstellations.includes(currentState.selectedConstellation)) {
-            set({ selectedConstellation: 'all' });
-          }
-          
-          // Reset sensor types if they're not available for this operator
-          const validSensorTypes = currentState.selectedSensorTypes.filter(type => availableSensorTypes.includes(type));
-          if (validSensorTypes.length !== currentState.selectedSensorTypes.length) {
-            set({ selectedSensorTypes: validSensorTypes });
-          }
-        }
-        
         get().updateDerivedState();
       },
       
-      setSensorTypes: (values) => {
-        const currentState = get();
-        set({ selectedSensorTypes: values });
-        
-        // Reset dependent filters that might become invalid
-        if (values.length > 0) {
-          const availableSats = currentState.satelliteData.filter(sat => values.includes(sat.sensor_type));
-          const availableConstellations = [...new Set(availableSats.map(sat => sat.constellation))];
-          const availableOperators = [...new Set(availableSats.map(sat => sat.operator))];
-          
-          // Reset constellation if it's not available for these sensor types
-          if (currentState.selectedConstellation !== 'all' && !availableConstellations.includes(currentState.selectedConstellation)) {
-            set({ selectedConstellation: 'all' });
-          }
-          
-          // Reset operator if it's not available for these sensor types
-          if (currentState.selectedOperator !== 'all' && !availableOperators.includes(currentState.selectedOperator)) {
-            set({ selectedOperator: 'all' });
-          }
-        }
-        
+      setSensorType: (value) => {
+        set({ selectedSensorType: value });
         get().updateDerivedState();
       },
       
-      setSpatialResolution: (values) => {
-        set({ selectedSpatialResolution: values });
+      setSpatialResolution: (value) => {
+        set({ selectedSpatialResolution: value });
         get().updateDerivedState();
       },
       
-      setDataAccess: (values) => {
-        set({ selectedDataAccess: values });
+      setDataAccess: (value) => {
+        set({ selectedDataAccess: value });
         get().updateDerivedState();
       },
       
@@ -193,21 +134,21 @@ export const useFilterStore = create<FilterState>()(
         }
         
         // Apply sensor type filter
-        if (state.selectedSensorTypes.length > 0) {
-          filtered = filtered.filter(sat => state.selectedSensorTypes.includes(sat.sensor_type));
+        if (state.selectedSensorType !== 'all') {
+          filtered = filtered.filter(sat => sat.sensor_type === state.selectedSensorType);
         }
         
         // Apply spatial resolution filter
-        if (state.selectedSpatialResolution.length > 0) {
+        if (state.selectedSpatialResolution !== 'all') {
           filtered = filtered.filter(sat => {
             const category = getSpatialResolutionCategory(sat.spatial_res_cm);
-            return state.selectedSpatialResolution.includes(category);
+            return category === state.selectedSpatialResolution;
           });
         }
         
         // Apply data access filter
-        if (state.selectedDataAccess.length > 0) {
-          filtered = filtered.filter(sat => state.selectedDataAccess.includes(sat.data_access));
+        if (state.selectedDataAccess !== 'all') {
+          filtered = filtered.filter(sat => sat.data_access === state.selectedDataAccess);
         }
         
         return filtered;
@@ -215,39 +156,58 @@ export const useFilterStore = create<FilterState>()(
       
       updateDerivedState: () => {
         const state = get();
-        const filteredSatellites = state.getFilteredSatellites();
         
-        // Get all available options from current filtered satellites
-        const allConstellations = [...new Set(filteredSatellites.map(sat => sat.constellation))];
-        const allOperators = [...new Set(filteredSatellites.map(sat => sat.operator))];
-        const allSensorTypes = [...new Set(filteredSatellites.map(sat => sat.sensor_type))];
-        const allSpatialResolution = [...new Set(filteredSatellites.map(sat => getSpatialResolutionCategory(sat.spatial_res_cm)))];
-        const allDataAccess = [...new Set(filteredSatellites.map(sat => sat.data_access))];
+        // Apply driver filters (sensor type, spatial resolution, data access) to determine available constellations/operators
+        let driverFiltered = [...state.satelliteData];
+        
+        // Apply sensor type filter
+        if (state.selectedSensorType !== 'all') {
+          driverFiltered = driverFiltered.filter(sat => sat.sensor_type === state.selectedSensorType);
+        }
+        
+        // Apply spatial resolution filter
+        if (state.selectedSpatialResolution !== 'all') {
+          driverFiltered = driverFiltered.filter(sat => {
+            const category = getSpatialResolutionCategory(sat.spatial_res_cm);
+            return category === state.selectedSpatialResolution;
+          });
+        }
+        
+        // Apply data access filter
+        if (state.selectedDataAccess !== 'all') {
+          driverFiltered = driverFiltered.filter(sat => sat.data_access === state.selectedDataAccess);
+        }
+        
+        // Get available options from driver-filtered satellites
+        const availableConstellationsFromDrivers = [...new Set(driverFiltered.map(sat => sat.constellation))];
+        const availableOperatorsFromDrivers = [...new Set(driverFiltered.map(sat => sat.operator))];
         
         // Generate available options with disabled states
+        // Only constellation and operator get constrained by driver filters
         const availableConstellations = (state.metadata?.constellations || []).map((constellation: string) => ({
           value: constellation,
-          disabled: !allConstellations.includes(constellation)
+          disabled: !availableConstellationsFromDrivers.includes(constellation)
         }));
         
         const availableOperators = (state.metadata?.operators || []).map((operator: string) => ({
           value: operator,
-          disabled: !allOperators.includes(operator)
+          disabled: !availableOperatorsFromDrivers.includes(operator)
         }));
         
+        // Driver filters are never disabled - they're always selectable
         const availableSensorTypes = (state.metadata?.sensor_types || []).map((sensorType: string) => ({
           value: sensorType,
-          disabled: !allSensorTypes.includes(sensorType)
+          disabled: false
         }));
         
         const availableSpatialResolution = ['high', 'medium', 'low'].map((resolution: string) => ({
           value: resolution,
-          disabled: !allSpatialResolution.includes(resolution)
+          disabled: false
         }));
         
         const availableDataAccess = (state.metadata?.data_access_options || []).map((access: string) => ({
           value: access,
-          disabled: !allDataAccess.includes(access)
+          disabled: false
         }));
         
         const mapFilter = state.generateMapFilter();
@@ -286,40 +246,25 @@ export const useFilterStore = create<FilterState>()(
           filter.push(["==", ["get", "operator"], state.selectedOperator]);
         }
         
-        // Sensor types filter
-        if (state.selectedSensorTypes.length > 0) {
-          const sensorFilter = state.selectedSensorTypes.length === 1 
-            ? ["==", ["get", "sensor_type"], state.selectedSensorTypes[0]]
-            : ["in", ["get", "sensor_type"], ["literal", state.selectedSensorTypes]];
-          filter.push(sensorFilter);
+        // Sensor type filter
+        if (state.selectedSensorType !== 'all') {
+          filter.push(["==", ["get", "sensor_type"], state.selectedSensorType]);
         }
         
         // Spatial resolution filter
-        if (state.selectedSpatialResolution.length > 0) {
-          const spatialFilters: any[] = [];
-          state.selectedSpatialResolution.forEach(range => {
-            if (range === "high") {
-              spatialFilters.push(["<", ["get", "spatial_res_m"], 5]);
-            } else if (range === "medium") {
-              spatialFilters.push(["all", [">=", ["get", "spatial_res_m"], 5], ["<=", ["get", "spatial_res_m"], 30]]);
-            } else if (range === "low") {
-              spatialFilters.push([">", ["get", "spatial_res_m"], 30]);
-            }
-          });
-          
-          if (spatialFilters.length === 1) {
-            filter.push(spatialFilters[0]);
-          } else if (spatialFilters.length > 1) {
-            filter.push(["any", ...spatialFilters]);
+        if (state.selectedSpatialResolution !== 'all') {
+          if (state.selectedSpatialResolution === "high") {
+            filter.push(["<", ["get", "spatial_res_m"], 5]);
+          } else if (state.selectedSpatialResolution === "medium") {
+            filter.push(["all", [">=", ["get", "spatial_res_m"], 5], ["<=", ["get", "spatial_res_m"], 30]]);
+          } else if (state.selectedSpatialResolution === "low") {
+            filter.push([">", ["get", "spatial_res_m"], 30]);
           }
         }
         
         // Data access filter
-        if (state.selectedDataAccess.length > 0) {
-          const accessFilter = state.selectedDataAccess.length === 1 
-            ? ["==", ["get", "data_access"], state.selectedDataAccess[0]]
-            : ["in", ["get", "data_access"], ["literal", state.selectedDataAccess]];
-          filter.push(accessFilter);
+        if (state.selectedDataAccess !== 'all') {
+          filter.push(["==", ["get", "data_access"], state.selectedDataAccess]);
         }
         
         return filter;

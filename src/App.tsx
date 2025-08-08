@@ -21,14 +21,20 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
 import { useFilterStore } from "@/store/filterStore";
 
 const Controls = () => {
+  const [localTimeRange, setLocalTimeRange] = useState<number[]>([]);
+  
   const {
     timeRange,
     selectedConstellation,
     selectedOperator, 
-    selectedSensorTypes,
+    selectedSensorType,
     selectedSpatialResolution,
     selectedDataAccess,
     availableConstellations,
@@ -40,10 +46,17 @@ const Controls = () => {
     setTimeRange,
     setConstellation,
     setOperator,
-    setSensorTypes,
+    setSensorType,
     setSpatialResolution,
     setDataAccess,
   } = useFilterStore();
+
+  // Sync local time range with store when timeRange changes from external source
+  useEffect(() => {
+    if (timeRange.length > 0 && localTimeRange.length === 0) {
+      setLocalTimeRange(timeRange);
+    }
+  }, [timeRange, localTimeRange.length]);
   
   if (!metadata || !timeRange.length) {
     return null;
@@ -102,85 +115,104 @@ const Controls = () => {
       
       <div>
         <label className="font-bold mb-2 block">Sensor Types</label>
-        <ToggleGroup
-          type="multiple"
-          value={selectedSensorTypes}
-          onValueChange={setSensorTypes}
-          className="flex-wrap gap-1"
+        <RadioGroup
+          value={selectedSensorType}
+          onValueChange={setSensorType}
+          className="flex flex-wrap gap-2"
         >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="all" id="sensor-all" />
+            <label htmlFor="sensor-all" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              All
+            </label>
+          </div>
           {availableSensorTypes.map(({ value, disabled }) => (
-            <ToggleGroupItem
-              key={value}
-              value={value}
-              disabled={disabled}
-              className={`text-xs px-2 py-1 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {value}
-            </ToggleGroupItem>
+            <div key={value} className="flex items-center space-x-2">
+              <RadioGroupItem value={value} id={`sensor-${value}`} disabled={disabled} />
+              <label
+                htmlFor={`sensor-${value}`}
+                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${disabled ? 'opacity-50' : ''}`}
+              >
+                {value}
+              </label>
+            </div>
           ))}
-        </ToggleGroup>
+        </RadioGroup>
       </div>
       
       <div>
         <label className="font-bold mb-2 block">Spatial Resolution</label>
-        <ToggleGroup
-          type="multiple"
+        <RadioGroup
           value={selectedSpatialResolution}
           onValueChange={setSpatialResolution}
-          className="flex-wrap gap-1"
+          className="flex flex-wrap gap-2"
         >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="all" id="resolution-all" />
+            <label htmlFor="resolution-all" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              All
+            </label>
+          </div>
           {availableSpatialResolution.map(({ value, disabled }) => {
             const label = value === 'high' ? 'High (<5m)' : 
                         value === 'medium' ? 'Medium (5-30m)' : 
                         'Low (>30m)';
             return (
-              <ToggleGroupItem
-                key={value}
-                value={value}
-                disabled={disabled}
-                className={`text-xs px-2 py-1 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {label}
-              </ToggleGroupItem>
+              <div key={value} className="flex items-center space-x-2">
+                <RadioGroupItem value={value} id={`resolution-${value}`} disabled={disabled} />
+                <label
+                  htmlFor={`resolution-${value}`}
+                  className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${disabled ? 'opacity-50' : ''}`}
+                >
+                  {label}
+                </label>
+              </div>
             );
           })}
-        </ToggleGroup>
+        </RadioGroup>
       </div>
       
       <div>
         <label className="font-bold mb-2 block">Data Access</label>
-        <ToggleGroup
-          type="multiple"
+        <RadioGroup
           value={selectedDataAccess}
           onValueChange={setDataAccess}
-          className="flex gap-1"
+          className="flex flex-wrap gap-2"
         >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="all" id="access-all" />
+            <label htmlFor="access-all" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              All
+            </label>
+          </div>
           {availableDataAccess.map(({ value, disabled }) => (
-            <ToggleGroupItem
-              key={value}
-              value={value}
-              disabled={disabled}
-              className={`text-xs px-2 py-1 capitalize ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {value}
-            </ToggleGroupItem>
+            <div key={value} className="flex items-center space-x-2">
+              <RadioGroupItem value={value} id={`access-${value}`} disabled={disabled} />
+              <label
+                htmlFor={`access-${value}`}
+                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize ${disabled ? 'opacity-50' : ''}`}
+              >
+                {value}
+              </label>
+            </div>
           ))}
-        </ToggleGroup>
+        </RadioGroup>
       </div>
       
       <div>
         <label className="font-bold mb-2 block">Time Range</label>
         <Slider
-          value={timeRange}
+          value={localTimeRange.length > 0 ? localTimeRange : timeRange}
           min={metadata.minTime}
           max={metadata.maxTime}
           step={3600000} // 1 hour
-          onValueChange={setTimeRange}
+          onValueChange={setLocalTimeRange}
+          onValueCommit={setTimeRange}
           className="w-full"
         />
         <div className="flex justify-between text-xs mt-1">
-          <span>{new Date(timeRange[0]).toUTCString()}</span>
-          <span>{new Date(timeRange[1]).toUTCString()}</span>
+          <span>{new Date((localTimeRange.length > 0 ? localTimeRange : timeRange)[0]).toUTCString()}</span>
+          <span>{new Date((localTimeRange.length > 0 ? localTimeRange : timeRange)[1]).toUTCString()}</span>
         </div>
       </div>
     </div>
