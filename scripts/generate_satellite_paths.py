@@ -1,7 +1,8 @@
-import requests
+import httpx
 import subprocess
 import json
 import os
+import asyncio
 from skyfield.api import load, wgs84, Timescale
 from datetime import datetime, timedelta, timezone
 import geopandas as gpd
@@ -28,16 +29,33 @@ urls = []
 for sat in satellite_info:
     urls.append(f"https://celestrak.org/NORAD/elements/gp.php?CATNR={sat['norad_id']}&FORMAT=tle")
 
+# Async function to fetch a single TLE URL
+async def fetch_tle(client, url):
+    try:
+        response = await client.get(url)
+        response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+        print(f"  Successfully fetched from {url}")
+        return response.text
+    except httpx.HTTPStatusError as e:
+        print(f"  Failed to fetch {url} (HTTP error: {e.response.status_code})")
+        return ""
+    except httpx.RequestError as e:
+        print(f"  Failed to fetch {url} (Request error: {e})")
+        return ""
+
+# Async function to fetch all TLE URLs concurrently
+async def fetch_all_tles(urls):
+    async with httpx.AsyncClient() as client:
+        tasks = [fetch_tle(client, url) for url in urls]
+        return await asyncio.gather(*tasks)
+
 # Fetch and combine TLE data
 print("Fetching TLE data...")
 combined_tle_content = ""
-for url in urls:
-    print(f"  Fetching from {url}")
-    response = requests.get(url)
-    if response.status_code == 200:
-        combined_tle_content += response.text.strip() + "\n"
-    else:
-        print(f"  Failed to fetch {url} (status: {response.status_code})")
+
+# Run the async fetching
+all_tle_contents = asyncio.run(fetch_all_tles(urls))
+combined_tle_content = "\n".join(all_tle_contents)
 
 with open(os.path.join(script_dir, "combined_tle.txt"), "w") as outfile:
     outfile.write(combined_tle_content)
