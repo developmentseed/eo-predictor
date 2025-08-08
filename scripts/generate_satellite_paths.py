@@ -1,7 +1,8 @@
-import requests
+import httpx
 import subprocess
 import json
 import os
+import asyncio
 from skyfield.api import load, wgs84, Timescale
 from datetime import datetime, timedelta, timezone
 import geopandas as gpd
@@ -19,26 +20,70 @@ metadata_path = os.path.join(public_dir, "satellite_paths_metadata.json")
 pmtiles_path = os.path.join(public_dir, "satellite_paths.pmtiles")
 geojson_path = os.path.join(script_dir, "satellite_paths.geojson")
 
+# Load satellite list from JSON
+with open(os.path.join(script_dir, "satellite-list.json"), "r") as f:
+    satellite_info = json.load(f)
+
 # List of satellite TLE data URLs from Celestrak
-urls = [
-    "https://celestrak.org/NORAD/elements/gp.php?GROUP=planet&FORMAT=tle",
-]
+urls = []
+for sat in satellite_info:
+    urls.append(f"https://celestrak.org/NORAD/elements/gp.php?CATNR={sat['norad_id']}&FORMAT=tle")
+
+# Async function to fetch a single TLE URL
+async def fetch_tle(client, url):
+    try:
+        response = await client.get(url)
+        response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
+        print(f"  Successfully fetched from {url}")
+        return response.text
+    except httpx.HTTPStatusError as e:
+        print(f"  Failed to fetch {url} (HTTP error: {e.response.status_code})")
+        return ""
+    except httpx.RequestError as e:
+        print(f"  Failed to fetch {url} (Request error: {e})")
+        return ""
+
+# Async function to fetch all TLE URLs concurrently
+async def fetch_all_tles(urls):
+    async with httpx.AsyncClient() as client:
+        tasks = [fetch_tle(client, url) for url in urls]
+        return await asyncio.gather(*tasks)
 
 # Fetch and combine TLE data
 print("Fetching TLE data...")
+combined_tle_content = ""
+
+# Run the async fetching
+all_tle_contents = asyncio.run(fetch_all_tles(urls))
+combined_tle_content = "\n".join(all_tle_contents)
+
 with open(os.path.join(script_dir, "combined_tle.txt"), "w") as outfile:
-    for url in urls:
-        print(f"  Fetching from {url}")
-        response = requests.get(url)
-        if response.status_code == 200:
-            outfile.write(response.text.strip() + "\n")
-        else:
-            print(f"  Failed to fetch {url} (status: {response.status_code})")
+    outfile.write(combined_tle_content)
 
 # Load satellites from the TLE file
 print("Loading satellites from TLE file...")
 satellites = load.tle_file(os.path.join(script_dir, "combined_tle.txt"))
-print(f"{len(satellites)} satellites loaded.")
+
+# Create a mapping from NORAD ID to satellite data from your JSON
+satellite_data_map = {str(sat["norad_id"]): sat for sat in satellite_info}
+
+# Filter satellites to only include those from your JSON list and add properties
+filtered_satellites = []
+for sat in satellites:
+    # Skyfield's sat.model.satnum is the NORAD ID
+    if str(sat.model.satnum) in satellite_data_map:
+        sat_props = satellite_data_map[str(sat.model.satnum)]
+        sat.name = sat_props["name"]
+        sat.constellation = sat_props["constellation"]
+        sat.swath_km = sat_props["swath_km"]
+        sat.operator = sat_props["operator"]
+        sat.sensor_type = sat_props["sensor_type"]
+        sat.spatial_res_m = sat_props["spatial_res_cm"] / 100 # Convert cm to meters
+        sat.data_access = sat_props["data_access"]
+        filtered_satellites.append(sat)
+satellites = filtered_satellites
+
+print(f"{len(satellites)} satellites loaded and filtered.")
 
 # Set up the time range for the prediction
 ts = load.timescale()
@@ -56,7 +101,13 @@ def get_satellite_positions(sat, start_time, end_time, step_minutes):
         positions.append({
             "satellite": sat.name,
             "timestamp": current_time,
-            "coordinates": Point(lon.degrees, lat.degrees)
+            "coordinates": Point(lon.degrees, lat.degrees),
+            "swath_km": sat.swath_km,
+            "constellation": sat.constellation,
+            "operator": sat.operator,
+            "sensor_type": sat.sensor_type,
+            "spatial_res_m": sat.spatial_res_m, # Use meters
+            "data_access": sat.data_access
         })
         current_time += timedelta(minutes=step_minutes)
     return positions
@@ -70,7 +121,10 @@ for i, sat in enumerate(satellites):
 
 # Create a DataFrame from the positions
 print("\nCreating DataFrame from positions...")
-positions_df = pd.DataFrame(all_positions, columns=["satellite", "timestamp", "coordinates"])
+positions_df = pd.DataFrame(all_positions, columns=[
+    "satellite", "timestamp", "coordinates", "swath_km", "constellation",
+    "operator", "sensor_type", "spatial_res_m", "data_access" # Use meters
+])
 
 # Create LineString paths for each satellite
 print("Creating LineString paths for each satellite...")
@@ -90,7 +144,13 @@ for sat_name, group in positions_df.groupby('satellite'):
             'satellite': sat_name,
             'start_time': group.loc[i, 'timestamp'],
             'end_time': group.loc[i + 1, 'timestamp'],
-            'geometry': line
+            'geometry': line,
+            'swath_km': group.loc[i, 'swath_km'],
+            'constellation': group.loc[i, 'constellation'],
+            'operator': group.loc[i, 'operator'],
+            'sensor_type': group.loc[i, 'sensor_type'],
+            'spatial_res_m': group.loc[i, 'spatial_res_m'], # Use meters
+            'data_access': group.loc[i, 'data_access']
         })
 
 if not path_segments:
@@ -102,13 +162,18 @@ else:
     # Buffer the lines to create polygons
     print("\nBuffering paths to create polygons...")
     path_gdf_proj = path_gdf.to_crs("EPSG:3395")
-    path_gdf_proj['geometry'] = path_gdf_proj.geometry.buffer(10000) # 10km buffer
+    # Use swath_km for buffering, converting km to meters
+    path_gdf_proj['geometry'] = path_gdf_proj.apply(lambda row: row.geometry.buffer(row['swath_km'] * 500), axis=1) # Half of swath_km for buffer
     path_gdf = path_gdf_proj.to_crs("EPSG:4326")
 
     # Save metadata
     print("\nSaving metadata...")
     metadata = {
         "satellites": path_gdf['satellite'].unique().tolist(),
+        "constellations": path_gdf['constellation'].unique().tolist(),
+        "operators": path_gdf['operator'].unique().tolist(),
+        "sensor_types": path_gdf['sensor_type'].unique().tolist(),
+        "data_access_options": path_gdf['data_access'].unique().tolist(),
         "minTime": path_gdf['start_time'].min().isoformat(),
         "maxTime": path_gdf['end_time'].max().isoformat(),
     }
@@ -126,7 +191,7 @@ else:
     subprocess.run([
         "tippecanoe",
         "-Z0",
-        "-z8",
+        "-z8", # Changed from -z12 to -z8
         "--simplification=10",
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
