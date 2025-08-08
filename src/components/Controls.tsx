@@ -41,8 +41,9 @@ export const Controls = ({ mapRef }: ControlsProps) => {
     setSpatialResolution,
     setDataAccess,
   } = useFilterStore();
-
-  const { getPassCountText } = usePassCounter({ mapRef });
+  // We will render the pass counter outside this component.
+  // Keep only the pass list here for when there are <=10.
+  const { visiblePasses } = usePassCounter({ mapRef });
 
   // Sync local time range with store when timeRange changes from external source
   useEffect(() => {
@@ -56,13 +57,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
   }
   
   return (
-    <div className="absolute top-5 left-5 bg-white/80 p-5 rounded-lg flex flex-col gap-4 max-w-sm max-h-[90vh] overflow-y-auto">
-      {/* Pass Counter */}
-      <div className="bg-blue-50 px-3 py-2 rounded-md border border-blue-200">
-        <div className="text-sm font-medium text-blue-900">
-          {getPassCountText()}
-        </div>
-      </div>
+    <div className="absolute top-20 left-5 bg-white/80 p-5 rounded-lg flex flex-col gap-4 max-w-sm max-h-[90vh] overflow-y-auto">
       
       <div>
         <label className="font-bold mb-2 block">Constellation</label>
@@ -216,6 +211,20 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           <span>{new Date((localTimeRange.length > 0 ? localTimeRange : timeRange)[1]).toUTCString()}</span>
         </div>
       </div>
+
+      {visiblePasses.length > 0 && (
+        <div className="bg-gray-50 px-3 py-2 rounded-md border border-gray-200">
+          <div className="text-sm font-semibold mb-1 text-gray-900">Visible passes</div>
+          <ul className="text-sm text-gray-800 list-disc pl-5 space-y-0.5">
+            {visiblePasses.map((p) => (
+              <li key={`${p.name}-${p.start_time}`}>
+                <span className="font-medium">{p.name}</span>
+                <span className="ml-1 text-gray-600">({new Date(p.start_time).toUTCString()})</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

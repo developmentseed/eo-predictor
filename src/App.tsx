@@ -9,6 +9,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useFilterStore } from "@/store/filterStore";
 import { Controls } from "@/components/Controls";
 import { SatellitePopup } from "@/components/SatellitePopup";
+import { PassCounter } from "@/components/PassCounter";
 import { setupPMTilesProtocol, loadMapData } from "@/utils/mapUtils";
 
 function App() {
@@ -97,6 +98,7 @@ function App() {
         <NavigationControl position="bottom-right" visualizePitch={true} />
         <GeolocateControl position="bottom-right" trackUserLocation={true} />
       </Map>
+      <PassCounter mapRef={mapRef} />
       <Controls mapRef={mapRef} />
     </>
   );

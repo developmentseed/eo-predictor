@@ -4,8 +4,11 @@ interface UsePassCounterProps {
   mapRef: React.RefObject<any>;
 }
 
+type VisiblePass = { name: string; start_time: string };
+
 export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
   const [visiblePassCount, setVisiblePassCount] = useState<number | null>(null);
+  const [visiblePasses, setVisiblePasses] = useState<VisiblePass[]>([]);
 
   // Function to count unique satellites from rendered features
   const updateVisiblePassCount = useCallback(() => {
@@ -35,6 +38,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
       if (features.length === 0) {
         console.log('Setting count to 0');
         setVisiblePassCount(0);
+        setVisiblePasses([]);
         return;
       }
 
@@ -42,19 +46,36 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
       if (features.length > 100) {
         console.log('Too many features, capping at 100+');
         setVisiblePassCount(101); // Use 101 to indicate "100+"
+        setVisiblePasses([]);
         return;
       }
 
-      const uniqueSatellites = new Set(
-        features.map(feature => feature.properties?.satellite || feature.properties?.name)
-      );
-      
-      console.log('Unique satellites:', Array.from(uniqueSatellites));
-      console.log(`Setting count to ${uniqueSatellites.size}`);
-      setVisiblePassCount(uniqueSatellites.size);
+      // Build list of all passes (duplicates allowed), sorted by start_time
+      const passes: VisiblePass[] = [];
+      for (const feature of features) {
+        const props = feature.properties || {};
+        const name = (props.satellite || props.name || '').toString();
+        const start = (props.start_time || '').toString();
+        if (!name || !start) continue;
+        passes.push({ name, start_time: start });
+      }
+
+      console.log('Total passes:', passes.length);
+      setVisiblePassCount(features.length);
+
+      // Only populate list when small enough to be useful (<= 10)
+      const list: VisiblePass[] = passes
+        .sort((a, b) => Date.parse(a.start_time) - Date.parse(b.start_time))
+        .slice(0, 10);
+      if (features.length <= 10) {
+        setVisiblePasses(list);
+      } else {
+        setVisiblePasses([]);
+      }
     } catch (error) {
       console.warn('Error counting visible passes:', error);
       setVisiblePassCount(null);
+      setVisiblePasses([]);
     }
   }, [mapRef]);
 
@@ -115,6 +136,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
   return {
     visiblePassCount,
+    visiblePasses,
     getPassCountText
   };
 };
