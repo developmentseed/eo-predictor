@@ -26,7 +26,8 @@
     "react-map-gl": "^8.0.4",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
-    "zstd-codec": "^0.1.5"
+    "zstd-codec": "^0.1.5",
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
     "@eslint/js": "latest",
