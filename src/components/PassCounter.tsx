@@ -17,11 +17,21 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
     mapRef,
   });
 
-  if (
-    visiblePassCount === null ||
-    visiblePassCount > 25 ||
-    visiblePasses.length === 0
-  ) {
+  if (visiblePassCount === null) {
+    return null;
+  }
+
+  // Show placeholder when there are too many passes to display individual details
+  if (visiblePassCount > 98 || visiblePasses.length === 0) {
+    if (visiblePassCount > 0) {
+      return (
+        <div className="text-center py-8 text-muted-foreground">
+          <p className="text-sm">
+            Zoom in or use filters to see individual satellite passes.
+          </p>
+        </div>
+      );
+    }
     return null;
   }
 

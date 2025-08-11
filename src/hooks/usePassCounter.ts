@@ -4,8 +4,8 @@ interface UsePassCounterProps {
   mapRef: React.RefObject<any>;
 }
 
-type VisiblePass = { 
-  name: string; 
+type VisiblePass = {
+  name: string;
   start_time: string;
   sensor_type?: string;
   spatial_res_m?: number;
@@ -66,23 +66,25 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
         const name = (props.satellite || props.name || "").toString();
         const start = (props.start_time || "").toString();
         if (!name || !start) continue;
-        passes.push({ 
-          name, 
+        passes.push({
+          name,
           start_time: start,
           sensor_type: props.sensor_type?.toString(),
-          spatial_res_m: props.spatial_res_m ? Number(props.spatial_res_m) : undefined,
-          data_access: props.data_access?.toString()
+          spatial_res_m: props.spatial_res_m
+            ? Number(props.spatial_res_m)
+            : undefined,
+          data_access: props.data_access?.toString(),
         });
       }
 
       console.log("Total passes:", passes.length);
       setVisiblePassCount(features.length);
 
-      // Only populate list when small enough to be useful (<= 10)
+      // Only populate list when small enough to be useful (<= 99)
       const list: VisiblePass[] = passes
         .sort((a, b) => Date.parse(a.start_time) - Date.parse(b.start_time))
-        .slice(0, 50);
-      if (features.length <= 50) {
+        .slice(0, 98);
+      if (features.length <= 98) {
         setVisiblePasses(list);
       } else {
         setVisiblePasses([]);

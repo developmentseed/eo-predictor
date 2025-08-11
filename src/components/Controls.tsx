@@ -38,50 +38,54 @@ export const Controls = ({ mapRef }: ControlsProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Constellation</label>
-        <Select onValueChange={setConstellation} value={selectedConstellation}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a constellation" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            {availableConstellations.map(({ value, disabled }) => (
-              <SelectItem
-                key={value}
-                value={value}
-                disabled={disabled}
-                className={disabled ? "opacity-50" : ""}
-              >
-                {value}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <div className="flex gap-8 content-evenly">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Constellation</label>
+          <Select
+            onValueChange={setConstellation}
+            value={selectedConstellation}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a constellation" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {availableConstellations.map(({ value, disabled }) => (
+                <SelectItem
+                  key={value}
+                  value={value}
+                  disabled={disabled}
+                  className={disabled ? "opacity-50" : ""}
+                >
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Operator</label>
-        <Select onValueChange={setOperator} value={selectedOperator}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select an operator" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            {availableOperators.map(({ value, disabled }) => (
-              <SelectItem
-                key={value}
-                value={value}
-                disabled={disabled}
-                className={disabled ? "opacity-50" : ""}
-              >
-                {value}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Operator</label>
+          <Select onValueChange={setOperator} value={selectedOperator}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select an operator" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {availableOperators.map(({ value, disabled }) => (
+                <SelectItem
+                  key={value}
+                  value={value}
+                  disabled={disabled}
+                  className={disabled ? "opacity-50" : ""}
+                >
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-
       <div className="space-y-2">
         <label className="text-sm font-medium">Sensor Types</label>
         <RadioGroup
