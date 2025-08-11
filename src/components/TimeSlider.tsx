@@ -1,21 +1,12 @@
 import { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFilterStore } from "@/store/filterStore";
 
 export const TimeSlider = () => {
   const [localTimeRange, setLocalTimeRange] = useState<number[]>([]);
 
-  const {
-    timeRange,
-    metadata,
-    setTimeRange,
-  } = useFilterStore();
+  const { timeRange, metadata, setTimeRange } = useFilterStore();
 
   // Sync local time range with store when timeRange changes from external source
   useEffect(() => {
@@ -29,7 +20,7 @@ export const TimeSlider = () => {
   }
 
   return (
-    <Card className="absolute bottom-5 left-1/2 transform -translate-x-1/2 w-96 max-w-[90vw]">
+    <Card className="w-96 max-w-[90vw]">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">Time Range</CardTitle>
       </CardHeader>

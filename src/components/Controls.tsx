@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/collapsible";
 import { CaretDown } from "phosphor-react";
 import { useFilterStore } from "@/store/filterStore";
+import { TimeSlider } from "@/components/TimeSlider";
 
 interface ControlsProps {
   mapRef: React.RefObject<any>;
@@ -50,7 +51,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
   }
 
   return (
-    <Card className="absolute top-20 left-5 max-w-sm max-h-[90vh] overflow-y-auto">
+    <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">Satellite Filters</CardTitle>
         <CardDescription>
@@ -58,8 +59,21 @@ export const Controls = ({ mapRef }: ControlsProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-            {/* Location Filters */}
-            <Collapsible defaultOpen>
+        {/* Time Range */}
+        <Collapsible defaultOpen>
+          <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-180">
+            Time Range
+            <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-4 pt-2">
+            <div className="[&>*]:border-0 [&>*]:shadow-none [&>*]:bg-transparent [&>*]:p-0">
+              <TimeSlider />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Location Filters */}
+        <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-180">
             Location & Platform
             <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200" />

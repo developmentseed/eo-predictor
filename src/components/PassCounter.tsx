@@ -9,12 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PassCounterProps {
   mapRef: React.RefObject<any>;
@@ -26,7 +21,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
   });
 
   return (
-    <Card className="absolute top-20 right-5 w-auto min-w-48 max-w-sm max-h-[90vh] overflow-y-auto">
+    <Card className="w-full max-h-96 overflow-y-auto">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg whitespace-nowrap">
           {getPassCountText()}
@@ -58,7 +53,9 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                     })}
                   </TableCell>
                   <TableCell className="text-xs">{pass.name}</TableCell>
-                  <TableCell className="text-xs">{pass.sensor_type || "N/A"}</TableCell>
+                  <TableCell className="text-xs">
+                    {pass.sensor_type || "N/A"}
+                  </TableCell>
                   <TableCell className="text-xs">
                     {pass.spatial_res_m
                       ? pass.spatial_res_m < 1
