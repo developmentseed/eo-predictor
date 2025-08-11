@@ -10,7 +10,9 @@ import { useFilterStore } from "@/store/filterStore";
 import { Controls } from "@/components/Controls";
 import { SatellitePopup } from "@/components/SatellitePopup";
 import { PassCounter } from "@/components/PassCounter";
+import { TimeSlider } from "@/components/TimeSlider";
 import { setupPMTilesProtocol, loadMapData } from "@/utils/mapUtils";
+import { usePassCounter } from "@/hooks/usePassCounter";
 import {
   Collapsible,
   CollapsibleContent,
@@ -30,6 +32,8 @@ function App() {
     setSatelliteData,
     setTimeRange,
   } = useFilterStore();
+
+  const { getPassCountText } = usePassCounter({ mapRef });
 
   useEffect(() => {
     const cleanupProtocol = setupPMTilesProtocol();
@@ -63,10 +67,42 @@ function App() {
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Desktop Sidebar - Left 1/3 */}
-      <div className="hidden md:flex md:w-1/3 md:flex-col md:overflow-y-auto md:bg-background md:border-r">
-        <div className="p-4 space-y-4">
-          <Controls mapRef={mapRef} />
-          <PassCounter mapRef={mapRef} />
+      <div className="hidden md:flex md:w-1/3 md:flex-col md:overflow-y-auto md:bg-background md:border-r md:p-4 md:space-y-4">
+        {/* Time Range Section */}
+        <Collapsible defaultOpen={true}>
+          <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-180">
+            Time Range
+            <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2">
+            <TimeSlider />
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Filters Section */}
+        <Collapsible defaultOpen={false}>
+          <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-180">
+            Satellite Filters
+            <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2">
+            <Controls mapRef={mapRef} />
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Passes Section - Fills remaining space */}
+        <div className="flex-1 min-h-0">
+          <Collapsible defaultOpen={true}>
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-180">
+              {getPassCountText()}
+              <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-2 h-full overflow-hidden">
+              <div className="h-full overflow-y-auto">
+                <PassCounter mapRef={mapRef} />
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </div>
 
@@ -116,39 +152,38 @@ function App() {
         </Map>
       </div>
 
-      {/* Mobile Controls - Below map and time slider */}
+      {/* Mobile Controls - Below map */}
       <div className="md:hidden bg-background border-t max-h-80 overflow-y-auto">
-        {/* Collapsible Controls */}
-        <Collapsible defaultOpen={false}>
+        {/* Time Range */}
+        <Collapsible defaultOpen={true}>
           <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50 border-b">
-            <div>
-              <h3 className="font-semibold">Satellite Filters</h3>
-              <p className="text-sm text-muted-foreground">
-                Filter based on properties of the satellite
-              </p>
-            </div>
+            <h3 className="font-semibold">Time Range</h3>
             <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200 [&[data-state=open]]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="px-4 pb-4">
-            <div className="[&>*]:border-0 [&>*]:shadow-none [&>*]:bg-transparent">
-              <Controls mapRef={mapRef} />
-            </div>
+            <TimeSlider />
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Collapsible PassCounter */}
+        {/* Satellite Filters */}
         <Collapsible defaultOpen={false}>
-          <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50">
-            <div>
-              <h3 className="font-semibold">Satellite Passes</h3>
-              <p className="text-sm text-muted-foreground">
-                View current visible satellite passes
-              </p>
-            </div>
+          <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50 border-b">
+            <h3 className="font-semibold">Satellite Filters</h3>
             <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200 [&[data-state=open]]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="px-4 pb-4">
-            <div className="[&>*]:border-0 [&>*]:shadow-none [&>*]:bg-transparent">
+            <Controls mapRef={mapRef} />
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Satellite Passes */}
+        <Collapsible defaultOpen={false}>
+          <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50">
+            <h3 className="font-semibold">{getPassCountText()}</h3>
+            <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200 [&[data-state=open]]:rotate-180" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="px-4 pb-4">
+            <div className="max-h-60 overflow-y-auto">
               <PassCounter mapRef={mapRef} />
             </div>
           </CollapsibleContent>
