@@ -6,6 +6,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import { useFilterStore } from "@/store/filterStore";
 import {
   Globe,
@@ -58,10 +63,16 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           size="sm"
           className="w-full"
         >
-          <ToggleGroupItem value="all" aria-label="All sensors">
-            <Globe />
-            All
-          </ToggleGroupItem>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToggleGroupItem value="all" aria-label="All sensors">
+                <Globe />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>All Sensors</p>
+            </TooltipContent>
+          </Tooltip>
           {availableSensorTypes.map(({ value, disabled }) => {
             const getIcon = () => {
               if (
@@ -80,15 +91,20 @@ export const Controls = ({ mapRef }: ControlsProps) => {
             };
 
             return (
-              <ToggleGroupItem
-                key={value}
-                value={value}
-                disabled={disabled}
-                aria-label={`${value} sensors`}
-              >
-                {getIcon()}
-                {value}
-              </ToggleGroupItem>
+              <Tooltip key={value}>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem
+                    value={value}
+                    disabled={disabled}
+                    aria-label={`${value} sensors`}
+                  >
+                    {getIcon()}
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{value} Sensors</p>
+                </TooltipContent>
+              </Tooltip>
             );
           })}
         </ToggleGroup>
@@ -104,10 +120,16 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           size="sm"
           className="w-full"
         >
-          <ToggleGroupItem value="all" aria-label="All resolutions">
-            <Globe />
-            All
-          </ToggleGroupItem>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToggleGroupItem value="all" aria-label="All resolutions">
+                <Globe />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>All Resolutions</p>
+            </TooltipContent>
+          </Tooltip>
           {availableSpatialResolution.map(({ value, disabled }) => {
             const getIcon = () => {
               if (value === "high") return <Maximize />;
@@ -118,16 +140,28 @@ export const Controls = ({ mapRef }: ControlsProps) => {
             const label =
               value === "high" ? "High" : value === "medium" ? "Medium" : "Low";
 
+            const tooltipText =
+              value === "high"
+                ? "High Resolution (<5m)"
+                : value === "medium"
+                ? "Medium Resolution (5-30m)"
+                : "Low Resolution (>30m)";
+
             return (
-              <ToggleGroupItem
-                key={value}
-                value={value}
-                disabled={disabled}
-                aria-label={`${label} resolution`}
-              >
-                {getIcon()}
-                {label}
-              </ToggleGroupItem>
+              <Tooltip key={value}>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem
+                    value={value}
+                    disabled={disabled}
+                    aria-label={`${label} resolution`}
+                  >
+                    {getIcon()}
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tooltipText}</p>
+                </TooltipContent>
+              </Tooltip>
             );
           })}
         </ToggleGroup>
@@ -143,10 +177,16 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           size="sm"
           className="w-full"
         >
-          <ToggleGroupItem value="all" aria-label="All data access types">
-            <Globe />
-            All
-          </ToggleGroupItem>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToggleGroupItem value="all" aria-label="All data access types">
+                <Globe />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>All Access Types</p>
+            </TooltipContent>
+          </Tooltip>
           {availableDataAccess.map(({ value, disabled }) => {
             const getIcon = () => {
               if (value.toLowerCase().includes("open")) {
@@ -158,16 +198,27 @@ export const Controls = ({ mapRef }: ControlsProps) => {
               return <Square />;
             };
 
+            const tooltipText = value.toLowerCase().includes("open")
+              ? "Open Data"
+              : value.toLowerCase().includes("commercial")
+              ? "Commercial Data"
+              : `${value} Data`;
+
             return (
-              <ToggleGroupItem
-                key={value}
-                value={value}
-                disabled={disabled}
-                aria-label={`${value} data access`}
-              >
-                {getIcon()}
-                {value}
-              </ToggleGroupItem>
+              <Tooltip key={value}>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem
+                    value={value}
+                    disabled={disabled}
+                    aria-label={`${value} data access`}
+                  >
+                    {getIcon()}
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tooltipText}</p>
+                </TooltipContent>
+              </Tooltip>
             );
           })}
         </ToggleGroup>
