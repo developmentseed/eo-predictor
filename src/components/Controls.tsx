@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -28,10 +26,7 @@ interface ControlsProps {
 }
 
 export const Controls = ({ mapRef }: ControlsProps) => {
-  const [localTimeRange, setLocalTimeRange] = useState<number[]>([]);
-
   const {
-    timeRange,
     selectedConstellation,
     selectedOperator,
     selectedSensorType,
@@ -43,7 +38,6 @@ export const Controls = ({ mapRef }: ControlsProps) => {
     availableSpatialResolution,
     availableDataAccess,
     metadata,
-    setTimeRange,
     setConstellation,
     setOperator,
     setSensorType,
@@ -51,14 +45,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
     setDataAccess,
   } = useFilterStore();
 
-  // Sync local time range with store when timeRange changes from external source
-  useEffect(() => {
-    if (timeRange.length > 0 && localTimeRange.length === 0) {
-      setLocalTimeRange(timeRange);
-    }
-  }, [timeRange, localTimeRange.length]);
-
-  if (!metadata || !timeRange.length) {
+  if (!metadata) {
     return null;
   }
 
@@ -71,34 +58,8 @@ export const Controls = ({ mapRef }: ControlsProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Time Range - Always visible */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Time Range</label>
-          <Slider
-            value={localTimeRange.length > 0 ? localTimeRange : timeRange}
-            min={metadata.minTime}
-            max={metadata.maxTime}
-            step={3600000} // 1 hour
-            onValueChange={setLocalTimeRange}
-            onValueCommit={setTimeRange}
-            className="w-full"
-          />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>
-              {new Date(
-                (localTimeRange.length > 0 ? localTimeRange : timeRange)[0]
-              ).toLocaleDateString()}
-            </span>
-            <span>
-              {new Date(
-                (localTimeRange.length > 0 ? localTimeRange : timeRange)[1]
-              ).toLocaleDateString()}
-            </span>
-          </div>
-        </div>
-
-        {/* Location Filters */}
-        <Collapsible defaultOpen>
+            {/* Location Filters */}
+            <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-180">
             Location & Platform
             <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200" />

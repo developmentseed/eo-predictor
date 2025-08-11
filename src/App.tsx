@@ -10,7 +10,15 @@ import { useFilterStore } from "@/store/filterStore";
 import { Controls } from "@/components/Controls";
 import { SatellitePopup } from "@/components/SatellitePopup";
 import { PassCounter } from "@/components/PassCounter";
+import { TimeSlider } from "@/components/TimeSlider";
 import { setupPMTilesProtocol, loadMapData } from "@/utils/mapUtils";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 function App() {
   const [clickedFeature, setClickedFeature] = useState(null);
@@ -100,6 +108,7 @@ function App() {
       </Map>
       <PassCounter mapRef={mapRef} />
       <Controls mapRef={mapRef} />
+      <TimeSlider />
     </>
   );
 }
