@@ -121,6 +121,7 @@ function App() {
           projection={{ type: "globe" }}
           onClick={handleMapClick}
           interactiveLayerIds={["satellite_paths"]}
+          maxZoom={13}
         >
           <Source type="vector" url="pmtiles:///satellite_paths.pmtiles">
             <Layer
@@ -134,11 +135,11 @@ function App() {
                   ["linear"],
                   ["zoom"],
                   2,
-                  0, // Completely transparent at zoom 3
+                  0,
                   6,
                   0.05,
-                  12,
-                  0.1, // Full opacity at zoom 4
+                  13,
+                  0.1,
                 ],
               }}
               filter={mapFilter}
