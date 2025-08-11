@@ -7,10 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFilterStore } from "@/store/filterStore";
 import { usePassCounter } from "@/hooks/usePassCounter";
 
@@ -20,11 +17,11 @@ interface ControlsProps {
 
 export const Controls = ({ mapRef }: ControlsProps) => {
   const [localTimeRange, setLocalTimeRange] = useState<number[]>([]);
-  
+
   const {
     timeRange,
     selectedConstellation,
-    selectedOperator, 
+    selectedOperator,
     selectedSensorType,
     selectedSpatialResolution,
     selectedDataAccess,
@@ -41,9 +38,6 @@ export const Controls = ({ mapRef }: ControlsProps) => {
     setSpatialResolution,
     setDataAccess,
   } = useFilterStore();
-  // We will render the pass counter outside this component.
-  // Keep only the pass list here for when there are <=10.
-  const { visiblePasses } = usePassCounter({ mapRef });
 
   // Sync local time range with store when timeRange changes from external source
   useEffect(() => {
@@ -55,24 +49,20 @@ export const Controls = ({ mapRef }: ControlsProps) => {
   if (!metadata || !timeRange.length) {
     return null;
   }
-  
+
   return (
     <div className="absolute top-20 left-5 bg-white/80 p-5 rounded-lg flex flex-col gap-4 max-w-sm max-h-[90vh] overflow-y-auto">
-      
       <div>
         <label className="font-bold mb-2 block">Constellation</label>
-        <Select
-          onValueChange={setConstellation}
-          value={selectedConstellation}
-        >
+        <Select onValueChange={setConstellation} value={selectedConstellation}>
           <SelectTrigger>
             <SelectValue placeholder="Select a constellation" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             {availableConstellations.map(({ value, disabled }) => (
-              <SelectItem 
-                key={value} 
+              <SelectItem
+                key={value}
                 value={value}
                 disabled={disabled}
                 className={disabled ? "opacity-50" : ""}
@@ -83,21 +73,18 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           </SelectContent>
         </Select>
       </div>
-      
+
       <div>
         <label className="font-bold mb-2 block">Operator</label>
-        <Select
-          onValueChange={setOperator}
-          value={selectedOperator}
-        >
+        <Select onValueChange={setOperator} value={selectedOperator}>
           <SelectTrigger>
             <SelectValue placeholder="Select an operator" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             {availableOperators.map(({ value, disabled }) => (
-              <SelectItem 
-                key={value} 
+              <SelectItem
+                key={value}
                 value={value}
                 disabled={disabled}
                 className={disabled ? "opacity-50" : ""}
@@ -108,7 +95,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           </SelectContent>
         </Select>
       </div>
-      
+
       <div>
         <label className="font-bold mb-2 block">Sensor Types</label>
         <RadioGroup
@@ -118,16 +105,25 @@ export const Controls = ({ mapRef }: ControlsProps) => {
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="all" id="sensor-all" />
-            <label htmlFor="sensor-all" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <label
+              htmlFor="sensor-all"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
               All
             </label>
           </div>
           {availableSensorTypes.map(({ value, disabled }) => (
             <div key={value} className="flex items-center space-x-2">
-              <RadioGroupItem value={value} id={`sensor-${value}`} disabled={disabled} />
+              <RadioGroupItem
+                value={value}
+                id={`sensor-${value}`}
+                disabled={disabled}
+              />
               <label
                 htmlFor={`sensor-${value}`}
-                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${disabled ? 'opacity-50' : ''}`}
+                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                  disabled ? "opacity-50" : ""
+                }`}
               >
                 {value}
               </label>
@@ -135,7 +131,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           ))}
         </RadioGroup>
       </div>
-      
+
       <div>
         <label className="font-bold mb-2 block">Spatial Resolution</label>
         <RadioGroup
@@ -145,20 +141,32 @@ export const Controls = ({ mapRef }: ControlsProps) => {
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="all" id="resolution-all" />
-            <label htmlFor="resolution-all" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <label
+              htmlFor="resolution-all"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
               All
             </label>
           </div>
           {availableSpatialResolution.map(({ value, disabled }) => {
-            const label = value === 'high' ? 'High (<5m)' : 
-                        value === 'medium' ? 'Medium (5-30m)' : 
-                        'Low (>30m)';
+            const label =
+              value === "high"
+                ? "High (<5m)"
+                : value === "medium"
+                ? "Medium (5-30m)"
+                : "Low (>30m)";
             return (
               <div key={value} className="flex items-center space-x-2">
-                <RadioGroupItem value={value} id={`resolution-${value}`} disabled={disabled} />
+                <RadioGroupItem
+                  value={value}
+                  id={`resolution-${value}`}
+                  disabled={disabled}
+                />
                 <label
                   htmlFor={`resolution-${value}`}
-                  className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${disabled ? 'opacity-50' : ''}`}
+                  className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                    disabled ? "opacity-50" : ""
+                  }`}
                 >
                   {label}
                 </label>
@@ -167,7 +175,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           })}
         </RadioGroup>
       </div>
-      
+
       <div>
         <label className="font-bold mb-2 block">Data Access</label>
         <RadioGroup
@@ -177,16 +185,25 @@ export const Controls = ({ mapRef }: ControlsProps) => {
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="all" id="access-all" />
-            <label htmlFor="access-all" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <label
+              htmlFor="access-all"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
               All
             </label>
           </div>
           {availableDataAccess.map(({ value, disabled }) => (
             <div key={value} className="flex items-center space-x-2">
-              <RadioGroupItem value={value} id={`access-${value}`} disabled={disabled} />
+              <RadioGroupItem
+                value={value}
+                id={`access-${value}`}
+                disabled={disabled}
+              />
               <label
                 htmlFor={`access-${value}`}
-                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize ${disabled ? 'opacity-50' : ''}`}
+                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize ${
+                  disabled ? "opacity-50" : ""
+                }`}
               >
                 {value}
               </label>
@@ -194,7 +211,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           ))}
         </RadioGroup>
       </div>
-      
+
       <div>
         <label className="font-bold mb-2 block">Time Range</label>
         <Slider
@@ -207,24 +224,18 @@ export const Controls = ({ mapRef }: ControlsProps) => {
           className="w-full"
         />
         <div className="flex justify-between text-xs mt-1">
-          <span>{new Date((localTimeRange.length > 0 ? localTimeRange : timeRange)[0]).toUTCString()}</span>
-          <span>{new Date((localTimeRange.length > 0 ? localTimeRange : timeRange)[1]).toUTCString()}</span>
+          <span>
+            {new Date(
+              (localTimeRange.length > 0 ? localTimeRange : timeRange)[0]
+            ).toUTCString()}
+          </span>
+          <span>
+            {new Date(
+              (localTimeRange.length > 0 ? localTimeRange : timeRange)[1]
+            ).toUTCString()}
+          </span>
         </div>
       </div>
-
-      {visiblePasses.length > 0 && (
-        <div className="bg-gray-50 px-3 py-2 rounded-md border border-gray-200">
-          <div className="text-sm font-semibold mb-1 text-gray-900">Visible passes</div>
-          <ul className="text-sm text-gray-800 list-disc pl-5 space-y-0.5">
-            {visiblePasses.map((p) => (
-              <li key={`${p.name}-${p.start_time}`}>
-                <span className="font-medium">{p.name}</span>
-                <span className="ml-1 text-gray-600">({new Date(p.start_time).toUTCString()})</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 };
