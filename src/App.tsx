@@ -117,7 +117,7 @@ function App() {
             zoom: 1,
           }}
           style={{ width: "100%", height: "100%" }}
-          mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+          mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
           projection={{ type: "globe" }}
           onClick={handleMapClick}
           interactiveLayerIds={["satellite_paths"]}
