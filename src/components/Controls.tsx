@@ -8,8 +8,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { CaretDown } from "phosphor-react";
 import { useFilterStore } from "@/store/filterStore";
-import { usePassCounter } from "@/hooks/usePassCounter";
 
 interface ControlsProps {
   mapRef: React.RefObject<any>;
@@ -51,191 +63,208 @@ export const Controls = ({ mapRef }: ControlsProps) => {
   }
 
   return (
-    <div className="absolute top-20 left-5 bg-white/80 p-5 rounded-lg flex flex-col gap-4 max-w-sm max-h-[90vh] overflow-y-auto">
-      <div>
-        <label className="font-bold mb-2 block">Constellation</label>
-        <Select onValueChange={setConstellation} value={selectedConstellation}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a constellation" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            {availableConstellations.map(({ value, disabled }) => (
-              <SelectItem
-                key={value}
-                value={value}
-                disabled={disabled}
-                className={disabled ? "opacity-50" : ""}
-              >
-                {value}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <label className="font-bold mb-2 block">Operator</label>
-        <Select onValueChange={setOperator} value={selectedOperator}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select an operator" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            {availableOperators.map(({ value, disabled }) => (
-              <SelectItem
-                key={value}
-                value={value}
-                disabled={disabled}
-                className={disabled ? "opacity-50" : ""}
-              >
-                {value}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <label className="font-bold mb-2 block">Sensor Types</label>
-        <RadioGroup
-          value={selectedSensorType}
-          onValueChange={setSensorType}
-          className="flex flex-wrap gap-2"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="all" id="sensor-all" />
-            <label
-              htmlFor="sensor-all"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              All
-            </label>
+    <Card className="absolute top-20 left-5 max-w-sm max-h-[90vh] overflow-y-auto">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Satellite Filters</CardTitle>
+        <CardDescription>
+          Filter based on properties of the satellite.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Time Range - Always visible */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Time Range</label>
+          <Slider
+            value={localTimeRange.length > 0 ? localTimeRange : timeRange}
+            min={metadata.minTime}
+            max={metadata.maxTime}
+            step={3600000} // 1 hour
+            onValueChange={setLocalTimeRange}
+            onValueCommit={setTimeRange}
+            className="w-full"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>
+              {new Date(
+                (localTimeRange.length > 0 ? localTimeRange : timeRange)[0]
+              ).toLocaleDateString()}
+            </span>
+            <span>
+              {new Date(
+                (localTimeRange.length > 0 ? localTimeRange : timeRange)[1]
+              ).toLocaleDateString()}
+            </span>
           </div>
-          {availableSensorTypes.map(({ value, disabled }) => (
-            <div key={value} className="flex items-center space-x-2">
-              <RadioGroupItem
-                value={value}
-                id={`sensor-${value}`}
-                disabled={disabled}
-              />
-              <label
-                htmlFor={`sensor-${value}`}
-                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
-                  disabled ? "opacity-50" : ""
-                }`}
-              >
-                {value}
-              </label>
-            </div>
-          ))}
-        </RadioGroup>
-      </div>
-
-      <div>
-        <label className="font-bold mb-2 block">Spatial Resolution</label>
-        <RadioGroup
-          value={selectedSpatialResolution}
-          onValueChange={setSpatialResolution}
-          className="flex flex-wrap gap-2"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="all" id="resolution-all" />
-            <label
-              htmlFor="resolution-all"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              All
-            </label>
-          </div>
-          {availableSpatialResolution.map(({ value, disabled }) => {
-            const label =
-              value === "high"
-                ? "High (<5m)"
-                : value === "medium"
-                ? "Medium (5-30m)"
-                : "Low (>30m)";
-            return (
-              <div key={value} className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value={value}
-                  id={`resolution-${value}`}
-                  disabled={disabled}
-                />
-                <label
-                  htmlFor={`resolution-${value}`}
-                  className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
-                    disabled ? "opacity-50" : ""
-                  }`}
-                >
-                  {label}
-                </label>
-              </div>
-            );
-          })}
-        </RadioGroup>
-      </div>
-
-      <div>
-        <label className="font-bold mb-2 block">Data Access</label>
-        <RadioGroup
-          value={selectedDataAccess}
-          onValueChange={setDataAccess}
-          className="flex flex-wrap gap-2"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="all" id="access-all" />
-            <label
-              htmlFor="access-all"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              All
-            </label>
-          </div>
-          {availableDataAccess.map(({ value, disabled }) => (
-            <div key={value} className="flex items-center space-x-2">
-              <RadioGroupItem
-                value={value}
-                id={`access-${value}`}
-                disabled={disabled}
-              />
-              <label
-                htmlFor={`access-${value}`}
-                className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize ${
-                  disabled ? "opacity-50" : ""
-                }`}
-              >
-                {value}
-              </label>
-            </div>
-          ))}
-        </RadioGroup>
-      </div>
-
-      <div>
-        <label className="font-bold mb-2 block">Time Range</label>
-        <Slider
-          value={localTimeRange.length > 0 ? localTimeRange : timeRange}
-          min={metadata.minTime}
-          max={metadata.maxTime}
-          step={3600000} // 1 hour
-          onValueChange={setLocalTimeRange}
-          onValueCommit={setTimeRange}
-          className="w-full"
-        />
-        <div className="flex justify-between text-xs mt-1">
-          <span>
-            {new Date(
-              (localTimeRange.length > 0 ? localTimeRange : timeRange)[0]
-            ).toUTCString()}
-          </span>
-          <span>
-            {new Date(
-              (localTimeRange.length > 0 ? localTimeRange : timeRange)[1]
-            ).toUTCString()}
-          </span>
         </div>
-      </div>
-    </div>
+
+        {/* Location Filters */}
+        <Collapsible defaultOpen>
+          <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-180">
+            Location & Platform
+            <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Constellation</label>
+              <Select
+                onValueChange={setConstellation}
+                value={selectedConstellation}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a constellation" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {availableConstellations.map(({ value, disabled }) => (
+                    <SelectItem
+                      key={value}
+                      value={value}
+                      disabled={disabled}
+                      className={disabled ? "opacity-50" : ""}
+                    >
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Operator</label>
+              <Select onValueChange={setOperator} value={selectedOperator}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an operator" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {availableOperators.map(({ value, disabled }) => (
+                    <SelectItem
+                      key={value}
+                      value={value}
+                      disabled={disabled}
+                      className={disabled ? "opacity-50" : ""}
+                    >
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Data Characteristics */}
+        <Collapsible>
+          <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium hover:underline [&[data-state=open]>svg]:rotate-180">
+            Data Characteristics
+            <CaretDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Sensor Types</label>
+              <RadioGroup
+                value={selectedSensorType}
+                onValueChange={setSensorType}
+                className="flex flex-wrap gap-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="all" id="sensor-all" />
+                  <label htmlFor="sensor-all" className="text-sm">
+                    All
+                  </label>
+                </div>
+                {availableSensorTypes.map(({ value, disabled }) => (
+                  <div key={value} className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value={value}
+                      id={`sensor-${value}`}
+                      disabled={disabled}
+                    />
+                    <label
+                      htmlFor={`sensor-${value}`}
+                      className={`text-sm ${disabled ? "opacity-50" : ""}`}
+                    >
+                      {value}
+                    </label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Spatial Resolution</label>
+              <RadioGroup
+                value={selectedSpatialResolution}
+                onValueChange={setSpatialResolution}
+                className="flex flex-wrap gap-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="all" id="resolution-all" />
+                  <label htmlFor="resolution-all" className="text-sm">
+                    All
+                  </label>
+                </div>
+                {availableSpatialResolution.map(({ value, disabled }) => {
+                  const label =
+                    value === "high"
+                      ? "High (<5m)"
+                      : value === "medium"
+                      ? "Medium (5-30m)"
+                      : "Low (>30m)";
+                  return (
+                    <div key={value} className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value={value}
+                        id={`resolution-${value}`}
+                        disabled={disabled}
+                      />
+                      <label
+                        htmlFor={`resolution-${value}`}
+                        className={`text-sm ${disabled ? "opacity-50" : ""}`}
+                      >
+                        {label}
+                      </label>
+                    </div>
+                  );
+                })}
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Data Access</label>
+              <RadioGroup
+                value={selectedDataAccess}
+                onValueChange={setDataAccess}
+                className="flex flex-wrap gap-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="all" id="access-all" />
+                  <label htmlFor="access-all" className="text-sm">
+                    All
+                  </label>
+                </div>
+                {availableDataAccess.map(({ value, disabled }) => (
+                  <div key={value} className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value={value}
+                      id={`access-${value}`}
+                      disabled={disabled}
+                    />
+                    <label
+                      htmlFor={`access-${value}`}
+                      className={`text-sm capitalize ${
+                        disabled ? "opacity-50" : ""
+                      }`}
+                    >
+                      {value}
+                    </label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </CardContent>
+    </Card>
   );
 };
