@@ -11,6 +11,7 @@ import { Controls } from "@/components/Controls";
 import { SatellitePopup } from "@/components/SatellitePopup";
 import { PassCounter } from "@/components/PassCounter";
 import { TimeSlider } from "@/components/TimeSlider";
+import { Header } from "@/components/Header";
 import { setupPMTilesProtocol, loadMapData } from "@/utils/mapUtils";
 import { usePassCounter } from "@/hooks/usePassCounter";
 import {
@@ -66,11 +67,9 @@ function App() {
   }
 
   return (
-    <div>
-      <div className="flex">
-        <title>Hello</title>
-      </div>
-      <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+    <div className="h-screen flex flex-col">
+      <Header />
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
         {/* Desktop Sidebar - Left 1/3 */}
         <div className="hidden md:flex md:w-1/3 md:flex-col md:overflow-y-auto md:bg-background md:border-r md:p-4">
           <Accordion
