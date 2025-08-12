@@ -6,6 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button } from "@/components/ui/button";
 import { useFilterStore } from "@/store/filterStore";
 import {
   Globe,
@@ -16,6 +17,7 @@ import {
   Minimize,
   DollarSign,
   Unlock,
+  RotateCcw,
 } from "lucide-react";
 
 export const Controls = () => {
@@ -36,6 +38,7 @@ export const Controls = () => {
     setSensorType,
     setSpatialResolution,
     setDataAccess,
+    resetFilters,
   } = useFilterStore();
 
   if (!metadata) {
@@ -182,8 +185,8 @@ export const Controls = () => {
           })}
         </ToggleGroup>
       </div>
-      <div className="flex gap-12">
-        <div className="flex-1 space-y-2">
+      <div className="flex gap-3 overflow-x-auto">
+        <div className="min-w-0 flex-1 space-y-2">
           <label className="text-sm font-medium">Constellation</label>
           <Select
             onValueChange={setConstellation}
@@ -208,7 +211,7 @@ export const Controls = () => {
           </Select>
         </div>
 
-        <div className="flex-1 space-y-2">
+        <div className="min-w-0 flex-1 space-y-2">
           <label className="text-sm font-medium">Operator</label>
           <Select onValueChange={setOperator} value={selectedOperator}>
             <SelectTrigger className="w-full">
@@ -228,6 +231,17 @@ export const Controls = () => {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="flex items-end flex-shrink-0">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={resetFilters}
+            title="Reset all filters"
+          >
+            <RotateCcw />
+          </Button>
         </div>
       </div>
     </div>

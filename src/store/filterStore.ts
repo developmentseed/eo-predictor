@@ -42,6 +42,7 @@ interface FilterState {
   setSensorType: (value: string) => void;
   setSpatialResolution: (value: string) => void;
   setDataAccess: (value: string) => void;
+  resetFilters: () => void;
   
   // Computed filter logic
   getFilteredSatellites: () => SatelliteData[];
@@ -115,6 +116,17 @@ export const useFilterStore = create<FilterState>()(
       
       setDataAccess: (value) => {
         set({ selectedDataAccess: value });
+        get().updateDerivedState();
+      },
+      
+      resetFilters: () => {
+        set({
+          selectedConstellation: 'all',
+          selectedOperator: 'all',
+          selectedSensorType: 'all',
+          selectedSpatialResolution: 'all',
+          selectedDataAccess: 'all'
+        });
         get().updateDerivedState();
       },
       
