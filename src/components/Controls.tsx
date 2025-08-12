@@ -52,7 +52,7 @@ export const Controls = () => {
         <ToggleGroup
           type="single"
           value={selectedSensorType}
-          onValueChange={setSensorType}
+          onValueChange={(value) => setSensorType(value || "all")}
           variant="outline"
           size="sm"
           className="w-full"
@@ -98,7 +98,7 @@ export const Controls = () => {
         <ToggleGroup
           type="single"
           value={selectedSpatialResolution}
-          onValueChange={setSpatialResolution}
+          onValueChange={(value) => setSpatialResolution(value || "all")}
           variant="outline"
           size="sm"
           className="w-full"
@@ -140,7 +140,7 @@ export const Controls = () => {
         <ToggleGroup
           type="single"
           value={selectedDataAccess}
-          onValueChange={setDataAccess}
+          onValueChange={(value) => setDataAccess(value || "all")}
           variant="outline"
           size="sm"
           className="w-full"
