@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { useFilterStore } from "@/store/filterStore";
+import { formatTimeDisplay } from "@/utils/timeUtils";
 
 export const TimeSlider = () => {
+  const { timeRange, metadata, setTimeRange } = useFilterStore();
   const [localTimeRange, setLocalTimeRange] = useState<number[]>([]);
 
-  const { timeRange, metadata, setTimeRange } = useFilterStore();
-
-  // Sync local time range with store when timeRange changes from external source
+  // Sync local state when store changes
   useEffect(() => {
-    if (timeRange.length > 0 && localTimeRange.length === 0) {
+    if (timeRange.length > 0) {
       setLocalTimeRange(timeRange);
     }
-  }, [timeRange, localTimeRange.length]);
+  }, [timeRange]);
 
   if (!metadata || !timeRange.length) {
     return null;
@@ -32,60 +32,17 @@ export const TimeSlider = () => {
         />
       </div>
       <div className="flex justify-between text-xs text-muted-foreground">
-        <div className="flex flex-col items-start">
-          <span>
-            {new Date(
-              (localTimeRange.length > 0 ? localTimeRange : timeRange)[0]
-            ).toLocaleDateString()}
-          </span>
-          <span className="text-xs opacity-75">
-            {new Date(
-              (localTimeRange.length > 0 ? localTimeRange : timeRange)[0]
-            ).toLocaleTimeString(undefined, {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })}{" "}
-            UTC{" "}
-            {(() => {
-              const date = new Date(
-                (localTimeRange.length > 0 ? localTimeRange : timeRange)[0]
-              );
-              const offsetMinutes = date.getTimezoneOffset();
-              const offsetHours = Math.abs(offsetMinutes) / 60;
-              const sign = offsetMinutes <= 0 ? "+" : "-";
-              if (offsetHours === 0) return "(local time)";
-              return `(${sign}${offsetHours}h local)`;
-            })()}
-          </span>
-        </div>
-        <div className="flex flex-col items-end">
-          <span>
-            {new Date(
-              (localTimeRange.length > 0 ? localTimeRange : timeRange)[1]
-            ).toLocaleDateString()}
-          </span>
-          <span className="text-xs opacity-75">
-            {new Date(
-              (localTimeRange.length > 0 ? localTimeRange : timeRange)[1]
-            ).toLocaleTimeString(undefined, {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })}{" "}
-            UTC{" "}
-            {(() => {
-              const date = new Date(
-                (localTimeRange.length > 0 ? localTimeRange : timeRange)[1]
-              );
-              const offsetMinutes = date.getTimezoneOffset();
-              const offsetHours = Math.abs(offsetMinutes) / 60;
-              const sign = offsetMinutes <= 0 ? "+" : "-";
-              if (offsetHours === 0) return "(local time)";
-              return `(${sign}${offsetHours}h local)`;
-            })()}
-          </span>
-        </div>
+        {(localTimeRange.length > 0 ? localTimeRange : timeRange).map((timestamp, index) => {
+          const { date, time, timezone } = formatTimeDisplay(timestamp);
+          return (
+            <div key={index} className={`flex flex-col ${index === 0 ? 'items-start' : 'items-end'}`}>
+              <span>{date}</span>
+              <span className="text-xs opacity-75">
+                {time} UTC {timezone}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

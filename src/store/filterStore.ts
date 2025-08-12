@@ -253,12 +253,15 @@ export const useFilterStore = create<FilterState>()(
         
         // Spatial resolution filter
         if (state.selectedSpatialResolution !== 'all') {
-          if (state.selectedSpatialResolution === "high") {
-            filter.push(["<", ["get", "spatial_res_m"], 5]);
-          } else if (state.selectedSpatialResolution === "medium") {
-            filter.push(["all", [">=", ["get", "spatial_res_m"], 5], ["<=", ["get", "spatial_res_m"], 30]]);
-          } else if (state.selectedSpatialResolution === "low") {
-            filter.push([">", ["get", "spatial_res_m"], 30]);
+          const resolutionFilters = {
+            high: ["<", ["get", "spatial_res_m"], 5],
+            medium: ["all", [">=", ["get", "spatial_res_m"], 5], ["<=", ["get", "spatial_res_m"], 30]],
+            low: [">", ["get", "spatial_res_m"], 30]
+          };
+          
+          const resolutionFilter = resolutionFilters[state.selectedSpatialResolution as keyof typeof resolutionFilters];
+          if (resolutionFilter) {
+            filter.push(resolutionFilter);
           }
         }
         

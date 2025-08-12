@@ -1,7 +1,19 @@
 import { Popup } from "react-map-gl/maplibre";
 
+interface ClickedFeature {
+  lngLat: { lng: number; lat: number };
+  satellite: string;
+  constellation: string;
+  operator: string;
+  sensor_type: string;
+  spatial_res_m: number;
+  data_access: string;
+  start_time: string;
+  end_time: string;
+}
+
 interface SatellitePopupProps {
-  clickedFeature: any;
+  clickedFeature: ClickedFeature | null;
   onClose: () => void;
 }
 

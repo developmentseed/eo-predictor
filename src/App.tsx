@@ -7,24 +7,26 @@ import Map, {
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useFilterStore } from "@/store/filterStore";
-import { Controls } from "@/components/Controls";
 import { SatellitePopup } from "@/components/SatellitePopup";
-import { PassCounter } from "@/components/PassCounter";
-import { TimeSlider } from "@/components/TimeSlider";
 import { Header } from "@/components/Header";
+import { SidebarContent } from "@/components/SidebarContent";
 import { setupPMTilesProtocol, loadMapData } from "@/utils/mapUtils";
-import { usePassCounter } from "@/hooks/usePassCounter";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { AlarmClock, Satellite, Settings2 } from "lucide-react";
+
+interface ClickedFeature {
+  lngLat: { lng: number; lat: number };
+  satellite: string;
+  constellation: string;
+  operator: string;
+  sensor_type: string;
+  spatial_res_m: number;
+  data_access: string;
+  start_time: string;
+  end_time: string;
+}
 
 function App() {
-  const [clickedFeature, setClickedFeature] = useState(null);
-  const mapRef = useRef<any>(null);
+  const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(null);
+  const mapRef = useRef<any>(null); // MapLibre map ref type is complex, keeping as any
 
   const {
     metadata,
@@ -34,8 +36,6 @@ function App() {
     setSatelliteData,
     setTimeRange,
   } = useFilterStore();
-
-  const { getPassCountText } = usePassCounter({ mapRef });
 
   useEffect(() => {
     const cleanupProtocol = setupPMTilesProtocol();
@@ -54,9 +54,10 @@ function App() {
     return cleanupProtocol;
   }, [setMetadata, setSatelliteData, setTimeRange]);
 
-  const handleMapClick = (e: any) => {
-    if (e.features && e.features.length > 0) {
-      setClickedFeature({ ...e.features[0].properties, lngLat: e.lngLat });
+  const handleMapClick = (e: any) => { // MapLibre event type is complex
+    const feature = e.features?.[0];
+    if (feature?.properties) {
+      setClickedFeature({ ...feature.properties, lngLat: e.lngLat });
     } else {
       setClickedFeature(null);
     }
@@ -70,54 +71,9 @@ function App() {
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
-        {/* Desktop Sidebar - Left 1/3 */}
+        {/* Desktop Sidebar */}
         <div className="hidden md:flex md:w-1/3 md:flex-col md:overflow-y-auto md:bg-background md:border-r md:p-4">
-          <Accordion
-            type="multiple"
-            defaultValue={["time-range", "filters", "passes"]}
-            className="flex-1 flex flex-col"
-          >
-            {/* Time Range Section */}
-            <AccordionItem value="time-range">
-              <AccordionTrigger className="text-sm font-medium">
-                <div className="flex items-center gap-4">
-                  <AlarmClock />
-                  Time Range
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <TimeSlider />
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Filters Section */}
-            <AccordionItem value="filters">
-              <AccordionTrigger className="text-sm font-medium">
-                <div className="flex items-center gap-4">
-                  <Settings2 />
-                  Satellite Filters
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <Controls mapRef={mapRef} />
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Passes Section - Fills remaining space */}
-            <AccordionItem value="passes" className="flex-1 flex flex-col">
-              <AccordionTrigger className="text-sm font-medium">
-                <div className="flex items-center gap-4">
-                  <Satellite />
-                  {getPassCountText()}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="flex-1 overflow-hidden">
-                <div className="h-full overflow-y-auto">
-                  <PassCounter mapRef={mapRef} />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <SidebarContent mapRef={mapRef} variant="desktop" />
         </div>
 
         {/* Map Area - Desktop: Right 2/3, Mobile: Full width with reduced height */}
@@ -170,50 +126,9 @@ function App() {
           </Map>
         </div>
 
-        {/* Mobile Controls - Below map */}
+        {/* Mobile Controls */}
         <div className="md:hidden bg-background border-t max-h-80 overflow-y-auto">
-          <Accordion type="multiple" defaultValue={["time-range"]}>
-            {/* Time Range */}
-            <AccordionItem value="time-range">
-              <AccordionTrigger className="px-4 text-left font-semibold">
-                <div className="flex items-center gap-4">
-                  <AlarmClock />
-                  Time Range
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <TimeSlider />
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Satellite Filters */}
-            <AccordionItem value="filters">
-              <AccordionTrigger className="px-4 text-left font-semibold">
-                <div className="flex items-center gap-4">
-                  <Settings2 />
-                  Satellite Filters
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <Controls mapRef={mapRef} />
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Satellite Passes */}
-            <AccordionItem value="passes">
-              <AccordionTrigger className="px-4 text-left font-semibold">
-                <div className="flex items-center gap-4">
-                  <Satellite />
-                  {getPassCountText()}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <div className="max-h-60 overflow-y-auto">
-                  <PassCounter mapRef={mapRef} />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <SidebarContent mapRef={mapRef} variant="mobile" />
         </div>
       </div>
     </div>

@@ -14,15 +14,11 @@ import {
   Maximize,
   Square,
   Minimize,
+  DollarSign,
   Unlock,
-  Lock,
 } from "lucide-react";
 
-interface ControlsProps {
-  mapRef: React.RefObject<any>;
-}
-
-export const Controls = ({ mapRef }: ControlsProps) => {
+export const Controls = () => {
   const {
     selectedConstellation,
     selectedOperator,
@@ -60,6 +56,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
         >
           <ToggleGroupItem value="all" aria-label="All sensors">
             <Globe />
+            ALL
           </ToggleGroupItem>
           {availableSensorTypes.map(({ value, disabled }) => {
             const getIcon = () => {
@@ -86,6 +83,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
                 aria-label={`${value} sensors`}
               >
                 {getIcon()}
+                {value.slice(0, 3).toUpperCase()}
               </ToggleGroupItem>
             );
           })}
@@ -104,6 +102,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
         >
           <ToggleGroupItem value="all" aria-label="All resolutions">
             <Globe />
+            ALL
           </ToggleGroupItem>
           {availableSpatialResolution.map(({ value, disabled }) => {
             const getIcon = () => {
@@ -112,6 +111,9 @@ export const Controls = ({ mapRef }: ControlsProps) => {
               return <Minimize />;
             };
 
+            const iconText =
+              { high: "HIGH", medium: "MED", low: "LOW" }[value] ||
+              value.slice(0, 2).toUpperCase();
             const label =
               value === "high" ? "High" : value === "medium" ? "Medium" : "Low";
 
@@ -123,6 +125,7 @@ export const Controls = ({ mapRef }: ControlsProps) => {
                 aria-label={`${label} resolution`}
               >
                 {getIcon()}
+                {iconText}
               </ToggleGroupItem>
             );
           })}
@@ -141,26 +144,39 @@ export const Controls = ({ mapRef }: ControlsProps) => {
         >
           <ToggleGroupItem value="all" aria-label="All data access types">
             <Globe />
+            ALL
           </ToggleGroupItem>
           {availableDataAccess.map(({ value, disabled }) => {
+            const isOpen = value.toLowerCase().includes("open");
+            const isCommercial = value.toLowerCase().includes("commercial");
+
             const getIcon = () => {
-              if (value.toLowerCase().includes("open")) {
-                return <Unlock />;
-              }
-              if (value.toLowerCase().includes("commercial")) {
-                return <Lock />;
-              }
+              if (isOpen) return <Unlock />;
+              if (isCommercial) return <DollarSign />;
               return <Square />;
             };
+
+            const iconText = isOpen
+              ? "FREE"
+              : isCommercial
+              ? "PAID"
+              : value.toUpperCase();
 
             return (
               <ToggleGroupItem
                 key={value}
                 value={value}
                 disabled={disabled}
-                aria-label={`${value} data access`}
+                aria-label={`${value} data access - ${
+                  isOpen
+                    ? "free/open access"
+                    : isCommercial
+                    ? "paid/proprietary"
+                    : "unknown access"
+                }`}
               >
                 {getIcon()}
+                {iconText}
               </ToggleGroupItem>
             );
           })}
