@@ -10,6 +10,7 @@ type VisiblePass = {
   sensor_type?: string;
   spatial_res_m?: number;
   data_access?: string;
+  constellation?: string;
 };
 
 export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
@@ -41,8 +42,8 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
         return;
       }
 
-      // Build list of passes
-      const passes: VisiblePass[] = features
+      // Build list of passes with deduplication
+      const allPasses: VisiblePass[] = features
         .map(feature => {
           const props = feature.properties || {};
           const name = (props.satellite || props.name || "").toString();
@@ -56,9 +57,33 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
             sensor_type: props.sensor_type?.toString(),
             spatial_res_m: props.spatial_res_m ? Number(props.spatial_res_m) : undefined,
             data_access: props.data_access?.toString(),
+            constellation: props.constellation?.toString(),
           };
         })
-        .filter((pass): pass is VisiblePass => pass !== null)
+        .filter((pass): pass is VisiblePass => pass !== null);
+
+      // Deduplicate passes by grouping satellite segments into actual passes
+      // Group by satellite name and 15-minute time windows to consolidate segments
+      const passGroups = new Map<string, VisiblePass>();
+      
+      allPasses.forEach(pass => {
+        const startTime = new Date(pass.start_time);
+        // Round to nearest 15-minute window for grouping
+        const roundedMinutes = Math.floor(startTime.getMinutes() / 15) * 15;
+        const roundedTime = new Date(startTime);
+        roundedTime.setMinutes(roundedMinutes, 0, 0);
+        
+        // Create unique key for satellite + time window
+        const groupKey = `${pass.name}-${roundedTime.getTime()}`;
+        
+        // Keep the earliest pass in each group (most representative of the actual pass)
+        if (!passGroups.has(groupKey) || 
+            Date.parse(pass.start_time) < Date.parse(passGroups.get(groupKey)!.start_time)) {
+          passGroups.set(groupKey, pass);
+        }
+      });
+
+      const passes = Array.from(passGroups.values())
         .sort((a, b) => Date.parse(a.start_time) - Date.parse(b.start_time));
 
       setVisiblePassCount(features.length);

@@ -1,4 +1,6 @@
 import { usePassCounter } from "@/hooks/usePassCounter";
+import { formatUTCOffset } from "@/utils/timeUtils";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -7,15 +9,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Eye,
+  Radio,
+  Square,
+  Maximize,
+  Minimize,
+  Unlock,
+  DollarSign,
+} from "lucide-react";
+import maplibregl from "maplibre-gl";
 
 interface PassCounterProps {
-  mapRef: React.RefObject<any>;
+  mapRef: React.RefObject<maplibregl.Map | null>;
 }
 
 export const PassCounter = ({ mapRef }: PassCounterProps) => {
   const { visiblePasses, visiblePassCount } = usePassCounter({
     mapRef,
   });
+
+  // Get timezone offset for table header
+  const timezoneOffset =
+    visiblePasses.length > 0
+      ? formatUTCOffset(new Date(visiblePasses[0].start_time))
+      : formatUTCOffset(new Date());
 
   if (visiblePassCount === null) {
     return null;
@@ -39,8 +57,8 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="text-xs">Time</TableHead>
-          <TableHead className="text-xs">Satellite</TableHead>
+          <TableHead className="text-xs">Time ({timezoneOffset})</TableHead>
+          <TableHead className="text-xs">Constellation</TableHead>
           <TableHead className="text-xs">Sensor</TableHead>
           <TableHead className="text-xs">Resolution</TableHead>
           <TableHead className="text-xs">Access</TableHead>
@@ -57,29 +75,67 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                 minute: "2-digit",
               })}
             </TableCell>
-            <TableCell className="text-xs">{pass.name}</TableCell>
             <TableCell className="text-xs">
-              {pass.sensor_type || "N/A"}
+              {pass.constellation || "N/A"}
             </TableCell>
             <TableCell className="text-xs">
-              {pass.spatial_res_m
-                ? pass.spatial_res_m < 1
-                  ? `${Math.round(pass.spatial_res_m * 100)}cm`
-                  : `${Math.round(pass.spatial_res_m)}m`
-                : "N/A"}
+              {pass.sensor_type ? (
+                <Badge
+                  variant={
+                    pass.sensor_type === "optical"
+                      ? "soft-blue"
+                      : pass.sensor_type === "SAR"
+                      ? "soft-purple"
+                      : "soft-gray"
+                  }
+                >
+                  {pass.sensor_type === "optical" ? (
+                    <Eye />
+                  ) : pass.sensor_type === "SAR" ? (
+                    <Radio />
+                  ) : (
+                    <Square />
+                  )}
+                </Badge>
+              ) : (
+                <Badge variant="outline">N/A</Badge>
+              )}
             </TableCell>
             <TableCell className="text-xs">
-              <span
-                className={`px-1.5 py-0.5 rounded-full text-xs ${
-                  pass.data_access === "open"
-                    ? "bg-green-100 text-green-800"
-                    : pass.data_access === "commercial"
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {pass.data_access || "N/A"}
-              </span>
+              {pass.spatial_res_m ? (
+                <Badge
+                  variant={
+                    pass.spatial_res_m < 5
+                      ? "soft-green"
+                      : pass.spatial_res_m <= 30
+                      ? "soft-yellow"
+                      : "soft-orange"
+                  }
+                >
+                  {pass.spatial_res_m < 5 ? (
+                    <Maximize />
+                  ) : pass.spatial_res_m <= 30 ? (
+                    <Square />
+                  ) : (
+                    <Minimize />
+                  )}
+                </Badge>
+              ) : (
+                <Badge variant="outline">N/A</Badge>
+              )}
+            </TableCell>
+            <TableCell className="text-xs">
+              {pass.data_access ? (
+                <Badge
+                  variant={
+                    pass.data_access === "open" ? "soft-emerald" : "soft-red"
+                  }
+                >
+                  {pass.data_access === "open" ? <Unlock /> : <DollarSign />}
+                </Badge>
+              ) : (
+                <Badge variant="outline">N/A</Badge>
+              )}
             </TableCell>
           </TableRow>
         ))}

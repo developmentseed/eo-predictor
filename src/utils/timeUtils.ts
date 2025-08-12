@@ -11,7 +11,19 @@ export function formatTimezoneOffset(date: Date): string {
 }
 
 /**
- * Formats time for display with UTC and local offset
+ * Formats timezone offset for UTC context
+ */
+export function formatUTCOffset(date: Date): string {
+  const offsetMinutes = date.getTimezoneOffset();
+  const offsetHours = Math.abs(offsetMinutes) / 60;
+  const sign = offsetMinutes <= 0 ? "+" : "-";
+  
+  if (offsetHours === 0) return "UTC";
+  return `${sign}${offsetHours}h UTC`;
+}
+
+/**
+ * Formats time for display with UTC offset
  */
 export function formatTimeDisplay(timestamp: number): {
   date: string;
@@ -27,6 +39,6 @@ export function formatTimeDisplay(timestamp: number): {
       minute: "2-digit",
       hour12: false,
     }),
-    timezone: formatTimezoneOffset(date),
+    timezone: `(${formatUTCOffset(date)})`,
   };
 }
