@@ -39,6 +39,6 @@ export function formatTimeDisplay(timestamp: number): {
       minute: "2-digit",
       hour12: false,
     }),
-    timezone: `(${formatUTCOffset(date)})`,
+    timezone: formatUTCOffset(date),
   };
 }
