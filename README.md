@@ -9,7 +9,7 @@ The Earth Observation sector is highly fragmented, making it difficult to know w
 EO Predictor addresses this challenge by providing a visualization of satellite coverage paths, enabling humanitarian teams to anticipate when high-resolution imagery will be available for their areas of operation.
 
 > [!IMPORTANT]
-> This provides predicted satellite paths and _possible_ Earth Observation captures, but does not guarantee that an image/observation will become available.\*\*
+> This provides predicted satellite paths and _possible_ Earth Observation captures, but does not guarantee that an image/observation will become available.
 
 ## Features
 
