@@ -1,8 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-
-interface UsePassCounterProps {
 import maplibregl from "maplibre-gl";
-import { useState, useCallback, useEffect } from "react";
 
 interface UsePassCounterProps {
   mapRef: React.RefObject<maplibregl.Map | null>;
@@ -48,18 +45,20 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
       // Build list of passes with deduplication
       const allPasses: VisiblePass[] = features
-        .map(feature => {
+        .map((feature) => {
           const props = feature.properties || {};
           const name = (props.satellite || props.name || "").toString();
           const start = (props.start_time || "").toString();
-          
+
           if (!name || !start) return null;
-          
+
           return {
             name,
             start_time: start,
             sensor_type: props.sensor_type?.toString(),
-            spatial_res_m: props.spatial_res_m ? Number(props.spatial_res_m) : undefined,
+            spatial_res_m: props.spatial_res_m
+              ? Number(props.spatial_res_m)
+              : undefined,
             data_access: props.data_access?.toString(),
             constellation: props.constellation?.toString(),
           };
@@ -69,26 +68,30 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
       // Deduplicate passes by grouping satellite segments into actual passes
       // Group by satellite name and 15-minute time windows to consolidate segments
       const passGroups = new Map<string, VisiblePass>();
-      
-      allPasses.forEach(pass => {
+
+      allPasses.forEach((pass) => {
         const startTime = new Date(pass.start_time);
         // Round to nearest 15-minute window for grouping
         const roundedMinutes = Math.floor(startTime.getMinutes() / 15) * 15;
         const roundedTime = new Date(startTime);
         roundedTime.setMinutes(roundedMinutes, 0, 0);
-        
+
         // Create unique key for satellite + time window
         const groupKey = `${pass.name}-${roundedTime.getTime()}`;
-        
+
         // Keep the earliest pass in each group (most representative of the actual pass)
-        if (!passGroups.has(groupKey) || 
-            Date.parse(pass.start_time) < Date.parse(passGroups.get(groupKey)!.start_time)) {
+        if (
+          !passGroups.has(groupKey) ||
+          Date.parse(pass.start_time) <
+            Date.parse(passGroups.get(groupKey)!.start_time)
+        ) {
           passGroups.set(groupKey, pass);
         }
       });
 
-      const passes = Array.from(passGroups.values())
-        .sort((a, b) => Date.parse(a.start_time) - Date.parse(b.start_time));
+      const passes = Array.from(passGroups.values()).sort(
+        (a, b) => Date.parse(a.start_time) - Date.parse(b.start_time)
+      );
 
       setVisiblePassCount(passes.length);
       setVisiblePasses(passes);
