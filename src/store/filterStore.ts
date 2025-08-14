@@ -12,7 +12,20 @@ interface SatelliteData {
 
 interface FilterState {
   // Raw data
-  metadata: any;
+interface Metadata {
+  minTime: number;
+  maxTime: number;
+  constellations: string[];
+  operators: string[];
+  sensorTypes: string[];
+  spatialResolutions: string[];
+  dataAccessTypes: string[];
+  // Add other properties as needed
+}
+
+interface FilterState {
+  // Raw data
+  metadata: Metadata;
   satelliteData: SatelliteData[];
   
   // Filter state
@@ -31,7 +44,7 @@ interface FilterState {
   availableDataAccess: Array<{ value: string; disabled: boolean }>;
   
   // Map filter for MapLibre
-  mapFilter: any[];
+  mapFilter: FilterSpecification;
   
   // Actions
   setMetadata: (metadata: any) => void;
@@ -47,7 +60,7 @@ interface FilterState {
   // Computed filter logic
   getFilteredSatellites: () => SatelliteData[];
   updateDerivedState: () => void;
-  generateMapFilter: () => any[];
+  generateMapFilter: () => FilterSpecification;
 }
 
 const getSpatialResolutionCategory = (spatial_res_cm: number): string => {
