@@ -1618,5 +1618,17 @@
     "off_nadir_deg": 40,
     "data_access": "commercial",
     "norad_id": 62707
+  },
+  {
+    "name": "NISAR",
+    "operator": "NASA/ISRO",
+    "constellation": "NISAR",
+    "sensor_type": "SAR",
+    "spatial_res_cm": 300,
+    "swath_km": 240,
+    "altitude_km": 747,
+    "off_nadir_deg": 37,
+    "data_access": "open",
+    "norad_id": 65053
   }
 ]
