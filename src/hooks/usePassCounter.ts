@@ -1,7 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 
 interface UsePassCounterProps {
-  mapRef: React.RefObject<any>;
+import maplibregl from "maplibre-gl";
+import { useState, useCallback, useEffect } from "react";
+
+interface UsePassCounterProps {
+  mapRef: React.RefObject<maplibregl.Map | null>;
 }
 
 type VisiblePass = {
