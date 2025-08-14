@@ -2,6 +2,9 @@
 
 An interactive web application for visualizing Earth Observation satellite coverage paths and predicting upcoming satellite passes, primarily for humanitarian response planning.
 
+<img width="1818" height="1527" alt="image" src="https://github.com/user-attachments/assets/8fed8a42-a2ef-41a5-b5c1-3d97c2745a99" />
+
+
 ## Motivation
 
 The Earth Observation sector is highly fragmented, making it difficult to know when the next satellite observation will occur over a specific area of interest. For humanitarian organizations responding to disasters and crises, having access to the most up-to-date information about upcoming satellite passes is critical for mission planning, damage assessment, and resource allocation.
