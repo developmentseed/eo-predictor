@@ -102,19 +102,19 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
               )}
             </TableCell>
             <TableCell className="text-xs">
-              {pass.spatial_res_m ? (
+              {pass.spatial_res_cm ? (
                 <Badge
                   variant={
-                    pass.spatial_res_m < 5
+                    pass.spatial_res_cm / 100 < 5
                       ? "soft-green"
-                      : pass.spatial_res_m <= 30
+                      : pass.spatial_res_cm / 100 <= 30
                       ? "soft-yellow"
                       : "soft-orange"
                   }
                 >
-                  {pass.spatial_res_m < 5 ? (
+                  {pass.spatial_res_cm / 100 < 5 ? (
                     <Maximize />
-                  ) : pass.spatial_res_m <= 30 ? (
+                  ) : pass.spatial_res_cm / 100 <= 30 ? (
                     <Square />
                   ) : (
                     <Minimize />

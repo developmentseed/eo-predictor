@@ -50,6 +50,8 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
             sensor_type: props.sensor_type?.toString() || undefined,
             spatial_res_cm: props.spatial_res_cm
               ? Number(props.spatial_res_cm)
+              : props.spatial_res_m
+              ? Number(props.spatial_res_m) * 100 // Convert meters to centimeters
               : undefined,
             data_access: props.data_access?.toString() || undefined,
             constellation: props.constellation?.toString() || undefined,
