@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-interface SatelliteData {
+// Define FilterSpecification type for MapLibre GL
+export type FilterSpecification = Array<
+  string | number | boolean | FilterSpecification
+>;
+
+export interface SatelliteData {
   name: string;
   operator: string;
   constellation: string;
@@ -10,20 +15,30 @@ interface SatelliteData {
   data_access: string;
 }
 
-interface Metadata {
+export interface Metadata {
   minTime: number;
   maxTime: number;
   constellations: string[];
   operators: string[];
-  sensorTypes: string[];
+  sensor_types: string[];
   spatialResolutions: string[];
-  dataAccessTypes: string[];
+  data_access_options: string[];
   // Add other properties as needed
+}
+
+// Type for visible passes (used in usePassCounter)
+export interface VisiblePass {
+  name: string;
+  start_time: string;
+  sensor_type?: string;
+  spatial_res_cm?: number;
+  data_access?: string;
+  constellation?: string;
 }
 
 interface FilterState {
   // Raw data
-  metadata: Metadata;
+  metadata: Metadata | null;
   satelliteData: SatelliteData[];
 
   // Filter state
@@ -45,7 +60,7 @@ interface FilterState {
   mapFilter: FilterSpecification;
 
   // Actions
-  setMetadata: (metadata: any) => void;
+  setMetadata: (metadata: Metadata) => void;
   setSatelliteData: (data: SatelliteData[]) => void;
   setTimeRange: (range: number[]) => void;
   setConstellation: (value: string) => void;
@@ -279,7 +294,7 @@ export const useFilterStore = create<FilterState>()(
           return ["all"];
         }
 
-        const filter: any[] = [
+        const filter: FilterSpecification = [
           "all",
           [
             ">=",

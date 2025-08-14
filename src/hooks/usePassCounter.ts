@@ -1,18 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import maplibregl from "maplibre-gl";
+import type { VisiblePass } from "../store/filterStore";
 
 interface UsePassCounterProps {
   mapRef: React.RefObject<maplibregl.Map | null>;
 }
-
-type VisiblePass = {
-  name: string;
-  start_time: string;
-  sensor_type?: string;
-  spatial_res_m?: number;
-  data_access?: string;
-  constellation?: string;
-};
 
 export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
   const [visiblePassCount, setVisiblePassCount] = useState<number | null>(null);
@@ -25,7 +17,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
     if (!mapRef.current) return;
 
     try {
-      const map = mapRef.current.getMap();
+      const map = mapRef.current;
       const features = map.queryRenderedFeatures(undefined, {
         layers: ["satellite_paths"],
       });
@@ -45,7 +37,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
       // Build list of passes with deduplication
       const allPasses: VisiblePass[] = features
-        .map((feature) => {
+        .map((feature: maplibregl.MapGeoJSONFeature): VisiblePass | null => {
           const props = feature.properties || {};
           const name = (props.satellite || props.name || "").toString();
           const start = (props.start_time || "").toString();
@@ -55,12 +47,12 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
           return {
             name,
             start_time: start,
-            sensor_type: props.sensor_type?.toString(),
-            spatial_res_m: props.spatial_res_m
-              ? Number(props.spatial_res_m)
+            sensor_type: props.sensor_type?.toString() || undefined,
+            spatial_res_cm: props.spatial_res_cm
+              ? Number(props.spatial_res_cm)
               : undefined,
-            data_access: props.data_access?.toString(),
-            constellation: props.constellation?.toString(),
+            data_access: props.data_access?.toString() || undefined,
+            constellation: props.constellation?.toString() || undefined,
           };
         })
         .filter((pass): pass is VisiblePass => pass !== null);
@@ -95,7 +87,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
       setVisiblePassCount(passes.length);
       setVisiblePasses(passes);
-    } catch (error) {
+    } catch {
       setVisiblePassCount(null);
       setVisiblePasses([]);
     }
@@ -113,7 +105,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
     const setupListeners = () => {
       if (mapRef.current) {
-        const map = mapRef.current.getMap();
+        const map = mapRef.current;
 
         map.on("moveend", debouncedUpdate);
         map.on("sourcedata", debouncedUpdate);
