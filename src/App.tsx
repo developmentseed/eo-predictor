@@ -26,7 +26,7 @@ interface ClickedFeature {
 
 function App() {
   const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(null);
-  const mapRef = useRef<any>(null); // MapLibre map ref type is complex, keeping as any
+  const mapRef = useRef<Map | null>(null); // MapLibre map ref
 
   const {
     metadata,
@@ -54,7 +54,7 @@ function App() {
     return cleanupProtocol;
   }, [setMetadata, setSatelliteData, setTimeRange]);
 
-  const handleMapClick = (e: any) => { // MapLibre event type is complex
+  const handleMapClick = (e: MapLayerMouseEvent) => {
     const feature = e.features?.[0];
     if (feature?.properties) {
       setClickedFeature({ ...feature.properties, lngLat: e.lngLat });
