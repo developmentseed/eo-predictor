@@ -205,7 +205,7 @@ else:
     subprocess.run([
         "tippecanoe",
         "-Z0",
-        "-z8", # Changed from -z12 to -z8
+        "-z7", # Changed from -z12 to -z7
         "--simplification=10",
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
