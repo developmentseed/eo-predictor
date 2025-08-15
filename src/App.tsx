@@ -71,11 +71,11 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col">
-      <Header lastUpdated={metadata?.lastUpdated} />
+      <Header />
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:flex md:w-1/3 md:flex-col md:overflow-y-auto md:bg-background md:border-r md:p-4">
-          <SidebarContent mapRef={mapRef} variant="desktop" />
+          <SidebarContent mapRef={mapRef} variant="desktop" lastUpdated={metadata?.lastUpdated} />
         </div>
 
         {/* Map Area - Desktop: Right 2/3, Mobile: Full width with reduced height */}
@@ -130,7 +130,7 @@ function App() {
 
         {/* Mobile Controls */}
         <div className="md:hidden bg-background border-t max-h-80 overflow-y-auto">
-          <SidebarContent mapRef={mapRef} variant="mobile" />
+          <SidebarContent mapRef={mapRef} variant="mobile" lastUpdated={metadata?.lastUpdated} />
         </div>
       </div>
     </div>

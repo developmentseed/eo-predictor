@@ -23,6 +23,7 @@ export interface Metadata {
   sensor_types: string[];
   spatialResolutions: string[];
   data_access_options: string[];
+  lastUpdated: string;
   // Add other properties as needed
 }
 
