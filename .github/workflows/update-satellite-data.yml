@@ -1,0 +1,66 @@
+name: Update Satellite Data
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-satellite-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tippecanoe
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install Python dependencies
+        run: |
+          cd scripts
+          uv sync
+
+      - name: Generate satellite data
+        env:
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd scripts
+          uv run python generate_satellite_paths.py
+
+      - name: Commit updated metadata
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add public/satellite_paths_metadata.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update satellite data metadata (daily update)"
+            git push
+          fi
+
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: satellite-data-artifacts
+          path: |
+            scripts/satellite_paths.geojson
+            public/satellite_paths_metadata.json
+            scripts/combined_tle.txt
+          retention-days: 7

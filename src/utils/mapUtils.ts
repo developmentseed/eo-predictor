@@ -35,9 +35,13 @@ export const loadMapData = async () => {
     maxTime: max 
   };
 
+  // Determine PMTiles URL - use S3 URL if available, otherwise fall back to local
+  const pmtilesUrl = metadataData.pmtilesUrl || "/satellite_paths.pmtiles";
+
   return {
     metadata: processedMetadata,
     satelliteData,
-    initialTimeRange: [min, max] as [number, number]
+    initialTimeRange: [min, max] as [number, number],
+    pmtilesUrl
   };
 };

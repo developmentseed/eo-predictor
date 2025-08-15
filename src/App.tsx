@@ -26,6 +26,7 @@ interface ClickedFeature {
 
 function App() {
   const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(null);
+  const [pmtilesUrl, setPmtilesUrl] = useState<string | null>(null);
   const mapRef = useRef<Map | null>(null); // MapLibre map ref
 
   const {
@@ -42,10 +43,11 @@ function App() {
 
     // Load metadata and satellite data
     loadMapData()
-      .then(({ metadata, satelliteData, initialTimeRange }) => {
+      .then(({ metadata, satelliteData, initialTimeRange, pmtilesUrl }) => {
         setMetadata(metadata);
         setSatelliteData(satelliteData);
         setTimeRange(initialTimeRange);
+        setPmtilesUrl(pmtilesUrl);
       })
       .catch((error) => {
         console.error("Error loading data:", error);
@@ -63,13 +65,13 @@ function App() {
     }
   };
 
-  if (!metadata || !timeRange.length) {
+  if (!metadata || !timeRange.length || !pmtilesUrl) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="h-screen flex flex-col">
-      <Header />
+      <Header lastUpdated={metadata?.lastUpdated} />
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:flex md:w-1/3 md:flex-col md:overflow-y-auto md:bg-background md:border-r md:p-4">
@@ -92,7 +94,7 @@ function App() {
             interactiveLayerIds={["satellite_paths"]}
             maxZoom={13}
           >
-            <Source type="vector" url="pmtiles:///satellite_paths.pmtiles">
+            <Source type="vector" url={`pmtiles://${pmtilesUrl}`}>
               <Layer
                 id="satellite_paths"
                 source-layer="satellite_paths"

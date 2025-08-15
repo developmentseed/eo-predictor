@@ -126,3 +126,4 @@ resolve: {
   },
 }
 ```
+- Don't run the development server. The user runs that in a separate terminal window
