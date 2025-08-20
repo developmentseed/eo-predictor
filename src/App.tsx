@@ -4,6 +4,7 @@ import Map, {
   Layer,
   NavigationControl,
   GeolocateControl,
+  type MapRef,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useFilterStore } from "@/store/filterStore";
@@ -28,7 +29,7 @@ function App() {
   const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(
     null
   );
-  const mapRef = useRef<Map | null>(null); // MapLibre map ref
+  const mapRef = useRef<MapRef | null>(null); // MapLibre map ref
 
   const {
     metadata,
