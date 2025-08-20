@@ -33,34 +33,20 @@ jobs:
           uv sync
 
       - name: Generate satellite data
-        env:
-          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           cd scripts
           uv run python generate_satellite_paths.py
 
-      - name: Commit updated metadata
+      - name: Commit updated satellite data
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add public/satellite_paths_metadata.json
+          git add public/tiles/
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update satellite data metadata (daily update)"
+            git commit -m "Update satellite data and tiles (daily update)"
             git push
           fi
 
-      - name: Upload artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: satellite-data-artifacts
-          path: |
-            scripts/satellite_paths.geojson
-            public/satellite_paths_metadata.json
-            scripts/combined_tle.txt
-          retention-days: 7
