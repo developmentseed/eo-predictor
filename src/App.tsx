@@ -25,7 +25,9 @@ interface ClickedFeature {
 }
 
 function App() {
-  const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(null);
+  const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(
+    null
+  );
   const mapRef = useRef<Map | null>(null); // MapLibre map ref
 
   const {
@@ -69,7 +71,11 @@ function App() {
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:flex md:w-1/3 md:flex-col md:overflow-y-auto md:bg-background md:border-r md:p-4">
-          <SidebarContent mapRef={mapRef} variant="desktop" lastUpdated={metadata?.lastUpdated} />
+          <SidebarContent
+            mapRef={mapRef}
+            variant="desktop"
+            lastUpdated={metadata?.lastUpdated}
+          />
         </div>
 
         {/* Map Area - Desktop: Right 2/3, Mobile: Full width with reduced height */}
@@ -88,9 +94,11 @@ function App() {
             interactiveLayerIds={["satellite_paths"]}
             maxZoom={13}
           >
-            <Source 
-              type="vector" 
-              tiles={["/tiles/{z}/{x}/{y}.pbf"]}
+            <Source
+              type="vector"
+              tiles={[
+                "https://www.developmentseed.org/eo-predictor/public/tiles/{z}/{x}/{y}.pbf",
+              ]}
               minzoom={0}
               maxzoom={7}
             >
@@ -129,7 +137,11 @@ function App() {
 
         {/* Mobile Controls */}
         <div className="md:hidden bg-background border-t max-h-80 overflow-y-auto">
-          <SidebarContent mapRef={mapRef} variant="mobile" lastUpdated={metadata?.lastUpdated} />
+          <SidebarContent
+            mapRef={mapRef}
+            variant="mobile"
+            lastUpdated={metadata?.lastUpdated}
+          />
         </div>
       </div>
     </div>
