@@ -1,10 +1,21 @@
-name: Update Satellite Data
+name: Update Satellite Data and Deploy
 
 on:
   schedule:
     # Run daily at 2 AM UTC
     - cron: "0 2 * * *"
   workflow_dispatch: # Allow manual triggering
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   update-satellite-data:
@@ -37,16 +48,44 @@ jobs:
           cd scripts
           uv run python generate_satellite_paths.py
 
-      - name: Commit updated satellite data
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Build site
+        run: pnpm build
+
+      - name: Commit updated satellite metadata
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add public/satellite_paths_metadata.json
-          git add public/tiles/
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update satellite data and tiles (daily update)"
+            git commit -m "Update satellite data metadata (daily update)"
             git push
           fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
