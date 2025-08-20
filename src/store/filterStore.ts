@@ -1,10 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-// Define FilterSpecification type for MapLibre GL
-export type FilterSpecification = Array<
-  string | number | boolean | FilterSpecification
->;
+// Use a compatible filter type that works with MapLibre GL at runtime
+export type FilterExpression = any;
 
 export interface SatelliteData {
   name: string;
@@ -23,6 +21,7 @@ export interface Metadata {
   sensor_types: string[];
   spatialResolutions: string[];
   data_access_options: string[];
+  lastUpdated: string;
   // Add other properties as needed
 }
 
@@ -57,7 +56,7 @@ interface FilterState {
   availableDataAccess: Array<{ value: string; disabled: boolean }>;
 
   // Map filter for MapLibre
-  mapFilter: FilterSpecification;
+  mapFilter: FilterExpression;
 
   // Actions
   setMetadata: (metadata: Metadata) => void;
@@ -73,7 +72,7 @@ interface FilterState {
   // Computed filter logic
   getFilteredSatellites: () => SatelliteData[];
   updateDerivedState: () => void;
-  generateMapFilter: () => FilterSpecification;
+  generateMapFilter: () => FilterExpression;
 }
 
 const getSpatialResolutionCategory = (spatial_res_cm: number): string => {
@@ -294,7 +293,7 @@ export const useFilterStore = create<FilterState>()(
           return ["all"];
         }
 
-        const filter: FilterSpecification = [
+        const filter: FilterExpression = [
           "all",
           [
             ">=",

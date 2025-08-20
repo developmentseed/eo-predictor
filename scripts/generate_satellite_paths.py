@@ -16,9 +16,10 @@ project_root = os.path.dirname(script_dir)
 
 # Define absolute paths for output files
 public_dir = os.path.join(project_root, "public")
-metadata_path = os.path.join(public_dir, "satellite_paths_metadata.json")
-pmtiles_path = os.path.join(public_dir, "satellite_paths.pmtiles")
+local_metadata_path = os.path.join(public_dir, "satellite_paths_metadata.json")
+tiles_dir = os.path.join(public_dir, "tiles")
 geojson_path = os.path.join(script_dir, "satellite_paths.geojson")
+
 
 # Load satellite list from JSON
 with open(os.path.join(script_dir, "satellite-list.json"), "r") as f:
@@ -181,7 +182,8 @@ else:
             range_category = "low"
         spatial_resolution_ranges.append(range_category)
     
-    metadata = {
+    # Generate base metadata with tiles URL template
+    base_metadata = {
         "satellites": path_gdf['satellite'].unique().tolist(),
         "constellations": path_gdf['constellation'].unique().tolist(),
         "operators": path_gdf['operator'].unique().tolist(),
@@ -190,29 +192,44 @@ else:
         "spatial_resolution_ranges": list(set(spatial_resolution_ranges)),
         "minTime": path_gdf['start_time'].min().isoformat(),
         "maxTime": path_gdf['end_time'].max().isoformat(),
+        "lastUpdated": datetime.now(timezone.utc).isoformat(),
+        "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
     }
-    with open(metadata_path, "w") as f:
-        json.dump(metadata, f)
-    print(f"\nSuccessfully generated {metadata_path}")
+    
+    # Save local copy first
+    with open(local_metadata_path, "w") as f:
+        json.dump(base_metadata, f, indent=2)
+    print(f"\nSuccessfully generated local {local_metadata_path}")
 
     # Save GeoJSON
     print("\nSaving paths to GeoJSON file...")
     path_gdf.to_file(geojson_path, driver='GeoJSON')
     print(f"\nSuccessfully generated {geojson_path}")
 
-    # Generate PMTiles from the GeoJSON
-    print("\nGenerating PMTiles from GeoJSON...")
+    # Generate directory tiles from the GeoJSON
+    print("\nGenerating directory tiles from GeoJSON...")
+    
+    # Remove existing tiles directory if it exists
+    if os.path.exists(tiles_dir):
+        import shutil
+        shutil.rmtree(tiles_dir)
+    
     subprocess.run([
         "tippecanoe",
         "-Z0",
-        "-z8", # Changed from -z12 to -z8
+        "-z7", # Changed from -z12 to -z7
         "--simplification=10",
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
         "--detect-longitude-wraparound",
-        "-o",
-        pmtiles_path,
+        "--no-tile-compression",  # Important for web hosting
+        "--output-to-directory",
+        tiles_dir,
         geojson_path,
         "--force"
     ])
-    print(f"\nSuccessfully generated {pmtiles_path}")
+    print(f"\nSuccessfully generated tiles in {tiles_dir}")
+    
+    print(f"\nTiles generated successfully and ready for GitHub hosting")
+    print(f"Metadata saved to: {local_metadata_path}")
+    print(f"Tiles directory: {tiles_dir}")

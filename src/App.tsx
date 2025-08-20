@@ -4,13 +4,14 @@ import Map, {
   Layer,
   NavigationControl,
   GeolocateControl,
+  type MapRef,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useFilterStore } from "@/store/filterStore";
 import { SatellitePopup } from "@/components/SatellitePopup";
 import { Header } from "@/components/Header";
 import { SidebarContent } from "@/components/SidebarContent";
-import { setupPMTilesProtocol, loadMapData } from "@/utils/mapUtils";
+import { loadMapData } from "@/utils/mapUtils";
 
 interface ClickedFeature {
   lngLat: { lng: number; lat: number };
@@ -25,8 +26,10 @@ interface ClickedFeature {
 }
 
 function App() {
-  const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(null);
-  const mapRef = useRef<Map | null>(null); // MapLibre map ref
+  const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(
+    null
+  );
+  const mapRef = useRef<MapRef | null>(null); // MapLibre map ref
 
   const {
     metadata,
@@ -38,8 +41,6 @@ function App() {
   } = useFilterStore();
 
   useEffect(() => {
-    const cleanupProtocol = setupPMTilesProtocol();
-
     // Load metadata and satellite data
     loadMapData()
       .then(({ metadata, satelliteData, initialTimeRange }) => {
@@ -50,11 +51,9 @@ function App() {
       .catch((error) => {
         console.error("Error loading data:", error);
       });
-
-    return cleanupProtocol;
   }, [setMetadata, setSatelliteData, setTimeRange]);
 
-  const handleMapClick = (e: MapLayerMouseEvent) => {
+  const handleMapClick = (e: any) => {
     const feature = e.features?.[0];
     if (feature?.properties) {
       setClickedFeature({ ...feature.properties, lngLat: e.lngLat });
@@ -73,7 +72,11 @@ function App() {
       <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:flex md:w-1/3 md:flex-col md:overflow-y-auto md:bg-background md:border-r md:p-4">
-          <SidebarContent mapRef={mapRef} variant="desktop" />
+          <SidebarContent
+            mapRef={mapRef}
+            variant="desktop"
+            lastUpdated={metadata?.lastUpdated}
+          />
         </div>
 
         {/* Map Area - Desktop: Right 2/3, Mobile: Full width with reduced height */}
@@ -92,7 +95,14 @@ function App() {
             interactiveLayerIds={["satellite_paths"]}
             maxZoom={13}
           >
-            <Source type="vector" url="pmtiles:///satellite_paths.pmtiles">
+            <Source
+              type="vector"
+              tiles={[
+                "https://www.developmentseed.org/eo-predictor/tiles/{z}/{x}/{y}.pbf",
+              ]}
+              minzoom={0}
+              maxzoom={7}
+            >
               <Layer
                 id="satellite_paths"
                 source-layer="satellite_paths"
@@ -128,7 +138,11 @@ function App() {
 
         {/* Mobile Controls */}
         <div className="md:hidden bg-background border-t max-h-80 overflow-y-auto">
-          <SidebarContent mapRef={mapRef} variant="mobile" />
+          <SidebarContent
+            mapRef={mapRef}
+            variant="mobile"
+            lastUpdated={metadata?.lastUpdated}
+          />
         </div>
       </div>
     </div>

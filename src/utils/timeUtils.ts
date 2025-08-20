@@ -42,3 +42,22 @@ export function formatTimeDisplay(timestamp: number): {
     timezone: formatUTCOffset(date),
   };
 }
+
+/**
+ * Formats last updated timestamp for display as relative time
+ */
+export function formatLastUpdated(lastUpdated: string): string {
+  const date = new Date(lastUpdated);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffDays > 0) {
+    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+  } else if (diffHours > 0) {
+    return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+  } else {
+    return "Less than 1 hour ago";
+  }
+}

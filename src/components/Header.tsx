@@ -1,4 +1,9 @@
-import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+} from "@/components/ui/navigation-menu";
 
 export function Header() {
   return (
@@ -8,12 +13,14 @@ export function Header() {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="#about">
-                About
-              </NavigationMenuLink>
+              <NavigationMenuLink href="#about">About</NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <NavigationMenuLink
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Github
               </NavigationMenuLink>
             </NavigationMenuItem>
