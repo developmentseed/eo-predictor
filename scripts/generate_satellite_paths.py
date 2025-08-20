@@ -8,9 +8,6 @@ from datetime import datetime, timedelta, timezone
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point, LineString
-from boto3 import Session
-from obstore.auth.boto3 import Boto3CredentialProvider
-from obstore.store import S3Store
 
 # Get the absolute path of the script's directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -20,44 +17,9 @@ project_root = os.path.dirname(script_dir)
 # Define absolute paths for output files
 public_dir = os.path.join(project_root, "public")
 local_metadata_path = os.path.join(public_dir, "satellite_paths_metadata.json")
-local_pmtiles_path = os.path.join(public_dir, "satellite_paths.pmtiles")
+tiles_dir = os.path.join(public_dir, "tiles")
 geojson_path = os.path.join(script_dir, "satellite_paths.geojson")
 
-# S3 configuration from environment variables
-S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
-AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
-S3_PMTILES_KEY = "satellite_paths.pmtiles"
-S3_METADATA_KEY = "satellite_paths_metadata.json"
-
-# Function to upload files to S3
-def upload_to_s3(local_file_path, s3_key):
-    """Upload a file to S3 using obstore with boto3 credentials"""
-    if not S3_BUCKET_NAME:
-        print(f"  Skipping S3 upload for {s3_key} - S3_BUCKET_NAME not set")
-        return None
-    
-    try:
-        print(f"  Uploading {s3_key} to S3...")
-        
-        # Create boto3 session and obstore S3 client
-        session = Session()
-        credential_provider = Boto3CredentialProvider(session)
-        store = S3Store(S3_BUCKET_NAME, credential_provider=credential_provider, region=AWS_REGION)
-        
-        # Read file and upload to S3
-        with open(local_file_path, "rb") as f:
-            file_content = f.read()
-        
-        store.put(s3_key, file_content)
-        
-        # Return the public URL
-        s3_url = f"https://{S3_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
-        print(f"  Successfully uploaded {s3_key} to {s3_url}")
-        return s3_url
-        
-    except Exception as e:
-        print(f"  Failed to upload {s3_key} to S3: {e}")
-        return None
 
 # Load satellite list from JSON
 with open(os.path.join(script_dir, "satellite-list.json"), "r") as f:
@@ -220,7 +182,7 @@ else:
             range_category = "low"
         spatial_resolution_ranges.append(range_category)
     
-    # Generate base metadata (without URLs initially)
+    # Generate base metadata with tiles URL template
     base_metadata = {
         "satellites": path_gdf['satellite'].unique().tolist(),
         "constellations": path_gdf['constellation'].unique().tolist(),
@@ -231,6 +193,7 @@ else:
         "minTime": path_gdf['start_time'].min().isoformat(),
         "maxTime": path_gdf['end_time'].max().isoformat(),
         "lastUpdated": datetime.now(timezone.utc).isoformat(),
+        "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
     }
     
     # Save local copy first
@@ -243,8 +206,14 @@ else:
     path_gdf.to_file(geojson_path, driver='GeoJSON')
     print(f"\nSuccessfully generated {geojson_path}")
 
-    # Generate PMTiles from the GeoJSON
-    print("\nGenerating PMTiles from GeoJSON...")
+    # Generate directory tiles from the GeoJSON
+    print("\nGenerating directory tiles from GeoJSON...")
+    
+    # Remove existing tiles directory if it exists
+    if os.path.exists(tiles_dir):
+        import shutil
+        shutil.rmtree(tiles_dir)
+    
     subprocess.run([
         "tippecanoe",
         "-Z0",
@@ -253,35 +222,14 @@ else:
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
         "--detect-longitude-wraparound",
-        "-o",
-        local_pmtiles_path,
+        "--no-tile-compression",  # Important for web hosting
+        "--output-to-directory",
+        tiles_dir,
         geojson_path,
         "--force"
     ])
-    print(f"\nSuccessfully generated {local_pmtiles_path}")
+    print(f"\nSuccessfully generated tiles in {tiles_dir}")
     
-    # Upload files to S3
-    print("\nUploading files to S3...")
-    pmtiles_s3_url = upload_to_s3(local_pmtiles_path, S3_PMTILES_KEY)
-    
-    # Update metadata with S3 URLs if upload succeeded
-    if pmtiles_s3_url:
-        base_metadata["pmtilesUrl"] = pmtiles_s3_url
-        
-        # Save updated metadata locally
-        with open(local_metadata_path, "w") as f:
-            json.dump(base_metadata, f, indent=2)
-        print(f"\nUpdated local metadata with S3 URL")
-        
-        # Upload updated metadata to S3
-        metadata_s3_url = upload_to_s3(local_metadata_path, S3_METADATA_KEY)
-        if metadata_s3_url:
-            base_metadata["metadataUrl"] = metadata_s3_url
-            # Final update to local metadata
-            with open(local_metadata_path, "w") as f:
-                json.dump(base_metadata, f, indent=2)
-            print(f"\nAll files successfully uploaded to S3")
-        else:
-            print(f"\nPMTiles uploaded but metadata upload failed")
-    else:
-        print(f"\nS3 upload failed - files remain local only")
+    print(f"\nTiles generated successfully and ready for GitHub hosting")
+    print(f"Metadata saved to: {local_metadata_path}")
+    print(f"Tiles directory: {tiles_dir}")
