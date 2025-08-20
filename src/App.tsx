@@ -10,7 +10,7 @@ import { useFilterStore } from "@/store/filterStore";
 import { SatellitePopup } from "@/components/SatellitePopup";
 import { Header } from "@/components/Header";
 import { SidebarContent } from "@/components/SidebarContent";
-import { setupPMTilesProtocol, loadMapData } from "@/utils/mapUtils";
+import { loadMapData } from "@/utils/mapUtils";
 
 interface ClickedFeature {
   lngLat: { lng: number; lat: number };
@@ -26,7 +26,6 @@ interface ClickedFeature {
 
 function App() {
   const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(null);
-  const [pmtilesUrl, setPmtilesUrl] = useState<string | null>(null);
   const mapRef = useRef<Map | null>(null); // MapLibre map ref
 
   const {
@@ -39,24 +38,19 @@ function App() {
   } = useFilterStore();
 
   useEffect(() => {
-    const cleanupProtocol = setupPMTilesProtocol();
-
     // Load metadata and satellite data
     loadMapData()
-      .then(({ metadata, satelliteData, initialTimeRange, pmtilesUrl }) => {
+      .then(({ metadata, satelliteData, initialTimeRange }) => {
         setMetadata(metadata);
         setSatelliteData(satelliteData);
         setTimeRange(initialTimeRange);
-        setPmtilesUrl(pmtilesUrl);
       })
       .catch((error) => {
         console.error("Error loading data:", error);
       });
-
-    return cleanupProtocol;
   }, [setMetadata, setSatelliteData, setTimeRange]);
 
-  const handleMapClick = (e: MapLayerMouseEvent) => {
+  const handleMapClick = (e: any) => {
     const feature = e.features?.[0];
     if (feature?.properties) {
       setClickedFeature({ ...feature.properties, lngLat: e.lngLat });
@@ -65,7 +59,7 @@ function App() {
     }
   };
 
-  if (!metadata || !timeRange.length || !pmtilesUrl) {
+  if (!metadata || !timeRange.length) {
     return <div>Loading...</div>;
   }
 
@@ -94,7 +88,12 @@ function App() {
             interactiveLayerIds={["satellite_paths"]}
             maxZoom={13}
           >
-            <Source type="vector" url={`pmtiles://${pmtilesUrl}`}>
+            <Source 
+              type="vector" 
+              tiles={["/tiles/{z}/{x}/{y}.pbf"]}
+              minzoom={0}
+              maxzoom={7}
+            >
               <Layer
                 id="satellite_paths"
                 source-layer="satellite_paths"

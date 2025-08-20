@@ -1,19 +1,4 @@
-import * as pmtiles from "pmtiles";
-import maplibregl from "maplibre-gl";
 
-/**
- * Sets up PMTiles protocol for MapLibre
- * @returns Cleanup function to remove protocol
- */
-export const setupPMTilesProtocol = (): (() => void) => {
-  const protocol = new pmtiles.Protocol();
-  maplibregl.addProtocol("pmtiles", protocol.tile);
-  
-  // Return cleanup function
-  return () => {
-    maplibregl.removeProtocol("pmtiles");
-  };
-};
 
 /**
  * Loads satellite metadata and list data in parallel
@@ -35,13 +20,9 @@ export const loadMapData = async () => {
     maxTime: max 
   };
 
-  // Determine PMTiles URL - use S3 URL if available, otherwise fall back to local
-  const pmtilesUrl = metadataData.pmtilesUrl || "/satellite_paths.pmtiles";
-
   return {
     metadata: processedMetadata,
     satelliteData,
-    initialTimeRange: [min, max] as [number, number],
-    pmtilesUrl
+    initialTimeRange: [min, max] as [number, number]
   };
 };
