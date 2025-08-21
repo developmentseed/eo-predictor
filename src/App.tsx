@@ -97,9 +97,7 @@ function App() {
           >
             <Source
               type="vector"
-              tiles={[
-                "/tiles/{z}/{x}/{y}.pbf",
-              ]}
+              tiles={["./tiles/{z}/{x}/{y}.pbf"]}
               minzoom={0}
               maxzoom={7}
             >
