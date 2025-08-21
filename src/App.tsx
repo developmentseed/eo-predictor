@@ -97,7 +97,9 @@ function App() {
           >
             <Source
               type="vector"
-              tiles={["./tiles/{z}/{x}/{y}.pbf"]}
+              tiles={[
+                "https://developmentseed.org/eo-predictor/tiles/{z}/{x}/{y}.pbf",
+              ]}
               minzoom={0}
               maxzoom={7}
             >
