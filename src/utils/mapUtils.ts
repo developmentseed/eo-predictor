@@ -6,8 +6,8 @@
  */
 export const loadMapData = async () => {
   const [metadataData, satelliteData] = await Promise.all([
-    fetch("/satellite_paths_metadata.json").then((res) => res.json()),
-    fetch("/scripts/satellite-list.json").then((res) => res.json())
+    fetch("./satellite_paths_metadata.json").then((res) => res.json()),
+    fetch("./scripts/satellite-list.json").then((res) => res.json())
   ]);
 
   // Process metadata to convert time strings to timestamps
