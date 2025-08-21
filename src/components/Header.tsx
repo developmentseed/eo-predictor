@@ -13,11 +13,8 @@ export function Header() {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="#about">About</NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
               <NavigationMenuLink
-                href="https://github.com"
+                href="https://github.com/developmentseed/eo-predictor"
                 target="_blank"
                 rel="noopener noreferrer"
               >
