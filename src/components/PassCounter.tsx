@@ -17,6 +17,7 @@ import {
   Minimize,
   Unlock,
   DollarSign,
+  Asterisk,
 } from "lucide-react";
 import maplibregl from "maplibre-gl";
 
@@ -86,7 +87,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                       ? "soft-blue"
                       : pass.sensor_type === "SAR"
                       ? "soft-purple"
-                      : "soft-gray"
+                      : "soft-orange"
                   }
                 >
                   {pass.sensor_type === "optical" ? (
@@ -94,7 +95,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                   ) : pass.sensor_type === "SAR" ? (
                     <Radio />
                   ) : (
-                    <Square />
+                    <Asterisk />
                   )}
                 </Badge>
               ) : (

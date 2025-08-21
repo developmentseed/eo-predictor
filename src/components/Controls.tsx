@@ -18,6 +18,7 @@ import {
   DollarSign,
   Unlock,
   RotateCcw,
+  Asterisk,
 } from "lucide-react";
 
 export const Controls = () => {
@@ -75,7 +76,7 @@ export const Controls = () => {
               ) {
                 return <Radio />;
               }
-              return <Square />;
+              return <Asterisk />;
             };
 
             return (
