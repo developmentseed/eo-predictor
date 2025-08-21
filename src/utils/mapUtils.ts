@@ -1,14 +1,14 @@
 
 
+// Import satellite data directly since it's not included in the runtime metadata
+import satelliteListData from '../../scripts/satellite-list.json';
+
 /**
- * Loads satellite metadata and list data in parallel
+ * Loads satellite metadata and processes it for the application
  * @returns Promise resolving to processed data
  */
 export const loadMapData = async () => {
-  const [metadataData, satelliteData] = await Promise.all([
-    fetch("./satellite_paths_metadata.json").then((res) => res.json()),
-    fetch("./scripts/satellite-list.json").then((res) => res.json())
-  ]);
+  const metadataData = await fetch("./satellite_paths_metadata.json").then((res) => res.json());
 
   // Process metadata to convert time strings to timestamps
   const min = new Date(metadataData.minTime).getTime();
@@ -22,7 +22,7 @@ export const loadMapData = async () => {
 
   return {
     metadata: processedMetadata,
-    satelliteData,
+    satelliteData: satelliteListData,
     initialTimeRange: [min, max] as [number, number]
   };
 };
