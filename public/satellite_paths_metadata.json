@@ -149,12 +149,30 @@
     "WorldView Legion",
     "WorldView"
   ],
-  "operators": ["Planet", "Maxar", "ICEYE", "NASA/USGS", "NASA/ISRO", "ESA"],
-  "sensor_types": ["optical", "SAR", "hyperspectral"],
-  "data_access_options": ["commercial", "open"],
-  "spatial_resolution_ranges": ["high", "low", "medium"],
-  "minTime": "2025-08-21T06:47:19.578724+00:00",
-  "maxTime": "2025-08-23T06:47:19.578724+00:00",
-  "lastUpdated": "2025-08-21T06:47:54.480765+00:00",
+  "operators": [
+    "Planet",
+    "Maxar",
+    "ICEYE",
+    "NASA/USGS",
+    "NASA/ISRO",
+    "ESA"
+  ],
+  "sensor_types": [
+    "optical",
+    "SAR",
+    "hyperspectral"
+  ],
+  "data_access_options": [
+    "commercial",
+    "open"
+  ],
+  "spatial_resolution_ranges": [
+    "medium",
+    "high",
+    "low"
+  ],
+  "minTime": "2025-08-21T07:46:09.348463+00:00",
+  "maxTime": "2025-08-23T07:46:09.348463+00:00",
+  "lastUpdated": "2025-08-21T07:46:44.817485+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
