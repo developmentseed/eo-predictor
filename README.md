@@ -169,4 +169,4 @@ Add new satellites to `scripts/satellite-list.json` with complete metadata
 
 ## License
 
-[License information to be added]
+MIT
