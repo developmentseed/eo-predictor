@@ -24,6 +24,7 @@ export function SidebarContent({
   lastUpdated,
 }: SidebarContentProps) {
   const { getPassCountText } = usePassCounter({ mapRef });
+  const version = __APP_VERSION__ || "0.1.0";
 
   const isDesktop = variant === "desktop";
   const triggerClass = isDesktop
@@ -102,11 +103,11 @@ export function SidebarContent({
           </span>
           <Badge variant="outline" asChild>
             <a
-              href="https://github.com/developmentseed/eo-predictor/releases/tag/v0.1"
+              href={`https://github.com/developmentseed/eo-predictor/releases/tag/v${version}`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              v0.1
+              v{version}
             </a>
           </Badge>
         </div>
