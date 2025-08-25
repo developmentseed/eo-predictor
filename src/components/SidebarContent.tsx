@@ -101,15 +101,13 @@ export function SidebarContent({
           <span className="text-xs text-muted-foreground">
             Last updated: {formatLastUpdated(lastUpdated)}
           </span>
-          <Badge variant="outline" asChild>
-            <a
-              href={`https://github.com/developmentseed/eo-predictor/releases/tag/v${version}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              v{version}
-            </a>
-          </Badge>
+          <a
+            href={`https://github.com/developmentseed/eo-predictor/releases/tag/${version}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Badge variant="outline">v{version}</Badge>
+          </a>
         </div>
       )}
     </>
