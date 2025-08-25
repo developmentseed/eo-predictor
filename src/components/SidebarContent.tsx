@@ -8,6 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import { AlarmClock, Satellite, Settings2 } from "lucide-react";
 import { formatLastUpdated } from "@/utils/timeUtils";
 
@@ -17,22 +18,26 @@ interface SidebarContentProps {
   lastUpdated?: string;
 }
 
-export function SidebarContent({ mapRef, variant = "desktop", lastUpdated }: SidebarContentProps) {
+export function SidebarContent({
+  mapRef,
+  variant = "desktop",
+  lastUpdated,
+}: SidebarContentProps) {
   const { getPassCountText } = usePassCounter({ mapRef });
-  
+
   const isDesktop = variant === "desktop";
-  const triggerClass = isDesktop 
-    ? "text-sm font-medium" 
+  const triggerClass = isDesktop
+    ? "text-sm font-medium"
     : "px-4 text-left font-semibold";
-  const contentClass = isDesktop 
-    ? undefined 
-    : "px-4 pb-4";
+  const contentClass = isDesktop ? undefined : "px-4 pb-4";
 
   return (
     <>
       <Accordion
         type="multiple"
-        defaultValue={isDesktop ? ["time-range", "filters", "passes"] : ["time-range"]}
+        defaultValue={
+          isDesktop ? ["time-range", "filters", "passes"] : ["time-range"]
+        }
         className={isDesktop ? "flex-1 flex flex-col" : undefined}
       >
         <AccordionItem value="time-range">
@@ -59,8 +64,8 @@ export function SidebarContent({ mapRef, variant = "desktop", lastUpdated }: Sid
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem 
-          value="passes" 
+        <AccordionItem
+          value="passes"
           className={isDesktop ? "flex-1 flex flex-col" : undefined}
         >
           <AccordionTrigger className={triggerClass}>
@@ -69,20 +74,41 @@ export function SidebarContent({ mapRef, variant = "desktop", lastUpdated }: Sid
               {getPassCountText()}
             </div>
           </AccordionTrigger>
-          <AccordionContent 
+          <AccordionContent
             className={isDesktop ? "flex-1 overflow-hidden" : contentClass}
           >
-            <div className={isDesktop ? "h-full overflow-y-auto" : "max-h-60 overflow-y-auto"}>
+            <div
+              className={
+                isDesktop
+                  ? "h-full overflow-y-auto"
+                  : "max-h-60 overflow-y-auto"
+              }
+            >
               <PassCounter mapRef={mapRef} />
             </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
       {lastUpdated && (
-        <div className={isDesktop ? "mt-4 pt-4 border-t" : "p-4 border-t"}>
+        <div
+          className={
+            isDesktop
+              ? "flex justify-between items-center mt-4 pt-4 border-t"
+              : "flex justify-between items-center p-4 border-t"
+          }
+        >
           <span className="text-xs text-muted-foreground">
             Last updated: {formatLastUpdated(lastUpdated)}
           </span>
+          <Badge variant="outline" asChild>
+            <a
+              href="https://github.com/developmentseed/eo-predictor/releases/tag/v0.1"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              v0.1
+            </a>
+          </Badge>
         </div>
       )}
     </>
