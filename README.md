@@ -167,6 +167,13 @@ scripts/
 
 Add new satellites to `scripts/satellite-list.json` with complete metadata
 
+## Update Release
+
+1. `pnpm version < major | minor | patch >`
+2. `git push`
+3. `gh release create --generate-notes`
+4. Create new tag
+
 ## License
 
 MIT
