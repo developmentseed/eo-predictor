@@ -4,7 +4,6 @@ An interactive web application for visualizing Earth Observation satellite cover
 
 <img width="1818" height="1527" alt="image" src="https://github.com/user-attachments/assets/8fed8a42-a2ef-41a5-b5c1-3d97c2745a99" />
 
-
 ## Motivation
 
 The Earth Observation sector is highly fragmented, making it difficult to know when the next satellite observation will occur over a specific area of interest. For humanitarian organizations responding to disasters and crises, having access to the most up-to-date information about upcoming satellite passes is critical for mission planning, damage assessment, and resource allocation.
@@ -46,9 +45,9 @@ EO Predictor addresses this challenge by providing a visualization of satellite 
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
-- Python 3.11+
-- tippecanoe (for PMTiles generation)
+- Node.js 18+ and [pnpm](https://pnpm.io/)
+- Python 3.11+ via [uv](https://docs.astral.sh/uv/)
+- [tippecanoe](https://github.com/mapbox/tippecanoe) (for vector tile generation)
 
 ### Installation
 
@@ -79,6 +78,7 @@ EO Predictor addresses this challenge by providing a visualization of satellite 
    ```
 
 5. **Start development server**
+
    ```bash
    cd ..
    pnpm dev
@@ -127,7 +127,7 @@ python generate_satellite_paths.py  # Generate satellite path data
 
 ### Project Structure
 
-```
+```text
 src/
 ├── components/
 │   ├── ui/           # shadcn/ui components
