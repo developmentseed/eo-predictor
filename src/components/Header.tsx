@@ -4,6 +4,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
+import { AboutDialog } from "@/components/About";
 
 export function Header() {
   return (
@@ -12,6 +13,13 @@ export function Header() {
         <h1 className="text-xl font-bold">EO Predictor</h1>
         <NavigationMenu>
           <NavigationMenuList>
+            <NavigationMenuItem>
+              <AboutDialog>
+                <NavigationMenuLink className="cursor-pointer">
+                  About
+                </NavigationMenuLink>
+              </AboutDialog>
+            </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink
                 href="https://github.com/developmentseed/eo-predictor"
