@@ -136,10 +136,11 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
   // Format pass count text
   const getPassCountText = () => {
     if (visiblePassCount === null) return "Loading...";
-    if (visiblePassCount === 0) return "No passes";
-    if (visiblePassCount === 1) return "1 pass";
-    if (visiblePassCount > MAX_PASSES_THRESHOLD) return "Many passes (100+)";
-    return `${visiblePassCount} passes`;
+    if (visiblePassCount === 0) return "No Predicted Passes";
+    if (visiblePassCount === 1) return "1 Predicted Pass";
+    if (visiblePassCount > MAX_PASSES_THRESHOLD)
+      return "Many Predicted Passes (100+)";
+    return `${visiblePassCount} Predicted Passes`;
   };
 
   return {
