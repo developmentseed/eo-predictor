@@ -1,0 +1,35 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: "ci"
+
+jobs:
+  format-and-lint:
+    name: Format and lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: scripts
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "scripts/.python-version"
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Check
+        run: uv run ruff check
+
+      - name: Format
+        run: uv run ruff format --check
