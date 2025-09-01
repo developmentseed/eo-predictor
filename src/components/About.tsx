@@ -81,6 +81,15 @@ export function AboutDialog({ children }: AboutDialogProps) {
                 >
                   Celestrak
                 </a>
+                . Built by{" "}
+                <a
+                  href="https://www.developmentseed.com/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline"
+                >
+                  Development Seed
+                </a>
                 .
               </p>
             </div>
