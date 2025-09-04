@@ -144,7 +144,7 @@ def main():
             all_data[filename] = data
     
     # Check for duplicate NORAD IDs
-    print(f"\n--- NORAD ID Uniqueness Check ---")
+    print("\n--- NORAD ID Uniqueness Check ---")
     duplicates_found = False
     for norad_id, files in all_norad_ids.items():
         if len(files) > 1:
@@ -156,7 +156,7 @@ def main():
         print("✅ All NORAD IDs are unique")
     
     # Summary
-    print(f"\n--- SUMMARY ---")
+    print("\n--- SUMMARY ---")
     print(f"Constellation files: {len(all_data)}")
     print(f"Total satellites: {total_satellites}")
     print(f"Unique NORAD IDs: {len(all_norad_ids)}")
