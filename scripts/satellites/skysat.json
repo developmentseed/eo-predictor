@@ -1,0 +1,27 @@
+{
+  "constellation": "SkySat",
+  "operator": "Planet",
+  "sensor_type": "optical",
+  "spatial_res_cm": 50,
+  "swath_km": 6,
+  "altitude_km": 475,
+  "off_nadir_deg": 45,
+  "data_access": "commercial",
+  "norad_ids": [
+    39418,
+    40072,
+    41601,
+    41771,
+    41772,
+    41773,
+    41774,
+    42987,
+    42988,
+    42989,
+    42990,
+    42991,
+    42992,
+    43797,
+    43802
+  ]
+}

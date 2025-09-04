@@ -9,7 +9,8 @@
     "altitude_km": 693,
     "off_nadir_deg": 33,
     "data_access": "open",
-    "norad_id": 39634
+    "norad_id": 39634,
+    "tasking": false
   },
   {
     "name": "Sentinel-1C",
@@ -21,7 +22,8 @@
     "altitude_km": 693,
     "off_nadir_deg": 33,
     "data_access": "open",
-    "norad_id": 62261
+    "norad_id": 62261,
+    "tasking": false
   },
   {
     "name": "Sentinel-2A",
@@ -33,7 +35,8 @@
     "altitude_km": 786,
     "off_nadir_deg": 0,
     "data_access": "open",
-    "norad_id": 40697
+    "norad_id": 40697,
+    "tasking": false
   },
   {
     "name": "Sentinel-2B",
@@ -45,7 +48,8 @@
     "altitude_km": 786,
     "off_nadir_deg": 0,
     "data_access": "open",
-    "norad_id": 42063
+    "norad_id": 42063,
+    "tasking": false
   },
   {
     "name": "Sentinel-2C",
@@ -57,7 +61,8 @@
     "altitude_km": 786,
     "off_nadir_deg": 0,
     "data_access": "open",
-    "norad_id": 60989
+    "norad_id": 60989,
+    "tasking": false
   },
   {
     "name": "Sentinel-3A",
@@ -69,7 +74,8 @@
     "altitude_km": 814,
     "off_nadir_deg": 0,
     "data_access": "open",
-    "norad_id": 41335
+    "norad_id": 41335,
+    "tasking": false
   },
   {
     "name": "Sentinel-3B",
@@ -81,7 +87,8 @@
     "altitude_km": 814,
     "off_nadir_deg": 0,
     "data_access": "open",
-    "norad_id": 43437
+    "norad_id": 43437,
+    "tasking": false
   },
   {
     "name": "Landsat-8",
@@ -93,7 +100,8 @@
     "altitude_km": 705,
     "off_nadir_deg": 0,
     "data_access": "open",
-    "norad_id": 39084
+    "norad_id": 39084,
+    "tasking": false
   },
   {
     "name": "Landsat-9",
@@ -105,7 +113,8 @@
     "altitude_km": 705,
     "off_nadir_deg": 0,
     "data_access": "open",
-    "norad_id": 49260
+    "norad_id": 49260,
+    "tasking": false
   },
   {
     "name": "SKYSAT-A",

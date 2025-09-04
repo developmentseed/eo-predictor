@@ -1,0 +1,12 @@
+{
+  "constellation": "Example Constellation",
+  "operator": "Example Operator",
+  "sensor_type": "optical",
+  "spatial_res_cm": 300,
+  "swath_km": 20,
+  "altitude_km": 500,
+  "off_nadir_deg": 30,
+  "data_access": "commercial",
+  "tasking": true,
+  "norad_ids": [12345, 12346, 12347]
+}

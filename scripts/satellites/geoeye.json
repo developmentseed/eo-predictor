@@ -1,0 +1,13 @@
+{
+  "constellation": "GeoEye",
+  "operator": "Maxar",
+  "sensor_type": "optical",
+  "spatial_res_cm": 41,
+  "swath_km": 15,
+  "altitude_km": 681,
+  "off_nadir_deg": 60,
+  "data_access": "commercial",
+  "norad_ids": [
+    33331
+  ]
+}

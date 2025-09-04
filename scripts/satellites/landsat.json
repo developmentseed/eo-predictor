@@ -1,0 +1,15 @@
+{
+  "constellation": "Landsat",
+  "operator": "NASA/USGS",
+  "sensor_type": "optical",
+  "spatial_res_cm": 1500,
+  "swath_km": 185,
+  "altitude_km": 705,
+  "off_nadir_deg": 0,
+  "data_access": "open",
+  "norad_ids": [
+    39084,
+    49260
+  ],
+  "tasking": false
+}
