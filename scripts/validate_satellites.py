@@ -80,6 +80,14 @@ def validate_constellation_file(file_path, filename):
         if not isinstance(angle, (int, float)) or angle < 0 or angle > 90:
             errors.append(f"Invalid off-nadir angle: {angle}° (must be 0-90)")
     
+    # Validate URL field (optional)
+    if 'url' in data:
+        url = data['url']
+        if not isinstance(url, str) or not url.startswith(('http://', 'https://')):
+            warnings.append(f"Invalid URL format: {url} (should start with http:// or https://)")
+        if len(url) > 500:
+            warnings.append(f"URL is very long ({len(url)} chars): {url}")
+    
     return data, errors, warnings
 
 def main():

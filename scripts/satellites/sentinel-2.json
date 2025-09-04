@@ -7,10 +7,7 @@
   "altitude_km": 786,
   "off_nadir_deg": 0,
   "data_access": "open",
-  "norad_ids": [
-    40697,
-    42063,
-    60989
-  ],
-  "tasking": false
+  "tasking": false,
+  "url": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2",
+  "norad_ids": [40697, 42063, 60989]
 }

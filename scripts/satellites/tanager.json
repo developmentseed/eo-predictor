@@ -7,7 +7,6 @@
   "altitude_km": 520,
   "off_nadir_deg": 0,
   "data_access": "commercial",
-  "norad_ids": [
-    60507
-  ]
+  "url": "https://www.planet.com/products/hyperspectral/",
+  "norad_ids": [60507]
 }

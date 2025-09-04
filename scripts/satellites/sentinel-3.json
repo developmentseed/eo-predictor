@@ -7,9 +7,7 @@
   "altitude_km": 814,
   "off_nadir_deg": 0,
   "data_access": "open",
-  "norad_ids": [
-    41335,
-    43437
-  ],
-  "tasking": false
+  "tasking": false,
+  "url": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-3",
+  "norad_ids": [41335, 43437]
 }

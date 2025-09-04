@@ -7,7 +7,7 @@
   "altitude_km": 747,
   "off_nadir_deg": 37,
   "data_access": "open",
-  "norad_ids": [
-    65053
-  ]
+  "tasking": false,
+  "url": "https://nisar.jpl.nasa.gov/",
+  "norad_ids": [65053]
 }

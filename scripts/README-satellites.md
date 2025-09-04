@@ -35,13 +35,14 @@ scripts/
      "off_nadir_deg": 30,
      "data_access": "commercial",
      "tasking": true,
+     "url": "https://example.com/constellation-info",
      "norad_ids": [12345, 12346, 12347]
    }
    ```
 
 3. **Validate your changes:**
    ```bash
-   python validate_satellites.py
+   uv run python validate_satellites.py
    ```
 
 ## Modifying Existing Constellations
@@ -59,6 +60,7 @@ To add satellites to an existing constellation, just edit the JSON file and add 
 - **off_nadir_deg**: Maximum off-nadir viewing angle in degrees
 - **data_access**: `open` (free) or `commercial` (paid)
 - **tasking**: `true` if satellites can be tasked, `false` if pre-programmed
+- **url**: *(optional)* Link to constellation information page
 - **norad_ids**: Array of NORAD catalog numbers
 
 ## How It Works
@@ -86,11 +88,12 @@ cp template-constellation.json satellites/capella.json
   "off_nadir_deg": 45,
   "data_access": "commercial",
   "tasking": true,
+  "url": "https://www.capellaspace.com/",
   "norad_ids": [44420, 44421, 44422]
 }
 
 # Validate
-python validate_satellites.py
+uv run python validate_satellites.py
 ```
 
 ### Adding Satellites to Existing Constellation
