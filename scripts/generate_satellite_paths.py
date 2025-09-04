@@ -26,37 +26,41 @@ def load_constellations():
     """Load constellation data from individual JSON files in satellites/ folder"""
     satellites_dir = os.path.join(script_dir, "satellites")
     constellations = []
-    
+
     if not os.path.exists(satellites_dir):
         raise FileNotFoundError(f"Satellites directory not found: {satellites_dir}")
-    
+
     for filename in os.listdir(satellites_dir):
-        if filename.endswith('.json'):
+        if filename.endswith(".json"):
             file_path = os.path.join(satellites_dir, filename)
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 constellation = json.load(f)
                 constellations.append(constellation)
-    
+
     print(f"Loaded {len(constellations)} constellations from {satellites_dir}")
     return constellations
+
 
 def expand_constellations_to_satellites(constellations):
     """Convert constellation files into individual satellite records"""
     satellite_info = []
-    
+
     for constellation in constellations:
         base_data = constellation.copy()
-        norad_ids = base_data.pop('norad_ids')  # Remove the array
-        
+        norad_ids = base_data.pop("norad_ids")  # Remove the array
+
         for norad_id in norad_ids:
             sat_data = base_data.copy()
-            sat_data['norad_id'] = norad_id
+            sat_data["norad_id"] = norad_id
             # Note: satellite name will be extracted from TLE data
-            sat_data['name'] = f"{constellation['constellation']}-{norad_id}"  # Temporary name
+            sat_data["name"] = (
+                f"{constellation['constellation']}-{norad_id}"  # Temporary name
+            )
             satellite_info.append(sat_data)
-    
+
     print(f"Expanded to {len(satellite_info)} individual satellites")
     return satellite_info
+
 
 # Load constellation data from folder structure
 constellations = load_constellations()
