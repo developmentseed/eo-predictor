@@ -4,14 +4,6 @@ import { devtools } from "zustand/middleware";
 // Use a compatible filter type that works with MapLibre GL at runtime
 export type FilterExpression = any;
 
-export interface SatelliteData {
-  name: string;
-  operator: string;
-  constellation: string;
-  sensor_type: string;
-  spatial_res_cm: number;
-  data_access: string;
-}
 
 export interface Metadata {
   minTime: number;
@@ -38,7 +30,6 @@ export interface VisiblePass {
 interface FilterState {
   // Raw data
   metadata: Metadata | null;
-  satelliteData: SatelliteData[];
 
   // Filter state
   timeRange: number[];
@@ -60,7 +51,6 @@ interface FilterState {
 
   // Actions
   setMetadata: (metadata: Metadata) => void;
-  setSatelliteData: (data: SatelliteData[]) => void;
   setTimeRange: (range: number[]) => void;
   setConstellation: (value: string) => void;
   setOperator: (value: string) => void;
@@ -70,24 +60,16 @@ interface FilterState {
   resetFilters: () => void;
 
   // Computed filter logic
-  getFilteredSatellites: () => SatelliteData[];
   updateDerivedState: () => void;
   generateMapFilter: () => FilterExpression;
 }
 
-const getSpatialResolutionCategory = (spatial_res_cm: number): string => {
-  const meters = spatial_res_cm / 100;
-  if (meters < 5) return "high";
-  if (meters <= 30) return "medium";
-  return "low";
-};
 
 export const useFilterStore = create<FilterState>()(
   devtools(
     (set, get) => ({
       // Initial state
       metadata: null,
-      satelliteData: [],
       timeRange: [],
       selectedConstellation: "all",
       selectedOperator: "all",
@@ -109,10 +91,6 @@ export const useFilterStore = create<FilterState>()(
         get().updateDerivedState();
       },
 
-      setSatelliteData: (data) => {
-        set({ satelliteData: data });
-        get().updateDerivedState();
-      },
 
       setTimeRange: (range) => {
         set({ timeRange: range });
@@ -156,102 +134,25 @@ export const useFilterStore = create<FilterState>()(
       },
 
       // Computed methods
-      getFilteredSatellites: () => {
-        const state = get();
-        let filtered = [...state.satelliteData];
-
-        // Apply constellation filter
-        if (state.selectedConstellation !== "all") {
-          filtered = filtered.filter(
-            (sat) => sat.constellation === state.selectedConstellation
-          );
-        }
-
-        // Apply operator filter
-        if (state.selectedOperator !== "all") {
-          filtered = filtered.filter(
-            (sat) => sat.operator === state.selectedOperator
-          );
-        }
-
-        // Apply sensor type filter
-        if (state.selectedSensorType !== "all") {
-          filtered = filtered.filter(
-            (sat) => sat.sensor_type === state.selectedSensorType
-          );
-        }
-
-        // Apply spatial resolution filter
-        if (state.selectedSpatialResolution !== "all") {
-          filtered = filtered.filter((sat) => {
-            const category = getSpatialResolutionCategory(sat.spatial_res_cm);
-            return category === state.selectedSpatialResolution;
-          });
-        }
-
-        // Apply data access filter
-        if (state.selectedDataAccess !== "all") {
-          filtered = filtered.filter(
-            (sat) => sat.data_access === state.selectedDataAccess
-          );
-        }
-
-        return filtered;
-      },
 
       updateDerivedState: () => {
         const state = get();
 
-        // Apply driver filters (sensor type, spatial resolution, data access) to determine available constellations/operators
-        let driverFiltered = [...state.satelliteData];
-
-        // Apply sensor type filter
-        if (state.selectedSensorType !== "all") {
-          driverFiltered = driverFiltered.filter(
-            (sat) => sat.sensor_type === state.selectedSensorType
-          );
-        }
-
-        // Apply spatial resolution filter
-        if (state.selectedSpatialResolution !== "all") {
-          driverFiltered = driverFiltered.filter((sat) => {
-            const category = getSpatialResolutionCategory(sat.spatial_res_cm);
-            return category === state.selectedSpatialResolution;
-          });
-        }
-
-        // Apply data access filter
-        if (state.selectedDataAccess !== "all") {
-          driverFiltered = driverFiltered.filter(
-            (sat) => sat.data_access === state.selectedDataAccess
-          );
-        }
-
-        // Get available options from driver-filtered satellites
-        const availableConstellationsFromDrivers = [
-          ...new Set(driverFiltered.map((sat) => sat.constellation)),
-        ];
-        const availableOperatorsFromDrivers = [
-          ...new Set(driverFiltered.map((sat) => sat.operator)),
-        ];
-
-        // Generate available options with disabled states
-        // Only constellation and operator get constrained by driver filters
+        // Generate available options - no driver filtering needed since we use metadata directly
         const availableConstellations = (
           state.metadata?.constellations || []
         ).map((constellation: string) => ({
           value: constellation,
-          disabled: !availableConstellationsFromDrivers.includes(constellation),
+          disabled: false,
         }));
 
         const availableOperators = (state.metadata?.operators || []).map(
           (operator: string) => ({
             value: operator,
-            disabled: !availableOperatorsFromDrivers.includes(operator),
+            disabled: false,
           })
         );
 
-        // Driver filters are never disabled - they're always selectable
         const availableSensorTypes = (state.metadata?.sensor_types || []).map(
           (sensorType: string) => ({
             value: sensorType,
