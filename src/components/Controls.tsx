@@ -19,6 +19,8 @@ import {
   Unlock,
   RotateCcw,
   Asterisk,
+  Target,
+  Navigation,
 } from "lucide-react";
 
 export const Controls = () => {
@@ -28,17 +30,20 @@ export const Controls = () => {
     selectedSensorType,
     selectedSpatialResolution,
     selectedDataAccess,
+    selectedTasking,
     availableConstellations,
     availableOperators,
     availableSensorTypes,
     availableSpatialResolution,
     availableDataAccess,
+    availableTasking,
     metadata,
     setConstellation,
     setOperator,
     setSensorType,
     setSpatialResolution,
     setDataAccess,
+    setTasking,
     resetFilters,
   } = useFilterStore();
 
@@ -177,6 +182,57 @@ export const Controls = () => {
                     : isCommercial
                     ? "paid/proprietary"
                     : "unknown access"
+                }`}
+              >
+                {getIcon()}
+                {iconText}
+              </ToggleGroupItem>
+            );
+          })}
+        </ToggleGroup>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Tasking</label>
+        <ToggleGroup
+          type="single"
+          value={selectedTasking}
+          onValueChange={(value) => setTasking(value || "all")}
+          variant="outline"
+          size="sm"
+          className="w-full"
+        >
+          <ToggleGroupItem value="all" aria-label="All satellites">
+            <Globe />
+            ALL
+          </ToggleGroupItem>
+          {availableTasking.map(({ value, disabled }) => {
+            const isTasking = value === "tasking";
+            const isNonTasking = value === "non-tasking";
+
+            const getIcon = () => {
+              if (isTasking) return <Target />;
+              if (isNonTasking) return <Navigation />;
+              return <Square />;
+            };
+
+            const iconText = isTasking
+              ? "TASK"
+              : isNonTasking
+              ? "FIXED"
+              : value.toUpperCase();
+
+            return (
+              <ToggleGroupItem
+                key={value}
+                value={value}
+                disabled={disabled}
+                aria-label={`${value} satellites - ${
+                  isTasking
+                    ? "can be pointed to specific locations"
+                    : isNonTasking
+                    ? "fixed angle capture"
+                    : "unknown tasking"
                 }`}
               >
                 {getIcon()}

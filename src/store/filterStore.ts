@@ -2,7 +2,12 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 // Use a compatible filter type that works with MapLibre GL at runtime
-export type FilterExpression = any;
+export type FilterExpression = (
+  | string
+  | number
+  | boolean
+  | (string | number | boolean | FilterExpression)[]
+)[];
 
 
 export interface Metadata {
@@ -38,6 +43,7 @@ interface FilterState {
   selectedSensorType: string;
   selectedSpatialResolution: string;
   selectedDataAccess: string;
+  selectedTasking: string;
 
   // Computed/derived state
   availableConstellations: Array<{ value: string; disabled: boolean }>;
@@ -45,6 +51,7 @@ interface FilterState {
   availableSensorTypes: Array<{ value: string; disabled: boolean }>;
   availableSpatialResolution: Array<{ value: string; disabled: boolean }>;
   availableDataAccess: Array<{ value: string; disabled: boolean }>;
+  availableTasking: Array<{ value: string; disabled: boolean }>;
 
   // Map filter for MapLibre
   mapFilter: FilterExpression;
@@ -57,6 +64,7 @@ interface FilterState {
   setSensorType: (value: string) => void;
   setSpatialResolution: (value: string) => void;
   setDataAccess: (value: string) => void;
+  setTasking: (value: string) => void;
   resetFilters: () => void;
 
   // Computed filter logic
@@ -76,6 +84,7 @@ export const useFilterStore = create<FilterState>()(
       selectedSensorType: "all",
       selectedSpatialResolution: "all",
       selectedDataAccess: "all",
+      selectedTasking: "all",
 
       // Initial computed state
       availableConstellations: [],
@@ -83,6 +92,7 @@ export const useFilterStore = create<FilterState>()(
       availableSensorTypes: [],
       availableSpatialResolution: [],
       availableDataAccess: [],
+      availableTasking: [],
       mapFilter: [],
 
       // Actions
@@ -122,6 +132,11 @@ export const useFilterStore = create<FilterState>()(
         get().updateDerivedState();
       },
 
+      setTasking: (value) => {
+        set({ selectedTasking: value });
+        get().updateDerivedState();
+      },
+
       resetFilters: () => {
         set({
           selectedConstellation: "all",
@@ -129,6 +144,7 @@ export const useFilterStore = create<FilterState>()(
           selectedSensorType: "all",
           selectedSpatialResolution: "all",
           selectedDataAccess: "all",
+          selectedTasking: "all",
         });
         get().updateDerivedState();
       },
@@ -174,6 +190,13 @@ export const useFilterStore = create<FilterState>()(
           disabled: false,
         }));
 
+        const availableTasking = ["tasking", "non-tasking"].map(
+          (tasking: string) => ({
+            value: tasking,
+            disabled: false,
+          })
+        );
+
         const mapFilter = state.generateMapFilter();
 
         set({
@@ -182,6 +205,7 @@ export const useFilterStore = create<FilterState>()(
           availableSensorTypes,
           availableSpatialResolution,
           availableDataAccess,
+          availableTasking,
           mapFilter,
         });
       },
@@ -251,6 +275,12 @@ export const useFilterStore = create<FilterState>()(
         // Data access filter
         if (state.selectedDataAccess !== "all") {
           filter.push(["==", ["get", "data_access"], state.selectedDataAccess]);
+        }
+
+        // Tasking filter
+        if (state.selectedTasking !== "all") {
+          const taskingValue = state.selectedTasking === "tasking";
+          filter.push(["==", ["get", "tasking"], taskingValue]);
         }
 
         return filter;
