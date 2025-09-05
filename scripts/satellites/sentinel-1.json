@@ -1,0 +1,13 @@
+{
+  "constellation": "Sentinel-1",
+  "operator": "ESA",
+  "sensor_type": "SAR",
+  "spatial_res_cm": 500,
+  "swath_km": 410,
+  "altitude_km": 693,
+  "off_nadir_deg": 33,
+  "data_access": "open",
+  "tasking": false,
+  "url": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-1",
+  "norad_ids": [39634, 62261]
+}

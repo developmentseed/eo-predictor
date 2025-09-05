@@ -7,6 +7,11 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useFilterStore } from "@/store/filterStore";
 import {
   Globe,
@@ -19,6 +24,9 @@ import {
   Unlock,
   RotateCcw,
   Asterisk,
+  Target,
+  Navigation,
+  Info,
 } from "lucide-react";
 
 export const Controls = () => {
@@ -28,17 +36,20 @@ export const Controls = () => {
     selectedSensorType,
     selectedSpatialResolution,
     selectedDataAccess,
+    selectedTasking,
     availableConstellations,
     availableOperators,
     availableSensorTypes,
     availableSpatialResolution,
     availableDataAccess,
+    availableTasking,
     metadata,
     setConstellation,
     setOperator,
     setSensorType,
     setSpatialResolution,
     setDataAccess,
+    setTasking,
     resetFilters,
   } = useFilterStore();
 
@@ -48,15 +59,28 @@ export const Controls = () => {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Sensor Types</label>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Sensor Types</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter satellites by the type of sensor technology they use
+                (optical, synthetic aperture radar, or hyperspectral).
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <ToggleGroup
           type="single"
           value={selectedSensorType}
           onValueChange={(value) => setSensorType(value || "all")}
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full mt-1"
         >
           <ToggleGroupItem value="all" aria-label="All sensors">
             <Globe />
@@ -94,15 +118,28 @@ export const Controls = () => {
         </ToggleGroup>
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Spatial Resolution</label>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Spatial Resolution</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter by the level of detail satellites can capture (high,
+                medium, low)
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <ToggleGroup
           type="single"
           value={selectedSpatialResolution}
           onValueChange={(value) => setSpatialResolution(value || "all")}
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full mt-1"
         >
           <ToggleGroupItem value="all" aria-label="All resolutions">
             <Globe />
@@ -137,14 +174,27 @@ export const Controls = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Data Access</label>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Data Access</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter by whether satellite data is freely available or requires
+                payment
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <ToggleGroup
           type="single"
           value={selectedDataAccess}
           onValueChange={(value) => setDataAccess(value || "all")}
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full mt-1"
         >
           <ToggleGroupItem value="all" aria-label="All data access types">
             <Globe />
@@ -186,6 +236,70 @@ export const Controls = () => {
           })}
         </ToggleGroup>
       </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Taskable</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter by whether satellites can be pointed to specific
+                locations on demand
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        <ToggleGroup
+          type="single"
+          value={selectedTasking}
+          onValueChange={(value) => setTasking(value || "all")}
+          variant="outline"
+          size="sm"
+          className="w-full mt-1"
+        >
+          <ToggleGroupItem value="all" aria-label="All satellites">
+            <Globe />
+            ALL
+          </ToggleGroupItem>
+          {availableTasking.map(({ value, disabled }) => {
+            const isTasking = value === "tasking";
+            const isNonTasking = value === "non-tasking";
+
+            const getIcon = () => {
+              if (isTasking) return <Target />;
+              if (isNonTasking) return <Navigation />;
+              return <Square />;
+            };
+
+            const iconText = isTasking
+              ? "TASK"
+              : isNonTasking
+              ? "FIXED"
+              : value.toUpperCase();
+
+            return (
+              <ToggleGroupItem
+                key={value}
+                value={value}
+                disabled={disabled}
+                aria-label={`${value} satellites - ${
+                  isTasking
+                    ? "can be pointed to specific locations"
+                    : isNonTasking
+                    ? "fixed angle capture"
+                    : "unknown tasking"
+                }`}
+              >
+                {getIcon()}
+                {iconText}
+              </ToggleGroupItem>
+            );
+          })}
+        </ToggleGroup>
+      </div>
       <div className="flex gap-3 overflow-x-auto">
         <div className="min-w-0 flex-1 space-y-2">
           <label className="text-sm font-medium">Constellation</label>
@@ -193,7 +307,7 @@ export const Controls = () => {
             onValueChange={setConstellation}
             value={selectedConstellation}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Select a constellation" />
             </SelectTrigger>
             <SelectContent>
@@ -215,7 +329,7 @@ export const Controls = () => {
         <div className="min-w-0 flex-1 space-y-2">
           <label className="text-sm font-medium">Operator</label>
           <Select onValueChange={setOperator} value={selectedOperator}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Select an operator" />
             </SelectTrigger>
             <SelectContent>

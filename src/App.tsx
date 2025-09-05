@@ -36,22 +36,20 @@ function App() {
     timeRange,
     mapFilter,
     setMetadata,
-    setSatelliteData,
     setTimeRange,
   } = useFilterStore();
 
   useEffect(() => {
-    // Load metadata and satellite data
+    // Load metadata
     loadMapData()
-      .then(({ metadata, satelliteData, initialTimeRange }) => {
+      .then(({ metadata, initialTimeRange }) => {
         setMetadata(metadata);
-        setSatelliteData(satelliteData);
         setTimeRange(initialTimeRange);
       })
       .catch((error) => {
         console.error("Error loading data:", error);
       });
-  }, [setMetadata, setSatelliteData, setTimeRange]);
+  }, [setMetadata, setTimeRange]);
 
   const handleMapClick = (e: any) => {
     const feature = e.features?.[0];

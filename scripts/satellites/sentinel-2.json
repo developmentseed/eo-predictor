@@ -1,0 +1,13 @@
+{
+  "constellation": "Sentinel-2",
+  "operator": "ESA",
+  "sensor_type": "optical",
+  "spatial_res_cm": 1000,
+  "swath_km": 290,
+  "altitude_km": 786,
+  "off_nadir_deg": 0,
+  "data_access": "open",
+  "tasking": false,
+  "url": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2",
+  "norad_ids": [40697, 42063, 60989]
+}

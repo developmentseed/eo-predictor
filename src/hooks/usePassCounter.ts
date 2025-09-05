@@ -55,6 +55,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
               : undefined,
             data_access: props.data_access?.toString() || undefined,
             constellation: props.constellation?.toString() || undefined,
+            tasking: props.tasking !== undefined ? Boolean(props.tasking) : undefined,
           };
         })
         .filter((pass): pass is VisiblePass => pass !== null);

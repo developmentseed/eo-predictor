@@ -74,7 +74,7 @@ EO Predictor addresses this challenge by providing a visualization of satellite 
 4. **Generate satellite data**
 
    ```bash
-   python generate_satellite_paths.py
+   uv run python generate_satellite_paths.py
    ```
 
 5. **Start development server**
@@ -90,12 +90,13 @@ The application will be available at `http://localhost:5173`
 
 ### Satellite Database
 
-The application tracks a curated list of Earth Observation satellites stored in `scripts/satellite-list.json`, including:
+The application tracks a curated database of Earth Observation satellites organized in individual constellation files in `scripts/satellites/`, including:
 
 - **Open Data Satellites**: Sentinel-1/2/3, Landsat-8/9, NISAR
 - **Commercial Satellites**: Planet SkySat, PlanetScope, Maxar WorldView, ICEYE SAR
 - **Sensor Types**: Optical, SAR, and Hyperspectral sensors
 - **Technical Specifications**: Spatial resolution, swath width, data access policies
+- **Reference URLs**: Links to official constellation information pages
 
 > [!NOTE]  
 > Some of the information was collected using ChatGPT Deep Research, and has not been fully independently verified.
@@ -122,7 +123,8 @@ pnpm preview      # Preview production build
 ```bash
 cd scripts
 uv sync           # Install Python dependencies
-python generate_satellite_paths.py  # Generate satellite path data
+uv run python generate_satellite_paths.py  # Generate satellite path data
+uv run python validate_satellites.py       # Validate constellation files
 ```
 
 ### Project Structure
@@ -142,7 +144,9 @@ src/
 └── App.tsx          # Main application component
 
 scripts/
-├── satellite-list.json      # Satellite database
+├── satellites/              # Individual constellation files
+├── template-constellation.json # Template for new constellations
+├── validate_satellites.py  # Constellation validation tool
 ├── generate_satellite_paths.py # Data processing pipeline
 └── pyproject.toml          # Python dependencies
 ```
@@ -165,7 +169,16 @@ scripts/
 
 ## Contributing
 
-Add new satellites to `scripts/satellite-list.json` with complete metadata
+### Adding New Satellites
+
+1. **Copy the template:**
+   ```bash
+   cp scripts/template-constellation.json scripts/satellites/new-constellation.json
+   ```
+
+2. **Edit constellation details:** Update constellation name, operator, technical specifications, and NORAD IDs
+
+3. **Validate:** Run `uv run python scripts/validate_satellites.py` to ensure data integrity
 
 ## Update Release
 

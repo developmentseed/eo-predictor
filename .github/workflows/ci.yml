@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   format-and-lint:
-    name: Format and lint
+    name: Format and lint, check satellite list
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -33,3 +33,6 @@ jobs:
 
       - name: Format
         run: uv run ruff format --check
+
+      - name: Validate satellite constellations
+        run: uv run python validate_satellites.py

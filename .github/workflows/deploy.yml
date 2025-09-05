@@ -42,6 +42,10 @@ jobs:
         working-directory: scripts
         run: uv sync
 
+      - name: Validate constellation files
+        working-directory: scripts
+        run: uv run python validate_satellites.py
+
       - name: Generate satellite data
         working-directory: scripts
         run: uv run python generate_satellite_paths.py

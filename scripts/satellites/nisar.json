@@ -1,0 +1,13 @@
+{
+  "constellation": "NISAR",
+  "operator": "NASA/ISRO",
+  "sensor_type": "SAR",
+  "spatial_res_cm": 300,
+  "swath_km": 240,
+  "altitude_km": 747,
+  "off_nadir_deg": 37,
+  "data_access": "open",
+  "tasking": false,
+  "url": "https://nisar.jpl.nasa.gov/",
+  "norad_ids": [65053]
+}
