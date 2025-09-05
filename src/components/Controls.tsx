@@ -53,7 +53,7 @@ export const Controls = () => {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
+      <div className="space-y-3">
         <label className="text-sm font-medium">Sensor Types</label>
         <ToggleGroup
           type="single"
@@ -61,7 +61,7 @@ export const Controls = () => {
           onValueChange={(value) => setSensorType(value || "all")}
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full mt-1"
         >
           <ToggleGroupItem value="all" aria-label="All sensors">
             <Globe />
@@ -99,7 +99,7 @@ export const Controls = () => {
         </ToggleGroup>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <label className="text-sm font-medium">Spatial Resolution</label>
         <ToggleGroup
           type="single"
@@ -107,7 +107,7 @@ export const Controls = () => {
           onValueChange={(value) => setSpatialResolution(value || "all")}
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full mt-1"
         >
           <ToggleGroupItem value="all" aria-label="All resolutions">
             <Globe />
@@ -149,7 +149,7 @@ export const Controls = () => {
           onValueChange={(value) => setDataAccess(value || "all")}
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full mt-1"
         >
           <ToggleGroupItem value="all" aria-label="All data access types">
             <Globe />
@@ -200,7 +200,7 @@ export const Controls = () => {
           onValueChange={(value) => setTasking(value || "all")}
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full mt-1"
         >
           <ToggleGroupItem value="all" aria-label="All satellites">
             <Globe />
@@ -249,7 +249,7 @@ export const Controls = () => {
             onValueChange={setConstellation}
             value={selectedConstellation}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Select a constellation" />
             </SelectTrigger>
             <SelectContent>
@@ -271,7 +271,7 @@ export const Controls = () => {
         <div className="min-w-0 flex-1 space-y-2">
           <label className="text-sm font-medium">Operator</label>
           <Select onValueChange={setOperator} value={selectedOperator}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Select an operator" />
             </SelectTrigger>
             <SelectContent>
