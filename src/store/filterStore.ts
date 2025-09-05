@@ -1,14 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-// Use a compatible filter type that works with MapLibre GL at runtime
-export type FilterExpression = (
-  | string
-  | number
-  | boolean
-  | (string | number | boolean | FilterExpression)[]
-)[];
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FilterExpression = any;
 
 export interface Metadata {
   minTime: number;
@@ -73,7 +67,6 @@ interface FilterState {
   generateMapFilter: () => FilterExpression;
 }
 
-
 export const useFilterStore = create<FilterState>()(
   devtools(
     (set, get) => ({
@@ -101,7 +94,6 @@ export const useFilterStore = create<FilterState>()(
         set({ metadata });
         get().updateDerivedState();
       },
-
 
       setTimeRange: (range) => {
         set({ timeRange: range });
