@@ -7,6 +7,11 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useFilterStore } from "@/store/filterStore";
 import {
   Globe,
@@ -21,6 +26,7 @@ import {
   Asterisk,
   Target,
   Navigation,
+  Info,
 } from "lucide-react";
 
 export const Controls = () => {
@@ -54,7 +60,20 @@ export const Controls = () => {
   return (
     <div className="space-y-4">
       <div className="space-y-3">
-        <label className="text-sm font-medium">Sensor Types</label>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Sensor Types</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter satellites by the type of sensor technology they use
+                (optical, synthetic aperture radar, or hyperspectral).
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <ToggleGroup
           type="single"
           value={selectedSensorType}
@@ -100,7 +119,20 @@ export const Controls = () => {
       </div>
 
       <div className="space-y-3">
-        <label className="text-sm font-medium">Spatial Resolution</label>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Spatial Resolution</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter by the level of detail satellites can capture (high,
+                medium, low)
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <ToggleGroup
           type="single"
           value={selectedSpatialResolution}
@@ -142,7 +174,20 @@ export const Controls = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Data Access</label>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Data Access</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter by whether satellite data is freely available or requires
+                payment
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <ToggleGroup
           type="single"
           value={selectedDataAccess}
@@ -193,7 +238,20 @@ export const Controls = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Taskable</label>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Taskable</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter by whether satellites can be pointed to specific
+                locations on demand
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <ToggleGroup
           type="single"
           value={selectedTasking}
