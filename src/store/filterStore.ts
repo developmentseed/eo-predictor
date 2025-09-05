@@ -30,6 +30,7 @@ export interface VisiblePass {
   spatial_res_cm?: number;
   data_access?: string;
   constellation?: string;
+  tasking?: boolean;
 }
 
 interface FilterState {
