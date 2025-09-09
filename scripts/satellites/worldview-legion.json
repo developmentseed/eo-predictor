@@ -7,6 +7,7 @@
   "altitude_km": 521,
   "off_nadir_deg": 30,
   "data_access": "commercial",
+  "tasking": true,
   "url": "https://earth.esa.int/eogateway/missions/worldview",
   "norad_ids": [59625, 59626, 60452, 60453, 62900, 62901]
 }
