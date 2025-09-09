@@ -31,3 +31,4 @@ scripts/satellite_paths.pmtiles
 scripts/satellite_paths.geojson
 public/tiles
 public/satellite_paths_metadata.json
+scripts/__pycache__/
