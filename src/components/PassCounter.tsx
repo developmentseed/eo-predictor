@@ -18,6 +18,8 @@ import {
   Unlock,
   DollarSign,
   Asterisk,
+  Target,
+  Navigation,
 } from "lucide-react";
 import maplibregl from "maplibre-gl";
 
@@ -63,6 +65,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
           <TableHead className="text-xs">Sensor</TableHead>
           <TableHead className="text-xs">Resolution</TableHead>
           <TableHead className="text-xs">Access</TableHead>
+          <TableHead className="text-xs">Tasking</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -133,6 +136,17 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                   }
                 >
                   {pass.data_access === "open" ? <Unlock /> : <DollarSign />}
+                </Badge>
+              ) : (
+                <Badge variant="outline">N/A</Badge>
+              )}
+            </TableCell>
+            <TableCell className="text-xs">
+              {pass.tasking !== undefined ? (
+                <Badge
+                  variant={pass.tasking ? "soft-green" : "soft-blue"}
+                >
+                  {pass.tasking ? <Target /> : <Navigation />}
                 </Badge>
               ) : (
                 <Badge variant="outline">N/A</Badge>

@@ -22,9 +22,49 @@ tiles_dir = os.path.join(public_dir, "tiles")
 geojson_path = os.path.join(script_dir, "satellite_paths.geojson")
 
 
-# Load satellite list from JSON
-with open(os.path.join(script_dir, "satellite-list.json"), "r") as f:
-    satellite_info = json.load(f)
+def load_constellations():
+    """Load constellation data from individual JSON files in satellites/ folder"""
+    satellites_dir = os.path.join(script_dir, "satellites")
+    constellations = []
+
+    if not os.path.exists(satellites_dir):
+        raise FileNotFoundError(f"Satellites directory not found: {satellites_dir}")
+
+    for filename in os.listdir(satellites_dir):
+        if filename.endswith(".json"):
+            file_path = os.path.join(satellites_dir, filename)
+            with open(file_path, "r") as f:
+                constellation = json.load(f)
+                constellations.append(constellation)
+
+    print(f"Loaded {len(constellations)} constellations from {satellites_dir}")
+    return constellations
+
+
+def expand_constellations_to_satellites(constellations):
+    """Convert constellation files into individual satellite records"""
+    satellite_info = []
+
+    for constellation in constellations:
+        base_data = constellation.copy()
+        norad_ids = base_data.pop("norad_ids")  # Remove the array
+
+        for norad_id in norad_ids:
+            sat_data = base_data.copy()
+            sat_data["norad_id"] = norad_id
+            # Note: satellite name will be extracted from TLE data
+            sat_data["name"] = (
+                f"{constellation['constellation']}-{norad_id}"  # Temporary name
+            )
+            satellite_info.append(sat_data)
+
+    print(f"Expanded to {len(satellite_info)} individual satellites")
+    return satellite_info
+
+
+# Load constellation data from folder structure
+constellations = load_constellations()
+satellite_info = expand_constellations_to_satellites(constellations)
 
 # List of satellite TLE data URLs from Celestrak
 urls = []
@@ -80,13 +120,17 @@ for sat in satellites:
     # Skyfield's sat.model.satnum is the NORAD ID
     if str(sat.model.satnum) in satellite_data_map:
         sat_props = satellite_data_map[str(sat.model.satnum)]
-        sat.name = sat_props["name"]
+        # Use the actual satellite name from TLE data (sat.name is set by Skyfield)
+        # sat.name already contains the correct name from TLE
         sat.constellation = sat_props["constellation"]
         sat.swath_km = sat_props["swath_km"]
         sat.operator = sat_props["operator"]
         sat.sensor_type = sat_props["sensor_type"]
         sat.spatial_res_m = sat_props["spatial_res_cm"] / 100  # Convert cm to meters
         sat.data_access = sat_props["data_access"]
+        # Add tasking field if it exists
+        if "tasking" in sat_props:
+            sat.tasking = sat_props["tasking"]
         filtered_satellites.append(sat)
 satellites = filtered_satellites
 

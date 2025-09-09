@@ -31,7 +31,8 @@ pnpm preview      # Preview production build
 # Python scripts are in /scripts/ directory
 cd scripts
 uv sync           # Install Python dependencies
-python generate_satellite_paths.py  # Generate satellite path data
+uv run python generate_satellite_paths.py  # Generate satellite path data
+uv run python validate_satellites.py       # Validate satellite constellation files
 # Note: Requires tippecanoe to be installed system-wide for PMTiles generation
 ```
 
@@ -44,7 +45,9 @@ python generate_satellite_paths.py  # Generate satellite path data
 4. **Visualization**: React app renders interactive satellite paths on MapLibre globe
 
 ### Key Components
-- **scripts/satellite-list.json**: Master satellite database with NORAD IDs, operators, sensors, and technical specifications
+- **scripts/satellites/**: Directory containing individual JSON files per satellite constellation with NORAD IDs, operators, sensors, and technical specifications
+- **scripts/template-constellation.json**: Template file for users to create new satellite constellations
+- **scripts/validate_satellites.py**: Validation tool for constellation files (run with `uv run python validate_satellites.py`)
 - **generate_satellite_paths.py**: Core data processing pipeline with async TLE fetching from Celestrak
 - **App.tsx**: Main application with Header, map controls, and layer management
 - **filterStore.ts**: Zustand store managing satellite filtering and MapLibre filter expressions
@@ -99,12 +102,42 @@ python generate_satellite_paths.py  # Generate satellite path data
 - **PMTiles Generation**: Verify tippecanoe is installed system-wide (`brew install tippecanoe` on macOS)
 - **Python Dependencies**: Use `uv sync` in scripts directory, requires Python 3.11+
 - **Map Loading Issues**: Check PMTiles files exist in `/public` directory
-- **Filter Issues**: Verify satellite-list.json structure matches expected schema
+- **Filter Issues**: Verify constellation files in `scripts/satellites/` directory match expected schema
 
 ### Development Dependencies
 - **tippecanoe**: Required for PMTiles generation (install system-wide)
 - **Python 3.11+**: Required for Skyfield orbital calculations
 - **Node.js 18+**: Required for Vite and React 19
+
+## Satellite Constellation Management
+
+The project uses a file-based system for managing satellite constellation data, making it easy to add or modify satellite information.
+
+### Adding New Constellations
+```bash
+# Copy template file
+cp scripts/template-constellation.json scripts/satellites/new-constellation.json
+
+# Edit the JSON file with constellation details
+# Each file should contain:
+# - constellation: Human-readable name
+# - operator: Organization name
+# - sensor_type: optical, SAR, or hyperspectral  
+# - spatial_res_cm: Resolution in centimeters
+# - swath_km: Swath width in kilometers
+# - altitude_km: Orbit altitude in kilometers
+# - off_nadir_deg: Maximum off-nadir angle (0-90°)
+# - data_access: open or commercial
+# - tasking: true/false for taskable satellites
+# - url: (optional) Link to constellation information
+# - norad_ids: Array of NORAD catalog numbers
+
+# Validate the constellation file
+uv run python scripts/validate_satellites.py
+```
+
+### Constellation File Structure
+Individual constellation files in `scripts/satellites/` contain constellation metadata and NORAD IDs. Satellite names are automatically fetched from TLE data, eliminating redundancy and ensuring accuracy.
 
 ## TypeScript Configuration
 
