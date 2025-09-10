@@ -161,6 +161,7 @@ def get_satellite_positions(sat, start_time, end_time, step_minutes):
                 "sensor_type": sat.sensor_type,
                 "spatial_res_m": sat.spatial_res_m,  # Use meters
                 "data_access": sat.data_access,
+                "tasking": sat.tasking,
             }
         )
         current_time += timedelta(minutes=step_minutes)
@@ -187,7 +188,8 @@ positions_df = pd.DataFrame(
         "operator",
         "sensor_type",
         "spatial_res_m",
-        "data_access",  # Use meters
+        "data_access",
+        "tasking",
     ],
 )
 
@@ -217,6 +219,7 @@ for sat_name, group in positions_df.groupby("satellite"):
                 "sensor_type": group.loc[i, "sensor_type"],
                 "spatial_res_m": group.loc[i, "spatial_res_m"],  # Use meters
                 "data_access": group.loc[i, "data_access"],
+                "tasking": group.loc[i, "tasking"],
             }
         )
 
