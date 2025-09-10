@@ -8,6 +8,7 @@ interface ClickedFeature {
   sensor_type: string;
   spatial_res_m: number;
   data_access: string;
+  tasking: boolean;
   start_time: string;
   end_time: string;
 }
@@ -36,6 +37,7 @@ export const SatellitePopup = ({ clickedFeature, onClose }: SatellitePopupProps)
         <p>Sensor Type: {clickedFeature.sensor_type}</p>
         <p>Spatial Resolution: {clickedFeature.spatial_res_m} m</p>
         <p>Data Access: {clickedFeature.data_access}</p>
+        <p>Tasking: {clickedFeature.tasking ? "Yes" : "No"}</p>
         <p>Start Time: {clickedFeature.start_time}</p>
         <p>End Time: {clickedFeature.end_time}</p>
       </div>
