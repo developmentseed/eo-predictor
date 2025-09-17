@@ -143,9 +143,9 @@ time_1 = now
 time_2 = now + timedelta(days=2)
 
 # Load solar ephemeris for daytime calculations
-eph = load('de421.bsp')
-earth = eph['earth']
-sun = eph['sun']
+eph = load("de421.bsp")
+earth = eph["earth"]
+sun = eph["sun"]
 
 
 def is_daytime(lat_degrees, lon_degrees, observation_time):
@@ -244,7 +244,10 @@ for sat_name, group in positions_df.groupby("satellite"):
         # Use the center point of the line segment and middle time
         center_lat = (pt0.y + pt1.y) / 2
         center_lon = (pt0.x + pt1.x) / 2
-        middle_time = group.loc[i, "timestamp"] + (group.loc[i + 1, "timestamp"] - group.loc[i, "timestamp"]) / 2
+        middle_time = (
+            group.loc[i, "timestamp"]
+            + (group.loc[i + 1, "timestamp"] - group.loc[i, "timestamp"]) / 2
+        )
         daytime = is_daytime(center_lat, center_lon, middle_time)
 
         path_segments.append(

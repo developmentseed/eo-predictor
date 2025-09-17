@@ -25,6 +25,7 @@ export interface VisiblePass {
   data_access?: string;
   constellation?: string;
   tasking?: boolean;
+  is_daytime?: boolean;
 }
 
 interface FilterState {
