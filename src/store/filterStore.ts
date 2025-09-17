@@ -39,6 +39,7 @@ interface FilterState {
   selectedSpatialResolution: string;
   selectedDataAccess: string;
   selectedTasking: string;
+  selectedDaylight: string;
 
   // Computed/derived state
   availableConstellations: Array<{ value: string; disabled: boolean }>;
@@ -47,6 +48,7 @@ interface FilterState {
   availableSpatialResolution: Array<{ value: string; disabled: boolean }>;
   availableDataAccess: Array<{ value: string; disabled: boolean }>;
   availableTasking: Array<{ value: string; disabled: boolean }>;
+  availableDaylight: Array<{ value: string; disabled: boolean }>;
 
   // Map filter for MapLibre
   mapFilter: FilterExpression;
@@ -60,6 +62,7 @@ interface FilterState {
   setSpatialResolution: (value: string) => void;
   setDataAccess: (value: string) => void;
   setTasking: (value: string) => void;
+  setDaylight: (value: string) => void;
   resetFilters: () => void;
 
   // Computed filter logic
@@ -79,6 +82,7 @@ export const useFilterStore = create<FilterState>()(
       selectedSpatialResolution: "all",
       selectedDataAccess: "all",
       selectedTasking: "all",
+      selectedDaylight: "all",
 
       // Initial computed state
       availableConstellations: [],
@@ -87,6 +91,7 @@ export const useFilterStore = create<FilterState>()(
       availableSpatialResolution: [],
       availableDataAccess: [],
       availableTasking: [],
+      availableDaylight: [],
       mapFilter: [],
 
       // Actions
@@ -130,6 +135,11 @@ export const useFilterStore = create<FilterState>()(
         get().updateDerivedState();
       },
 
+      setDaylight: (value) => {
+        set({ selectedDaylight: value });
+        get().updateDerivedState();
+      },
+
       resetFilters: () => {
         set({
           selectedConstellation: "all",
@@ -138,6 +148,7 @@ export const useFilterStore = create<FilterState>()(
           selectedSpatialResolution: "all",
           selectedDataAccess: "all",
           selectedTasking: "all",
+          selectedDaylight: "all",
         });
         get().updateDerivedState();
       },
@@ -190,6 +201,13 @@ export const useFilterStore = create<FilterState>()(
           })
         );
 
+        const availableDaylight = ["daytime", "nighttime"].map(
+          (daylight: string) => ({
+            value: daylight,
+            disabled: false,
+          })
+        );
+
         const mapFilter = state.generateMapFilter();
 
         set({
@@ -199,6 +217,7 @@ export const useFilterStore = create<FilterState>()(
           availableSpatialResolution,
           availableDataAccess,
           availableTasking,
+          availableDaylight,
           mapFilter,
         });
       },
@@ -274,6 +293,12 @@ export const useFilterStore = create<FilterState>()(
         if (state.selectedTasking !== "all") {
           const taskingValue = state.selectedTasking === "tasking";
           filter.push(["==", ["get", "tasking"], taskingValue]);
+        }
+
+        // Daylight filter
+        if (state.selectedDaylight !== "all") {
+          const isDaytime = state.selectedDaylight === "daytime";
+          filter.push(["==", ["get", "is_daytime"], isDaytime]);
         }
 
         return filter;

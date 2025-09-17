@@ -32,17 +32,24 @@ export const TimeSlider = () => {
         />
       </div>
       <div className="flex justify-between text-xs text-muted-foreground">
-        {(localTimeRange.length > 0 ? localTimeRange : timeRange).map((timestamp, index) => {
-          const { date, time, timezone } = formatTimeDisplay(timestamp);
-          return (
-            <div key={index} className={`flex flex-col ${index === 0 ? 'items-start' : 'items-end'}`}>
-              <span>{date}</span>
-              <span className="text-xs opacity-75">
-                {time} UTC {timezone}
-              </span>
-            </div>
-          );
-        })}
+        {(localTimeRange.length > 0 ? localTimeRange : timeRange).map(
+          (timestamp, index) => {
+            const { date, time, timezone } = formatTimeDisplay(timestamp);
+            return (
+              <div
+                key={index}
+                className={`flex flex-col ${
+                  index === 0 ? "items-start" : "items-end"
+                }`}
+              >
+                <span>{date}</span>
+                <span className="text-xs opacity-75">
+                  {time} {timezone}
+                </span>
+              </div>
+            );
+          }
+        )}
       </div>
     </div>
   );
