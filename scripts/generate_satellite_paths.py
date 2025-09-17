@@ -169,7 +169,7 @@ def is_daytime(lat_degrees, lon_degrees, observation_time):
 
     # Calculate solar position relative to the location
     astrometric = location.at(t).observe(sun)
-    alt = astrometric.apparent().altaz()
+    alt, az, distance = astrometric.apparent().altaz()
 
     # Return True if sun is above horizon (elevation > 0°)
     return alt.degrees > 0

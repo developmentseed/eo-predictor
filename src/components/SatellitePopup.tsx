@@ -1,4 +1,6 @@
 import { Popup } from "react-map-gl/maplibre";
+import { Sun, Moon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface ClickedFeature {
   lngLat: { lng: number; lat: number };
@@ -11,6 +13,7 @@ interface ClickedFeature {
   tasking: boolean;
   start_time: string;
   end_time: string;
+  is_daytime?: boolean;
 }
 
 interface SatellitePopupProps {
@@ -40,6 +43,20 @@ export const SatellitePopup = ({ clickedFeature, onClose }: SatellitePopupProps)
         <p>Tasking: {clickedFeature.tasking ? "Yes" : "No"}</p>
         <p>Start Time: {clickedFeature.start_time}</p>
         <p>End Time: {clickedFeature.end_time}</p>
+        <div className="flex items-center gap-1 mt-1">
+          <span>Daylight:</span>
+          {clickedFeature.is_daytime !== undefined ? (
+            <Badge
+              variant={clickedFeature.is_daytime ? "soft-yellow" : "soft-purple"}
+              className="flex items-center gap-1"
+            >
+              {clickedFeature.is_daytime ? <Sun size={12} /> : <Moon size={12} />}
+              {clickedFeature.is_daytime ? "Day" : "Night"}
+            </Badge>
+          ) : (
+            <Badge variant="outline">N/A</Badge>
+          )}
+        </div>
       </div>
     </Popup>
   );
