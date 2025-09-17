@@ -23,24 +23,22 @@ export function formatUTCOffset(date: Date): string {
 }
 
 /**
- * Formats time for display with UTC offset
+ * Formats time for display to match PassCounter format with timezone
  */
-export function formatTimeDisplay(timestamp: number): {
-  date: string;
-  time: string;
-  timezone: string;
-} {
+export function formatTimeDisplay(timestamp: number): string {
   const date = new Date(timestamp);
-  
-  return {
-    date: date.toLocaleDateString(),
-    time: date.toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }),
-    timezone: formatUTCOffset(date),
-  };
+
+  const timeString = date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const timezone = formatUTCOffset(date);
+
+  return `${timeString} ${timezone}`;
 }
 
 /**

@@ -80,6 +80,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                 day: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
+                hour12: false,
               })}
             </TableCell>
             <TableCell className="text-xs">

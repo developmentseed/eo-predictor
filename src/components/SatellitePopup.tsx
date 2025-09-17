@@ -14,6 +14,7 @@ import {
   Navigation,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatTimeDisplay } from "@/utils/timeUtils";
 
 interface ClickedFeature {
   lngLat: { lng: number; lat: number };
@@ -85,9 +86,11 @@ export const SatellitePopup = ({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs">Spatial Resolution:</span>
-          <span className="text-xs">{clickedFeature.spatial_res_m} m</span>
+        <div className="flex items-center gap-2 flex-nowrap">
+          <span className="text-xs whitespace-nowrap">Spatial Resolution:</span>
+          <span className="text-xs whitespace-nowrap">
+            {clickedFeature.spatial_res_m} m
+          </span>
           {clickedFeature.spatial_res_m && (
             <Badge
               variant={
@@ -178,9 +181,13 @@ export const SatellitePopup = ({
           )}
         </div>
 
-        <div className="font-medium text-xs mt-2 space-y-1">
-          <p>Start: {clickedFeature.start_time}</p>
-          <p>End: {clickedFeature.end_time}</p>
+        <div className="text-xs mt-2 space-y-1">
+          <p>
+            Start: {formatTimeDisplay(new Date(clickedFeature.start_time).getTime())}
+          </p>
+          <p>
+            End: {formatTimeDisplay(new Date(clickedFeature.end_time).getTime())}
+          </p>
         </div>
       </div>
     </Popup>
