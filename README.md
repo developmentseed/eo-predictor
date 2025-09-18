@@ -38,7 +38,7 @@ EO Predictor addresses this challenge by providing a visualization of satellite 
 - **Python 3.11+** with async/await patterns for concurrent data processing
 - **Skyfield** for precise orbital calculations and satellite positioning
 - **GeoPandas** for geospatial data manipulation and coverage polygon generation
-- **PMTiles** vector tiles for efficient satellite path visualization
+- **Vector tiles** served from tile directories for efficient satellite path visualization
 - **Celestrak API** for real-time Two-Line Element (TLE) data
 
 ## Quick Start
@@ -125,6 +125,8 @@ cd scripts
 uv sync           # Install Python dependencies
 uv run python generate_satellite_paths.py  # Generate satellite path data
 uv run python validate_satellites.py       # Validate constellation files
+uv run ruff check                          # Run Python linting
+uv run ruff format                         # Format Python code
 ```
 
 ### Project Structure
@@ -140,7 +142,7 @@ src/
 ├── store/
 │   └── filterStore.ts # Zustand state management
 ├── utils/
-│   └── mapUtils.ts   # PMTiles and MapLibre utilities
+│   └── mapUtils.ts   # Vector tiles and MapLibre utilities
 └── App.tsx          # Main application component
 
 scripts/
@@ -158,8 +160,9 @@ scripts/
 1. **TLE Fetching**: Async requests to Celestrak API for orbital data
 2. **Orbital Calculations**: Skyfield computes satellite positions over 48-hour windows
 3. **Coverage Processing**: Generate swath polygons based on satellite specifications
-4. **PMTiles Generation**: Convert geospatial data to optimized vector tiles
-5. **Interactive Visualization**: MapLibre renders tiles with real-time filtering
+4. **Vector Tile Generation**: Tippecanoe converts geospatial data to tile directories (`/public/tiles/`)
+5. **Tile Serving**: Vector tiles served via HTTP at `/tiles/{z}/{x}/{y}.pbf` endpoint structure
+6. **Interactive Visualization**: MapLibre renders tiles with real-time filtering
 
 ### State Management
 
