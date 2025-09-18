@@ -18,6 +18,10 @@ import {
   Unlock,
   DollarSign,
   Asterisk,
+  Target,
+  Navigation,
+  Sun,
+  Moon,
 } from "lucide-react";
 import maplibregl from "maplibre-gl";
 
@@ -63,6 +67,8 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
           <TableHead className="text-xs">Sensor</TableHead>
           <TableHead className="text-xs">Resolution</TableHead>
           <TableHead className="text-xs">Access</TableHead>
+          <TableHead className="text-xs">Tasking</TableHead>
+          <TableHead className="text-xs">Daylight</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -74,6 +80,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                 day: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
+                hour12: false,
               })}
             </TableCell>
             <TableCell className="text-xs">
@@ -133,6 +140,28 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                   }
                 >
                   {pass.data_access === "open" ? <Unlock /> : <DollarSign />}
+                </Badge>
+              ) : (
+                <Badge variant="outline">N/A</Badge>
+              )}
+            </TableCell>
+            <TableCell className="text-xs">
+              {pass.tasking !== undefined ? (
+                <Badge
+                  variant={pass.tasking ? "soft-green" : "soft-blue"}
+                >
+                  {pass.tasking ? <Target /> : <Navigation />}
+                </Badge>
+              ) : (
+                <Badge variant="outline">N/A</Badge>
+              )}
+            </TableCell>
+            <TableCell className="text-xs">
+              {pass.is_daytime !== undefined ? (
+                <Badge
+                  variant={pass.is_daytime ? "soft-yellow" : "soft-purple"}
+                >
+                  {pass.is_daytime ? <Sun /> : <Moon />}
                 </Badge>
               ) : (
                 <Badge variant="outline">N/A</Badge>

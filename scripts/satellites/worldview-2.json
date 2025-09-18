@@ -1,0 +1,13 @@
+{
+  "constellation": "WorldView-2",
+  "operator": "Maxar",
+  "sensor_type": "optical",
+  "spatial_res_cm": 46,
+  "swath_km": 16,
+  "altitude_km": 770,
+  "off_nadir_deg": 30,
+  "data_access": "commercial",
+  "tasking": true,
+  "url": "https://earth.esa.int/eogateway/missions/worldview",
+  "norad_ids": [35946]
+}

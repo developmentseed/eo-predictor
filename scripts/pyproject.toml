@@ -8,6 +8,7 @@ dependencies = [
     "geopandas>=1.1.1",
     "httpx>=0.28.1",
     "pandas>=2.3.2",
+    "pydantic>=2.11.7",
     "requests>=2.32.4",
     "shapely>=2.1.1",
     "skyfield>=1.53",

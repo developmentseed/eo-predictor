@@ -21,6 +21,7 @@ interface ClickedFeature {
   sensor_type: string;
   spatial_res_m: number;
   data_access: string;
+  tasking: boolean;
   start_time: string;
   end_time: string;
 }
@@ -31,27 +32,20 @@ function App() {
   );
   const mapRef = useRef<MapRef | null>(null); // MapLibre map ref
 
-  const {
-    metadata,
-    timeRange,
-    mapFilter,
-    setMetadata,
-    setSatelliteData,
-    setTimeRange,
-  } = useFilterStore();
+  const { metadata, timeRange, mapFilter, setMetadata, setTimeRange } =
+    useFilterStore();
 
   useEffect(() => {
-    // Load metadata and satellite data
+    // Load metadata
     loadMapData()
-      .then(({ metadata, satelliteData, initialTimeRange }) => {
+      .then(({ metadata, initialTimeRange }) => {
         setMetadata(metadata);
-        setSatelliteData(satelliteData);
         setTimeRange(initialTimeRange);
       })
       .catch((error) => {
         console.error("Error loading data:", error);
       });
-  }, [setMetadata, setSatelliteData, setTimeRange]);
+  }, [setMetadata, setTimeRange]);
 
   const handleMapClick = (e: any) => {
     const feature = e.features?.[0];
@@ -97,9 +91,7 @@ function App() {
           >
             <Source
               type="vector"
-              tiles={[
-                "https://developmentseed.org/eo-predictor/tiles/{z}/{x}/{y}.pbf",
-              ]}
+              tiles={[import.meta.env.VITE_TILES_URL]}
               minzoom={0}
               maxzoom={7}
             >

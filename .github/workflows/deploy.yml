@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version-file: "scripts/.python-version"
 
@@ -42,12 +42,16 @@ jobs:
         working-directory: scripts
         run: uv sync
 
+      - name: Validate constellation files
+        working-directory: scripts
+        run: uv run python validate_satellites.py
+
       - name: Generate satellite data
         working-directory: scripts
         run: uv run python generate_satellite_paths.py
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "20"
 

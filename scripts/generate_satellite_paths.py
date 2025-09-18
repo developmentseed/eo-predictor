@@ -22,9 +22,49 @@ tiles_dir = os.path.join(public_dir, "tiles")
 geojson_path = os.path.join(script_dir, "satellite_paths.geojson")
 
 
-# Load satellite list from JSON
-with open(os.path.join(script_dir, "satellite-list.json"), "r") as f:
-    satellite_info = json.load(f)
+def load_constellations():
+    """Load constellation data from individual JSON files in satellites/ folder"""
+    satellites_dir = os.path.join(script_dir, "satellites")
+    constellations = []
+
+    if not os.path.exists(satellites_dir):
+        raise FileNotFoundError(f"Satellites directory not found: {satellites_dir}")
+
+    for filename in os.listdir(satellites_dir):
+        if filename.endswith(".json"):
+            file_path = os.path.join(satellites_dir, filename)
+            with open(file_path, "r") as f:
+                constellation = json.load(f)
+                constellations.append(constellation)
+
+    print(f"Loaded {len(constellations)} constellations from {satellites_dir}")
+    return constellations
+
+
+def expand_constellations_to_satellites(constellations):
+    """Convert constellation files into individual satellite records"""
+    satellite_info = []
+
+    for constellation in constellations:
+        base_data = constellation.copy()
+        norad_ids = base_data.pop("norad_ids")  # Remove the array
+
+        for norad_id in norad_ids:
+            sat_data = base_data.copy()
+            sat_data["norad_id"] = norad_id
+            # Note: satellite name will be extracted from TLE data
+            sat_data["name"] = (
+                f"{constellation['constellation']}-{norad_id}"  # Temporary name
+            )
+            satellite_info.append(sat_data)
+
+    print(f"Expanded to {len(satellite_info)} individual satellites")
+    return satellite_info
+
+
+# Load constellation data from folder structure
+constellations = load_constellations()
+satellite_info = expand_constellations_to_satellites(constellations)
 
 # List of satellite TLE data URLs from Celestrak
 urls = []
@@ -80,13 +120,17 @@ for sat in satellites:
     # Skyfield's sat.model.satnum is the NORAD ID
     if str(sat.model.satnum) in satellite_data_map:
         sat_props = satellite_data_map[str(sat.model.satnum)]
-        sat.name = sat_props["name"]
+        # Use the actual satellite name from TLE data (sat.name is set by Skyfield)
+        # sat.name already contains the correct name from TLE
         sat.constellation = sat_props["constellation"]
         sat.swath_km = sat_props["swath_km"]
         sat.operator = sat_props["operator"]
         sat.sensor_type = sat_props["sensor_type"]
         sat.spatial_res_m = sat_props["spatial_res_cm"] / 100  # Convert cm to meters
         sat.data_access = sat_props["data_access"]
+        # Add tasking field if it exists
+        if "tasking" in sat_props:
+            sat.tasking = sat_props["tasking"]
         filtered_satellites.append(sat)
 satellites = filtered_satellites
 
@@ -97,6 +141,38 @@ ts = load.timescale()
 now = datetime.now(timezone.utc)
 time_1 = now
 time_2 = now + timedelta(days=2)
+
+# Load solar ephemeris for daytime calculations
+eph = load("de421.bsp")
+earth = eph["earth"]
+sun = eph["sun"]
+
+
+def is_daytime(lat_degrees, lon_degrees, observation_time):
+    """
+    Determine if it's daytime at a given location and time.
+    Uses solar elevation > 0° as the threshold for daytime.
+
+    Args:
+        lat_degrees: Latitude in degrees
+        lon_degrees: Longitude in degrees
+        observation_time: datetime object in UTC
+
+    Returns:
+        bool: True if daytime, False if nighttime
+    """
+    # Create location on Earth's surface
+    location = earth + wgs84.latlon(lat_degrees, lon_degrees)
+
+    # Convert datetime to Skyfield time
+    t = ts.from_datetime(observation_time)
+
+    # Calculate solar position relative to the location
+    astrometric = location.at(t).observe(sun)
+    alt, az, distance = astrometric.apparent().altaz()
+
+    # Return True if sun is above horizon (elevation > 0°)
+    return alt.degrees > 0
 
 
 # Function to calculate satellite positions
@@ -117,6 +193,7 @@ def get_satellite_positions(sat, start_time, end_time, step_minutes):
                 "sensor_type": sat.sensor_type,
                 "spatial_res_m": sat.spatial_res_m,  # Use meters
                 "data_access": sat.data_access,
+                "tasking": sat.tasking,
             }
         )
         current_time += timedelta(minutes=step_minutes)
@@ -143,7 +220,8 @@ positions_df = pd.DataFrame(
         "operator",
         "sensor_type",
         "spatial_res_m",
-        "data_access",  # Use meters
+        "data_access",
+        "tasking",
     ],
 )
 
@@ -161,6 +239,17 @@ for sat_name, group in positions_df.groupby("satellite"):
             continue
 
         line = LineString([pt0, pt1])
+
+        # Calculate if observation occurs during daytime
+        # Use the center point of the line segment and middle time
+        center_lat = (pt0.y + pt1.y) / 2
+        center_lon = (pt0.x + pt1.x) / 2
+        middle_time = (
+            group.loc[i, "timestamp"]
+            + (group.loc[i + 1, "timestamp"] - group.loc[i, "timestamp"]) / 2
+        )
+        daytime = is_daytime(center_lat, center_lon, middle_time)
+
         path_segments.append(
             {
                 "satellite": sat_name,
@@ -173,6 +262,8 @@ for sat_name, group in positions_df.groupby("satellite"):
                 "sensor_type": group.loc[i, "sensor_type"],
                 "spatial_res_m": group.loc[i, "spatial_res_m"],  # Use meters
                 "data_access": group.loc[i, "data_access"],
+                "tasking": group.loc[i, "tasking"],
+                "is_daytime": daytime,
             }
         )
 

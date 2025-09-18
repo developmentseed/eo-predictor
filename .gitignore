@@ -24,9 +24,12 @@ dist-ssr
 *.sw?
 
 public/satellite_paths.pmtiles
+public/satellite_paths_metadata.json
 scripts/SAR-satellite-location.ipynb
 scripts/combined_tle.txt
 src/assets/satellite_paths.pmtiles
 scripts/satellite_paths.pmtiles
 scripts/satellite_paths.geojson
-public/tiles/
+public/tiles
+public/satellite_paths_metadata.json
+scripts/__pycache__/
