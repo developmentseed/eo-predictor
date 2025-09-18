@@ -142,6 +142,38 @@ now = datetime.now(timezone.utc)
 time_1 = now
 time_2 = now + timedelta(days=2)
 
+# Load solar ephemeris for daytime calculations
+eph = load("de421.bsp")
+earth = eph["earth"]
+sun = eph["sun"]
+
+
+def is_daytime(lat_degrees, lon_degrees, observation_time):
+    """
+    Determine if it's daytime at a given location and time.
+    Uses solar elevation > 0° as the threshold for daytime.
+
+    Args:
+        lat_degrees: Latitude in degrees
+        lon_degrees: Longitude in degrees
+        observation_time: datetime object in UTC
+
+    Returns:
+        bool: True if daytime, False if nighttime
+    """
+    # Create location on Earth's surface
+    location = earth + wgs84.latlon(lat_degrees, lon_degrees)
+
+    # Convert datetime to Skyfield time
+    t = ts.from_datetime(observation_time)
+
+    # Calculate solar position relative to the location
+    astrometric = location.at(t).observe(sun)
+    alt, az, distance = astrometric.apparent().altaz()
+
+    # Return True if sun is above horizon (elevation > 0°)
+    return alt.degrees > 0
+
 
 # Function to calculate satellite positions
 def get_satellite_positions(sat, start_time, end_time, step_minutes):
@@ -207,6 +239,17 @@ for sat_name, group in positions_df.groupby("satellite"):
             continue
 
         line = LineString([pt0, pt1])
+
+        # Calculate if observation occurs during daytime
+        # Use the center point of the line segment and middle time
+        center_lat = (pt0.y + pt1.y) / 2
+        center_lon = (pt0.x + pt1.x) / 2
+        middle_time = (
+            group.loc[i, "timestamp"]
+            + (group.loc[i + 1, "timestamp"] - group.loc[i, "timestamp"]) / 2
+        )
+        daytime = is_daytime(center_lat, center_lon, middle_time)
+
         path_segments.append(
             {
                 "satellite": sat_name,
@@ -220,6 +263,7 @@ for sat_name, group in positions_df.groupby("satellite"):
                 "spatial_res_m": group.loc[i, "spatial_res_m"],  # Use meters
                 "data_access": group.loc[i, "data_access"],
                 "tasking": group.loc[i, "tasking"],
+                "is_daytime": daytime,
             }
         )
 

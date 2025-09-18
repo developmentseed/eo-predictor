@@ -56,6 +56,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
             data_access: props.data_access?.toString() || undefined,
             constellation: props.constellation?.toString() || undefined,
             tasking: props.tasking !== undefined ? Boolean(props.tasking) : undefined,
+            is_daytime: props.is_daytime !== undefined ? Boolean(props.is_daytime) : undefined,
           };
         })
         .filter((pass): pass is VisiblePass => pass !== null);

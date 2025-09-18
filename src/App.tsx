@@ -32,13 +32,8 @@ function App() {
   );
   const mapRef = useRef<MapRef | null>(null); // MapLibre map ref
 
-  const {
-    metadata,
-    timeRange,
-    mapFilter,
-    setMetadata,
-    setTimeRange,
-  } = useFilterStore();
+  const { metadata, timeRange, mapFilter, setMetadata, setTimeRange } =
+    useFilterStore();
 
   useEffect(() => {
     // Load metadata
@@ -96,9 +91,7 @@ function App() {
           >
             <Source
               type="vector"
-              tiles={[
-                "https://developmentseed.org/eo-predictor/tiles/{z}/{x}/{y}.pbf",
-              ]}
+              tiles={[import.meta.env.VITE_TILES_URL]}
               minzoom={0}
               maxzoom={7}
             >

@@ -27,6 +27,8 @@ import {
   Target,
   Navigation,
   Info,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export const Controls = () => {
@@ -37,12 +39,14 @@ export const Controls = () => {
     selectedSpatialResolution,
     selectedDataAccess,
     selectedTasking,
+    selectedDaylight,
     availableConstellations,
     availableOperators,
     availableSensorTypes,
     availableSpatialResolution,
     availableDataAccess,
     availableTasking,
+    availableDaylight,
     metadata,
     setConstellation,
     setOperator,
@@ -50,6 +54,7 @@ export const Controls = () => {
     setSpatialResolution,
     setDataAccess,
     setTasking,
+    setDaylight,
     resetFilters,
   } = useFilterStore();
 
@@ -291,6 +296,69 @@ export const Controls = () => {
                     : isNonTasking
                     ? "fixed angle capture"
                     : "unknown tasking"
+                }`}
+              >
+                {getIcon()}
+                {iconText}
+              </ToggleGroupItem>
+            );
+          })}
+        </ToggleGroup>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Daylight</label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Filter by whether satellite observations occur during daytime or nighttime
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        <ToggleGroup
+          type="single"
+          value={selectedDaylight}
+          onValueChange={(value) => setDaylight(value || "all")}
+          variant="outline"
+          size="sm"
+          className="w-full mt-1"
+        >
+          <ToggleGroupItem value="all" aria-label="All times">
+            <Globe />
+            ALL
+          </ToggleGroupItem>
+          {availableDaylight.map(({ value, disabled }) => {
+            const isDaytime = value === "daytime";
+            const isNighttime = value === "nighttime";
+
+            const getIcon = () => {
+              if (isDaytime) return <Sun />;
+              if (isNighttime) return <Moon />;
+              return <Globe />;
+            };
+
+            const iconText = isDaytime
+              ? "DAY"
+              : isNighttime
+              ? "NIGHT"
+              : value.toUpperCase();
+
+            return (
+              <ToggleGroupItem
+                key={value}
+                value={value}
+                disabled={disabled}
+                aria-label={`${value} observations - ${
+                  isDaytime
+                    ? "during daylight hours"
+                    : isNighttime
+                    ? "during nighttime hours"
+                    : "unknown time"
                 }`}
               >
                 {getIcon()}
