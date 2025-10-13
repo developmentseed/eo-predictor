@@ -36,7 +36,7 @@ jobs:
           sudo apt-get install -y tippecanoe
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
 
       - name: Install Python dependencies
         working-directory: scripts
