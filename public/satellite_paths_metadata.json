@@ -62,7 +62,6 @@
     "FLOCK 4Q-6",
     "FLOCK 4Q-7",
     "FLOCK 4Q-9",
-    "FLOCK 4Y-11",
     "GEOEYE 1",
     "ICEYE-X11",
     "ICEYE-X13",
@@ -165,12 +164,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
-    "high",
+    "low",
     "medium",
-    "low"
+    "high"
   ],
-  "minTime": "2025-10-19T02:37:13.413013+00:00",
-  "maxTime": "2025-10-21T02:37:13.413013+00:00",
-  "lastUpdated": "2025-10-19T02:39:57.045980+00:00",
+  "minTime": "2025-10-20T02:38:28.319755+00:00",
+  "maxTime": "2025-10-22T02:38:28.319755+00:00",
+  "lastUpdated": "2025-10-20T02:41:34.109253+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
