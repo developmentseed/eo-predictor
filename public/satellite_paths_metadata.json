@@ -93,7 +93,6 @@
     "ICEYE-X5",
     "ICEYE-X6",
     "ICEYE-X7",
-    "ICEYE-X8",
     "LANDSAT 8",
     "LANDSAT 9",
     "LEGION 1",
@@ -164,12 +163,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
-    "high",
     "medium",
+    "high",
     "low"
   ],
-  "minTime": "2025-11-14T02:36:20.853578+00:00",
-  "maxTime": "2025-11-16T02:36:20.853578+00:00",
-  "lastUpdated": "2025-11-14T02:39:23.869472+00:00",
+  "minTime": "2025-11-15T02:33:52.687510+00:00",
+  "maxTime": "2025-11-17T02:33:52.687510+00:00",
+  "lastUpdated": "2025-11-15T02:37:00.428519+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
