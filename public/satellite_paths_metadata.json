@@ -65,7 +65,6 @@
     "ICEYE-X14",
     "ICEYE-X2",
     "ICEYE-X21",
-    "ICEYE-X23",
     "ICEYE-X25",
     "ICEYE-X26",
     "ICEYE-X30",
@@ -159,12 +158,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
+    "low",
     "high",
-    "medium",
-    "low"
+    "medium"
   ],
-  "minTime": "2025-12-29T02:48:45.549953+00:00",
-  "maxTime": "2025-12-31T02:48:45.549953+00:00",
-  "lastUpdated": "2025-12-29T02:51:42.437482+00:00",
+  "minTime": "2025-12-30T02:41:53.967104+00:00",
+  "maxTime": "2026-01-01T02:41:53.967104+00:00",
+  "lastUpdated": "2025-12-30T02:44:47.492094+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
