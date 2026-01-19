@@ -11,6 +11,7 @@ import { useFilterStore } from "@/store/filterStore";
 import { SatellitePopup } from "@/components/SatellitePopup";
 import { Header } from "@/components/Header";
 import { SidebarContent } from "@/components/SidebarContent";
+import { ZoomPrompt } from "@/components/ZoomPrompt";
 import { loadMapData } from "@/utils/mapUtils";
 
 interface ClickedFeature {
@@ -30,6 +31,7 @@ function App() {
   const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(
     null
   );
+  const [zoom, setZoom] = useState(1);
   const mapRef = useRef<MapRef | null>(null); // MapLibre map ref
 
   const { metadata, timeRange, mapFilter, setMetadata, setTimeRange } =
@@ -80,12 +82,13 @@ function App() {
             initialViewState={{
               longitude: -111.7,
               latitude: 39.3,
-              zoom: 1,
+              zoom: zoom,
             }}
             style={{ width: "100%", height: "100%" }}
             mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
             projection={{ type: "globe" }}
             onClick={handleMapClick}
+            onMove={(evt) => setZoom(evt.viewState.zoom)}
             interactiveLayerIds={["satellite_paths"]}
             maxZoom={13}
           >
@@ -126,6 +129,7 @@ function App() {
               trackUserLocation={true}
             />
           </Map>
+          <ZoomPrompt visible={zoom < 2.5} />
         </div>
 
         {/* Mobile Controls */}
