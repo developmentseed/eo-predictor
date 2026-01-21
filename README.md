@@ -98,7 +98,7 @@ The application tracks a curated database of Earth Observation satellites organi
 - **Technical Specifications**: Spatial resolution, swath width, data access policies
 - **Reference URLs**: Links to official constellation information pages
 
-> [!NOTE]  
+> [!NOTE]
 > Some of the information was collected using ChatGPT Deep Research, and has not been fully independently verified.
 
 ### Orbital Data
@@ -185,7 +185,7 @@ scripts/
 
 ## Update Release
 
-1. `pnpm version < major | minor | patch >`
+1. `pnpm version <major|minor|patch>`
 2. `git push`
 3. `gh release create --generate-notes`
 4. Create new tag
