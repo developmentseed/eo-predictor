@@ -2,7 +2,7 @@
 
 An interactive web application for visualizing Earth Observation satellite coverage paths and predicting upcoming satellite passes, primarily for humanitarian response planning.
 
-<img width="1818" height="1527" alt="image" src="https://github.com/user-attachments/assets/8fed8a42-a2ef-41a5-b5c1-3d97c2745a99" />
+<img width="1818" height="1522" alt="image" src="https://github.com/user-attachments/assets/6d1b2406-2e71-48ed-9565-15467726aeb6" />
 
 ## Motivation
 
