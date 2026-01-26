@@ -13,6 +13,10 @@ import {
   Target,
   Navigation,
   SquareStack,
+  Code,
+  FolderOpenDot,
+  MonitorCheck,
+  Link2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatTimeDisplay } from "@/utils/timeUtils";
@@ -49,6 +53,28 @@ export const SatellitePopup = ({
     clickedFeature.data_repo_type,
     clickedFeature.data_repo_url,
   );
+
+  const normalizedRepoType = clickedFeature.data_repo_type?.toLowerCase();
+  const repoIcon = repoLink?.isStac ? (
+    <SquareStack size={14} />
+  ) : normalizedRepoType === "api" ? (
+    <Code size={14} />
+  ) : normalizedRepoType === "portal" ? (
+    <MonitorCheck size={14} />
+  ) : normalizedRepoType === "bucket" ? (
+    <FolderOpenDot size={14} />
+  ) : (
+    <Link2 size={14} />
+  );
+  const repoLabel = repoLink?.isStac
+    ? "Open in STAC Map"
+    : normalizedRepoType === "api"
+      ? "Open API"
+      : normalizedRepoType === "portal"
+        ? "Open portal"
+        : normalizedRepoType === "bucket"
+          ? "Open bucket"
+          : "Open data source";
 
   return (
     <Popup
@@ -207,8 +233,8 @@ export const SatellitePopup = ({
               rel="noreferrer"
               className="text-primary underline underline-offset-2 inline-flex items-center gap-1"
             >
-              {repoLink.isStac && <SquareStack size={14} />}
-              {repoLink.isStac ? "Open in STAC Map" : "Open data source"}
+              {repoIcon}
+              {repoLabel}
             </a>
           </div>
         )}

@@ -26,6 +26,9 @@ import {
   SquareStack,
   Link2,
   Minus,
+  Code,
+  FolderOpenDot,
+  MonitorCheck,
 } from "lucide-react";
 import maplibregl from "maplibre-gl";
 
@@ -47,6 +50,45 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
       <Minus size={12} />
     </Badge>
   );
+
+  const renderDataRepoBadge = (repoType?: string) => {
+    const normalizedType = repoType?.toLowerCase();
+    const isStac = normalizedType === "stac";
+    const isApi = normalizedType === "api";
+    const isPortal = normalizedType === "portal";
+    const isBucket = normalizedType === "bucket";
+    const variant = isStac
+      ? "soft-green"
+      : isApi || isPortal || isBucket
+        ? "soft-yellow"
+        : "soft-orange";
+    const icon = isStac ? (
+      <SquareStack size={12} />
+    ) : isApi ? (
+      <Code size={12} />
+    ) : isPortal ? (
+      <MonitorCheck size={12} />
+    ) : isBucket ? (
+      <FolderOpenDot size={12} />
+    ) : (
+      <Link2 size={12} />
+    );
+    const title = isStac
+      ? "STAC catalog"
+      : isApi
+        ? "API"
+        : isPortal
+          ? "Portal"
+          : isBucket
+            ? "Bucket"
+            : "Other";
+
+    return (
+      <Badge variant={variant} className="inline-flex items-center" title={title}>
+        {icon}
+      </Badge>
+    );
+  };
 
   // Get timezone offset for table header
   const timezoneOffset =
@@ -122,21 +164,11 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
               </TableCell>
               <TableCell className="text-xs">
                 {repoLink ? (
-                  <Badge
-                    variant={repoLink.isStac ? "soft-green" : "soft-yellow"}
-                    className="inline-flex items-center gap-1"
-                    title={repoLink.isStac ? "STAC catalog" : "Data link"}
-                  >
-                    {repoLink.isStac ? (
-                      <SquareStack size={12} />
-                    ) : (
-                      <Link2 size={12} />
-                    )}
-                  </Badge>
+                  renderDataRepoBadge(pass.data_repo_type)
                 ) : (
                   renderNotAvailable()
                 )}
-              </TableCell>
+            </TableCell>
               <TableCell className="text-xs">
                 {pass.sensor_type ? (
                   <Badge
