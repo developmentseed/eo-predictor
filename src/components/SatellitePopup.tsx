@@ -106,8 +106,8 @@ export const SatellitePopup = ({
                 clickedFeature.spatial_res_m < 5
                   ? "soft-green"
                   : clickedFeature.spatial_res_m <= 30
-                    ? "soft-yellow"
-                    : "soft-orange"
+                  ? "soft-yellow"
+                  : "soft-red"
               }
               className="flex items-center gap-1"
             >
@@ -132,9 +132,7 @@ export const SatellitePopup = ({
           {clickedFeature.data_access ? (
             <Badge
               variant={
-                clickedFeature.data_access === "open"
-                  ? "soft-emerald"
-                  : "soft-red"
+                clickedFeature.data_access === "open" ? "soft-green" : "soft-red"
               }
               className="flex items-center gap-1"
             >
@@ -154,7 +152,7 @@ export const SatellitePopup = ({
           <span className="text-xs">Tasking:</span>
           {clickedFeature.tasking !== undefined ? (
             <Badge
-              variant={clickedFeature.tasking ? "soft-green" : "soft-blue"}
+              variant={clickedFeature.tasking ? "soft-green" : "soft-yellow"}
               className="flex items-center gap-1"
             >
               {clickedFeature.tasking ? (

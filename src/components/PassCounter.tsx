@@ -39,7 +39,11 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
   });
 
   const renderNotAvailable = () => (
-    <Badge variant="soft-gray" className="inline-flex items-center">
+    <Badge
+      variant="soft-gray"
+      className="inline-flex items-center"
+      title="Not available"
+    >
       <Minus size={12} />
     </Badge>
   );
@@ -119,7 +123,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
               <TableCell className="text-xs">
                 {repoLink ? (
                   <Badge
-                    variant={repoLink.isStac ? "soft-green" : "soft-orange"}
+                    variant={repoLink.isStac ? "soft-green" : "soft-yellow"}
                     className="inline-flex items-center gap-1"
                     title={repoLink.isStac ? "STAC catalog" : "Data link"}
                   >
@@ -132,7 +136,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                 ) : (
                   renderNotAvailable()
                 )}
-            </TableCell>
+              </TableCell>
               <TableCell className="text-xs">
                 {pass.sensor_type ? (
                   <Badge
@@ -142,6 +146,13 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                         : pass.sensor_type === "SAR"
                           ? "soft-purple"
                           : "soft-orange"
+                    }
+                    title={
+                      pass.sensor_type === "optical"
+                        ? "Optical"
+                        : pass.sensor_type === "SAR"
+                          ? "SAR"
+                          : "Hyperspectral"
                     }
                   >
                     {pass.sensor_type === "optical" ? (
@@ -155,7 +166,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                 ) : (
                   renderNotAvailable()
                 )}
-            </TableCell>
+              </TableCell>
               <TableCell className="text-xs">
                 {pass.spatial_res_cm ? (
                   <Badge
@@ -164,7 +175,14 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                         ? "soft-green"
                         : pass.spatial_res_cm / 100 <= 30
                           ? "soft-yellow"
-                          : "soft-orange"
+                          : "soft-red"
+                    }
+                    title={
+                      pass.spatial_res_cm / 100 < 5
+                        ? "High resolution"
+                        : pass.spatial_res_cm / 100 <= 30
+                          ? "Medium resolution"
+                          : "Low resolution"
                     }
                   >
                     {pass.spatial_res_cm / 100 < 5 ? (
@@ -178,12 +196,17 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                 ) : (
                   renderNotAvailable()
                 )}
-            </TableCell>
+              </TableCell>
               <TableCell className="text-xs">
                 {pass.data_access ? (
                   <Badge
                     variant={
-                      pass.data_access === "open" ? "soft-emerald" : "soft-red"
+                      pass.data_access === "open" ? "soft-green" : "soft-red"
+                    }
+                    title={
+                      pass.data_access === "open"
+                        ? "Open access"
+                        : "Commercial access"
                     }
                   >
                     {pass.data_access === "open" ? <Unlock /> : <DollarSign />}
@@ -191,27 +214,31 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                 ) : (
                   renderNotAvailable()
                 )}
-            </TableCell>
+              </TableCell>
               <TableCell className="text-xs">
                 {pass.tasking !== undefined ? (
-                  <Badge variant={pass.tasking ? "soft-green" : "soft-blue"}>
+                  <Badge
+                    variant={pass.tasking ? "soft-green" : "soft-yellow"}
+                    title={pass.tasking ? "Taskable" : "Non-taskable"}
+                  >
                     {pass.tasking ? <Target /> : <Navigation />}
                   </Badge>
                 ) : (
                   renderNotAvailable()
                 )}
-            </TableCell>
+              </TableCell>
               <TableCell className="text-xs">
                 {pass.is_daytime !== undefined ? (
                   <Badge
-                    variant={pass.is_daytime ? "soft-yellow" : "soft-purple"}
+                    variant={pass.is_daytime ? "soft-blue" : "soft-purple"}
+                    title={pass.is_daytime ? "Day" : "Night"}
                   >
                     {pass.is_daytime ? <Sun /> : <Moon />}
                   </Badge>
                 ) : (
                   renderNotAvailable()
                 )}
-            </TableCell>
+              </TableCell>
             </TableRow>
           );
         })}
