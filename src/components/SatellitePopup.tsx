@@ -198,7 +198,7 @@ export const SatellitePopup = ({
           {clickedFeature.is_daytime !== undefined ? (
             <Badge
               variant={
-                clickedFeature.is_daytime ? "soft-yellow" : "soft-purple"
+                clickedFeature.is_daytime ? "soft-blue" : "soft-purple"
               }
               className="flex items-center gap-1"
             >
