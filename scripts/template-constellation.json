@@ -9,5 +9,7 @@
   "data_access": "commercial",
   "tasking": true,
   "url": "https://example.com/constellation-info",
-  "norad_ids": [12345, 12346, 12347]
+  "norad_ids": [12345, 12346, 12347],
+  "data_repo_type": "hey",
+  "data_repo_url": "https://example.com/stac-catalog"
 }
