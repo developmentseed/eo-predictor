@@ -51,12 +51,18 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
             spatial_res_cm: props.spatial_res_cm
               ? Number(props.spatial_res_cm)
               : props.spatial_res_m
-              ? Number(props.spatial_res_m) * 100 // Convert meters to centimeters
-              : undefined,
+                ? Number(props.spatial_res_m) * 100 // Convert meters to centimeters
+                : undefined,
             data_access: props.data_access?.toString() || undefined,
+            data_repo_type: props.data_repo_type?.toString() || undefined,
+            data_repo_url: props.data_repo_url?.toString() || undefined,
             constellation: props.constellation?.toString() || undefined,
-            tasking: props.tasking !== undefined ? Boolean(props.tasking) : undefined,
-            is_daytime: props.is_daytime !== undefined ? Boolean(props.is_daytime) : undefined,
+            tasking:
+              props.tasking !== undefined ? Boolean(props.tasking) : undefined,
+            is_daytime:
+              props.is_daytime !== undefined
+                ? Boolean(props.is_daytime)
+                : undefined,
           };
         })
         .filter((pass): pass is VisiblePass => pass !== null);
@@ -67,8 +73,8 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
       allPasses.forEach((pass) => {
         const startTime = new Date(pass.start_time);
-        // Round to nearest 15-minute window for grouping
-        const roundedMinutes = Math.floor(startTime.getMinutes() / 15) * 15;
+        // Round to nearest 5-minute window for grouping
+        const roundedMinutes = Math.floor(startTime.getMinutes() / 5) * 5;
         const roundedTime = new Date(startTime);
         roundedTime.setMinutes(roundedMinutes, 0, 0);
 
@@ -86,7 +92,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
       });
 
       const passes = Array.from(passGroups.values()).sort(
-        (a, b) => Date.parse(a.start_time) - Date.parse(b.start_time)
+        (a, b) => Date.parse(a.start_time) - Date.parse(b.start_time),
       );
 
       setVisiblePassCount(passes.length);

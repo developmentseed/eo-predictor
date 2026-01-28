@@ -12,9 +12,15 @@ import {
   DollarSign,
   Target,
   Navigation,
+  SquareStack,
+  Code,
+  FolderOpenDot,
+  MonitorCheck,
+  Link2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatTimeDisplay } from "@/utils/timeUtils";
+import { buildDataRepoLink } from "@/utils/stacUtils";
 
 interface ClickedFeature {
   lngLat: { lng: number; lat: number };
@@ -24,6 +30,8 @@ interface ClickedFeature {
   sensor_type: string;
   spatial_res_m: number;
   data_access: string;
+  data_repo_type?: string;
+  data_repo_url?: string;
   tasking: boolean;
   start_time: string;
   end_time: string;
@@ -40,6 +48,33 @@ export const SatellitePopup = ({
   onClose,
 }: SatellitePopupProps) => {
   if (!clickedFeature) return null;
+
+  const repoLink = buildDataRepoLink(
+    clickedFeature.data_repo_type,
+    clickedFeature.data_repo_url,
+  );
+
+  const normalizedRepoType = clickedFeature.data_repo_type?.toLowerCase();
+  const repoIcon = repoLink?.isStac ? (
+    <SquareStack size={14} />
+  ) : normalizedRepoType === "api" ? (
+    <Code size={14} />
+  ) : normalizedRepoType === "portal" ? (
+    <MonitorCheck size={14} />
+  ) : normalizedRepoType === "bucket" ? (
+    <FolderOpenDot size={14} />
+  ) : (
+    <Link2 size={14} />
+  );
+  const repoLabel = repoLink?.isStac
+    ? "Open in STAC Map"
+    : normalizedRepoType === "api"
+      ? "Open API"
+      : normalizedRepoType === "portal"
+        ? "Open portal"
+        : normalizedRepoType === "bucket"
+          ? "Open bucket"
+          : "Open data source";
 
   return (
     <Popup
@@ -63,8 +98,8 @@ export const SatellitePopup = ({
                 clickedFeature.sensor_type === "optical"
                   ? "soft-blue"
                   : clickedFeature.sensor_type === "SAR"
-                  ? "soft-purple"
-                  : "soft-orange"
+                    ? "soft-purple"
+                    : "soft-orange"
               }
               className="flex items-center gap-1"
             >
@@ -78,8 +113,8 @@ export const SatellitePopup = ({
               {clickedFeature.sensor_type === "optical"
                 ? "Optical"
                 : clickedFeature.sensor_type === "SAR"
-                ? "SAR"
-                : "Hyperspectral"}
+                  ? "SAR"
+                  : "Hyperspectral"}
             </Badge>
           ) : (
             <Badge variant="outline">N/A</Badge>
@@ -98,7 +133,7 @@ export const SatellitePopup = ({
                   ? "soft-green"
                   : clickedFeature.spatial_res_m <= 30
                   ? "soft-yellow"
-                  : "soft-orange"
+                  : "soft-red"
               }
               className="flex items-center gap-1"
             >
@@ -112,8 +147,8 @@ export const SatellitePopup = ({
               {clickedFeature.spatial_res_m < 5
                 ? "High"
                 : clickedFeature.spatial_res_m <= 30
-                ? "Medium"
-                : "Low"}
+                  ? "Medium"
+                  : "Low"}
             </Badge>
           )}
         </div>
@@ -123,9 +158,7 @@ export const SatellitePopup = ({
           {clickedFeature.data_access ? (
             <Badge
               variant={
-                clickedFeature.data_access === "open"
-                  ? "soft-emerald"
-                  : "soft-red"
+                clickedFeature.data_access === "open" ? "soft-green" : "soft-red"
               }
               className="flex items-center gap-1"
             >
@@ -145,7 +178,7 @@ export const SatellitePopup = ({
           <span className="text-xs">Tasking:</span>
           {clickedFeature.tasking !== undefined ? (
             <Badge
-              variant={clickedFeature.tasking ? "soft-green" : "soft-blue"}
+              variant={clickedFeature.tasking ? "soft-green" : "soft-yellow"}
               className="flex items-center gap-1"
             >
               {clickedFeature.tasking ? (
@@ -165,7 +198,7 @@ export const SatellitePopup = ({
           {clickedFeature.is_daytime !== undefined ? (
             <Badge
               variant={
-                clickedFeature.is_daytime ? "soft-yellow" : "soft-purple"
+                clickedFeature.is_daytime ? "soft-blue" : "soft-purple"
               }
               className="flex items-center gap-1"
             >
@@ -183,12 +216,28 @@ export const SatellitePopup = ({
 
         <div className="text-xs mt-2 space-y-1">
           <p>
-            Start: {formatTimeDisplay(new Date(clickedFeature.start_time).getTime())}
+            Start:{" "}
+            {formatTimeDisplay(new Date(clickedFeature.start_time).getTime())}
           </p>
           <p>
-            End: {formatTimeDisplay(new Date(clickedFeature.end_time).getTime())}
+            End:{" "}
+            {formatTimeDisplay(new Date(clickedFeature.end_time).getTime())}
           </p>
         </div>
+
+        {repoLink && (
+          <div className="text-xs">
+            <a
+              href={repoLink.url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary underline underline-offset-2 inline-flex items-center gap-1"
+            >
+              {repoIcon}
+              {repoLabel}
+            </a>
+          </div>
+        )}
       </div>
     </Popup>
   );

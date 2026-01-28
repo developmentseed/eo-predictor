@@ -9,5 +9,7 @@
   "data_access": "open",
   "tasking": false,
   "url": "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2",
-  "norad_ids": [40697, 42063, 60989]
+  "norad_ids": [40697, 42063, 60989],
+  "data_repo_type": "STAC",
+  "data_repo_url": "https://stac.dataspace.copernicus.eu/v1/"
 }

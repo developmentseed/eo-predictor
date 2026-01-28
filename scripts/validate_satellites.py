@@ -8,7 +8,7 @@ This script validates:
 3. NORAD ID uniqueness across all constellations
 4. Data type validation and constraints
 
-Usage: python validate_satellites.py
+Usage: uv run validate_satellites.py
 """
 
 import json
@@ -48,8 +48,15 @@ class SatelliteConstellation(BaseModel):
     norad_ids: List[Annotated[int, Field(gt=0)]] = Field(
         min_length=1, description="Array of NORAD catalog numbers"
     )
+    data_repo_type: Optional[Literal["STAC", "API", "portal", "bucket", "other"]] = (
+        Field(None, description="Type of data repository. STAC is preferred.")
+    )
+    data_repo_url: Optional[HttpUrl] = Field(
+        None,
+        description="Link to get data. Preferred STAC catalog, can also be API, portal, bucket or other",
+    )
 
-    class Config:
+    class ConfigDict:
         extra = "forbid"  # Forbid extra fields to catch typos
         use_enum_values = True
 
