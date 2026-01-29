@@ -141,7 +141,7 @@
   ],
   "operators": [
     "Planet",
-    "Maxar",
+    "Vantor",
     "ICEYE",
     "NASA/USGS",
     "NASA/ISRO",
@@ -157,12 +157,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
-    "low",
     "high",
-    "medium"
+    "medium",
+    "low"
   ],
-  "minTime": "2026-01-29T02:59:17.545492+00:00",
-  "maxTime": "2026-01-31T02:59:17.545492+00:00",
-  "lastUpdated": "2026-01-29T03:01:42.279519+00:00",
+  "minTime": "2026-01-29T16:57:40.474690+00:00",
+  "maxTime": "2026-01-31T16:57:40.474690+00:00",
+  "lastUpdated": "2026-01-29T17:00:42.720676+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
