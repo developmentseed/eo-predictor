@@ -12,12 +12,12 @@ import {
   DollarSign,
   Target,
   Navigation,
-  SquareStack,
   Code,
   FolderOpenDot,
   MonitorCheck,
   Link2,
 } from "lucide-react";
+import Stac from "@/components/icons/Stac";
 import { Badge } from "@/components/ui/badge";
 import { formatTimeDisplay } from "@/utils/timeUtils";
 import { buildDataRepoLink } from "@/utils/stacUtils";
@@ -56,7 +56,7 @@ export const SatellitePopup = ({
 
   const normalizedRepoType = clickedFeature.data_repo_type?.toLowerCase();
   const repoIcon = repoLink?.isStac ? (
-    <SquareStack size={14} />
+    <Stac width={14} height={14} />
   ) : normalizedRepoType === "api" ? (
     <Code size={14} />
   ) : normalizedRepoType === "portal" ? (

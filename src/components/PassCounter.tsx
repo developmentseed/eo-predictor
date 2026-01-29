@@ -23,13 +23,13 @@ import {
   Navigation,
   Sun,
   Moon,
-  SquareStack,
   Link2,
   Minus,
   Code,
   FolderOpenDot,
   MonitorCheck,
 } from "lucide-react";
+import Stac from "@/components/icons/Stac";
 import maplibregl from "maplibre-gl";
 
 interface PassCounterProps {
@@ -63,7 +63,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
         ? "soft-yellow"
         : "soft-orange";
     const icon = isStac ? (
-      <SquareStack size={12} />
+      <Stac width={12} height={12} />
     ) : isApi ? (
       <Code size={12} />
     ) : isPortal ? (
