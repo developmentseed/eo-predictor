@@ -92,7 +92,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
       });
 
       const passes = Array.from(passGroups.values()).sort(
-        (a, b) => Date.parse(a.start_time) - Date.parse(b.start_time),
+        (a, b) => Date.parse(a.start_time) - Date.parse(b.start_time)
       );
 
       setVisiblePassCount(passes.length);

@@ -7,7 +7,7 @@ import Map, {
   type MapRef,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useFilterStore } from "@/store/filterStore";
+import { useFilterStore, type DataRepoType } from "@/store/filterStore";
 import { SatellitePopup } from "@/components/SatellitePopup";
 import { Header } from "@/components/Header";
 import { SidebarContent } from "@/components/SidebarContent";
@@ -22,7 +22,7 @@ interface ClickedFeature {
   sensor_type: string;
   spatial_res_m: number;
   data_access: string;
-  data_repo_type?: string;
+  data_repo_type?: DataRepoType;
   data_repo_url?: string;
   tasking: boolean;
   start_time: string;

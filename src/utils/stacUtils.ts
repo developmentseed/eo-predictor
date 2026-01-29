@@ -1,5 +1,7 @@
+import type { DataRepoType } from "@/store/filterStore";
+
 export const buildDataRepoLink = (
-  dataRepoType?: string,
+  dataRepoType?: DataRepoType,
   dataRepoUrl?: string
 ) => {
   if (!dataRepoUrl) {
