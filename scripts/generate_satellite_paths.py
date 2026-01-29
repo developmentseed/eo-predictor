@@ -237,7 +237,6 @@ path_segments = []
 for sat_name, group in positions_df.groupby("satellite"):
     group = group.sort_values("timestamp").reset_index(drop=True)
     for i in range(len(group) - 1):
-        print("Processing segment for satellite group:", group)
         pt0 = group.loc[i, "coordinates"]
         pt1 = group.loc[i + 1, "coordinates"]
 

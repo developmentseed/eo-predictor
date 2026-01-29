@@ -69,7 +69,7 @@ export const SatellitePopup = ({
   const repoLabel = repoLink?.isStac
     ? "Open in STAC Map"
     : normalizedRepoType === "api"
-      ? "Open API"
+      ? "Open API docs"
       : normalizedRepoType === "portal"
         ? "Open portal"
         : normalizedRepoType === "bucket"
@@ -132,8 +132,8 @@ export const SatellitePopup = ({
                 clickedFeature.spatial_res_m < 5
                   ? "soft-green"
                   : clickedFeature.spatial_res_m <= 30
-                  ? "soft-yellow"
-                  : "soft-red"
+                    ? "soft-yellow"
+                    : "soft-red"
               }
               className="flex items-center gap-1"
             >
@@ -158,7 +158,9 @@ export const SatellitePopup = ({
           {clickedFeature.data_access ? (
             <Badge
               variant={
-                clickedFeature.data_access === "open" ? "soft-green" : "soft-red"
+                clickedFeature.data_access === "open"
+                  ? "soft-green"
+                  : "soft-red"
               }
               className="flex items-center gap-1"
             >
@@ -197,9 +199,7 @@ export const SatellitePopup = ({
           <span className="text-xs">Daylight:</span>
           {clickedFeature.is_daytime !== undefined ? (
             <Badge
-              variant={
-                clickedFeature.is_daytime ? "soft-blue" : "soft-purple"
-              }
+              variant={clickedFeature.is_daytime ? "soft-blue" : "soft-purple"}
               className="flex items-center gap-1"
             >
               {clickedFeature.is_daytime ? (

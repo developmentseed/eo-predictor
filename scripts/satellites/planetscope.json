@@ -9,6 +9,8 @@
   "data_access": "commercial",
   "tasking": true,
   "url": "https://www.planet.com/products/satellite-imagery/",
+  "data_repo_type": "portal",
+  "data_repo_url": "https://www.planet.com/explorer/",
   "norad_ids": [
     55032, 55043, 58270, 58271, 58273, 58274, 58275, 58280, 58282, 58283, 58284,
     58285, 58286, 58303, 58304, 58306, 58307, 58308, 58309, 58311, 58313, 58315,
