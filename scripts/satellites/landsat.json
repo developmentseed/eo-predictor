@@ -9,5 +9,7 @@
   "data_access": "open",
   "tasking": false,
   "url": "https://landsat.gsfc.nasa.gov/satellites/",
+  "data_repo_type": "STAC",
+  "data_repo_url": "https://landsatlook.usgs.gov/stac-server/",
   "norad_ids": [39084, 49260]
 }

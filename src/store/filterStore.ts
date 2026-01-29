@@ -23,6 +23,8 @@ export interface VisiblePass {
   sensor_type?: string;
   spatial_res_cm?: number;
   data_access?: string;
+  data_repo_type?: ["STAC" | "portal" | "API" | "other"];
+  data_repo_url?: string;
   constellation?: string;
   tasking?: boolean;
   is_daytime?: boolean;
@@ -171,21 +173,21 @@ export const useFilterStore = create<FilterState>()(
           (operator: string) => ({
             value: operator,
             disabled: false,
-          })
+          }),
         );
 
         const availableSensorTypes = (state.metadata?.sensor_types || []).map(
           (sensorType: string) => ({
             value: sensorType,
             disabled: false,
-          })
+          }),
         );
 
         const availableSpatialResolution = ["high", "medium", "low"].map(
           (resolution: string) => ({
             value: resolution,
             disabled: false,
-          })
+          }),
         );
 
         const availableDataAccess = (
@@ -199,14 +201,14 @@ export const useFilterStore = create<FilterState>()(
           (tasking: string) => ({
             value: tasking,
             disabled: false,
-          })
+          }),
         );
 
         const availableDaylight = ["daytime", "nighttime"].map(
           (daylight: string) => ({
             value: daylight,
             disabled: false,
-          })
+          }),
         );
 
         const mapFilter = state.generateMapFilter();
@@ -305,6 +307,6 @@ export const useFilterStore = create<FilterState>()(
         return filter;
       },
     }),
-    { name: "filter-store" }
-  )
+    { name: "filter-store" },
+  ),
 );

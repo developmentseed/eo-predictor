@@ -22,9 +22,12 @@ interface ClickedFeature {
   sensor_type: string;
   spatial_res_m: number;
   data_access: string;
+  data_repo_type?: string;
+  data_repo_url?: string;
   tasking: boolean;
   start_time: string;
   end_time: string;
+  is_daytime?: boolean;
 }
 
 function App() {

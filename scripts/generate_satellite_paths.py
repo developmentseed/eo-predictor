@@ -128,6 +128,8 @@ for sat in satellites:
         sat.sensor_type = sat_props["sensor_type"]
         sat.spatial_res_m = sat_props["spatial_res_cm"] / 100  # Convert cm to meters
         sat.data_access = sat_props["data_access"]
+        sat.data_repo_type = sat_props.get("data_repo_type")
+        sat.data_repo_url = sat_props.get("data_repo_url")
         # Add tasking field if it exists
         if "tasking" in sat_props:
             sat.tasking = sat_props["tasking"]
@@ -193,6 +195,8 @@ def get_satellite_positions(sat, start_time, end_time, step_minutes):
                 "sensor_type": sat.sensor_type,
                 "spatial_res_m": sat.spatial_res_m,  # Use meters
                 "data_access": sat.data_access,
+                "data_repo_type": sat.data_repo_type,
+                "data_repo_url": sat.data_repo_url,
                 "tasking": sat.tasking,
             }
         )
@@ -221,6 +225,8 @@ positions_df = pd.DataFrame(
         "sensor_type",
         "spatial_res_m",
         "data_access",
+        "data_repo_type",
+        "data_repo_url",
         "tasking",
     ],
 )
@@ -262,6 +268,8 @@ for sat_name, group in positions_df.groupby("satellite"):
                 "sensor_type": group.loc[i, "sensor_type"],
                 "spatial_res_m": group.loc[i, "spatial_res_m"],  # Use meters
                 "data_access": group.loc[i, "data_access"],
+                "data_repo_type": group.loc[i, "data_repo_type"],
+                "data_repo_url": group.loc[i, "data_repo_url"],
                 "tasking": group.loc[i, "tasking"],
                 "is_daytime": daytime,
             }
