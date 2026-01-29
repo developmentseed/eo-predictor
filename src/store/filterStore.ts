@@ -23,7 +23,7 @@ export interface VisiblePass {
   sensor_type?: string;
   spatial_res_cm?: number;
   data_access?: string;
-  data_repo_type?: "STAC" | "portal" | "API" | "other";
+  data_repo_type?: "STAC" | "portal" | "API" | "bucket" | "other";
   data_repo_url?: string;
   constellation?: string;
   tasking?: boolean;
