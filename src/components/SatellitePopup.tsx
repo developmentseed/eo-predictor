@@ -51,7 +51,7 @@ export const SatellitePopup = ({
 
   const repoLink = buildDataRepoLink(
     clickedFeature.data_repo_type,
-    clickedFeature.data_repo_url,
+    clickedFeature.data_repo_url
   );
 
   const normalizedRepoType = clickedFeature.data_repo_type?.toLowerCase();

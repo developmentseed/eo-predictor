@@ -84,7 +84,11 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
             : "Other";
 
     return (
-      <Badge variant={variant} className="inline-flex items-center" title={title}>
+      <Badge
+        variant={variant}
+        className="inline-flex items-center"
+        title={title}
+      >
         {icon}
       </Badge>
     );
@@ -132,7 +136,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
         {visiblePasses.map((pass, index) => {
           const repoLink = buildDataRepoLink(
             pass.data_repo_type,
-            pass.data_repo_url,
+            pass.data_repo_url
           );
 
           return (
@@ -163,12 +167,10 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                 {pass.constellation || "N/A"}
               </TableCell>
               <TableCell className="text-xs">
-                {repoLink ? (
-                  renderDataRepoBadge(pass.data_repo_type)
-                ) : (
-                  renderNotAvailable()
-                )}
-            </TableCell>
+                {repoLink
+                  ? renderDataRepoBadge(pass.data_repo_type)
+                  : renderNotAvailable()}
+              </TableCell>
               <TableCell className="text-xs">
                 {pass.sensor_type ? (
                   <Badge
