@@ -1,6 +1,6 @@
 {
   "constellation": "WorldView Legion",
-  "operator": "Maxar",
+  "operator": "Vantor",
   "sensor_type": "optical",
   "spatial_res_cm": 34,
   "swath_km": 10,
@@ -9,5 +9,7 @@
   "data_access": "commercial",
   "tasking": true,
   "url": "https://earth.esa.int/eogateway/missions/worldview",
+  "data_repo_type": "portal",
+  "data_repo_url": "https://xpress.maxar.com/",
   "norad_ids": [59625, 59626, 60452, 60453, 62900, 62901]
 }

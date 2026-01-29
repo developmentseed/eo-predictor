@@ -9,5 +9,7 @@
   "data_access": "commercial",
   "tasking": true,
   "url": "https://www.planet.com/products/hyperspectral/",
+  "data_repo_type": "portal",
+  "data_repo_url": "https://www.planet.com/explorer/",
   "norad_ids": [60507]
 }

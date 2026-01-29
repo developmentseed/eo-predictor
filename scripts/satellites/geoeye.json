@@ -1,6 +1,6 @@
 {
   "constellation": "GeoEye",
-  "operator": "Maxar",
+  "operator": "Vantor",
   "sensor_type": "optical",
   "spatial_res_cm": 41,
   "swath_km": 15,
@@ -9,5 +9,7 @@
   "data_access": "commercial",
   "tasking": true,
   "url": "https://earth.esa.int/eogateway/missions/geoeye-1",
+  "data_repo_type": "portal",
+  "data_repo_url": "https://xpress.maxar.com/",
   "norad_ids": [33331]
 }

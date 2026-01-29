@@ -1,6 +1,6 @@
 {
   "constellation": "WorldView-2",
-  "operator": "Maxar",
+  "operator": "Vantor",
   "sensor_type": "optical",
   "spatial_res_cm": 46,
   "swath_km": 16,
@@ -9,5 +9,7 @@
   "data_access": "commercial",
   "tasking": true,
   "url": "https://earth.esa.int/eogateway/missions/worldview",
+  "data_repo_type": "portal",
+  "data_repo_url": "https://xpress.maxar.com/",
   "norad_ids": [35946]
 }
