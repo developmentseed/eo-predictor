@@ -10,29 +10,42 @@ concurrency:
   group: "ci"
 
 jobs:
-  format-and-lint:
-    name: Format and lint, check satellite list
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install
+
+      - run: pnpm format:check
+
+      - run: pnpm build
+
+  python:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: scripts
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-      - name: "Set up Python"
-        uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6
         with:
           python-version-file: "scripts/.python-version"
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v7
 
-      - name: Check
-        run: uv run ruff check
+      - run: uv run ruff check
 
-      - name: Format
-        run: uv run ruff format --check
+      - run: uv run ruff format --check
 
-      - name: Validate satellite constellations
-        run: uv run python validate_satellites.py
+      - run: uv run python validate_satellites.py

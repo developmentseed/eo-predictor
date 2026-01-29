@@ -63,8 +63,8 @@ export const SatellitePopup = ({
                 clickedFeature.sensor_type === "optical"
                   ? "soft-blue"
                   : clickedFeature.sensor_type === "SAR"
-                  ? "soft-purple"
-                  : "soft-orange"
+                    ? "soft-purple"
+                    : "soft-orange"
               }
               className="flex items-center gap-1"
             >
@@ -78,8 +78,8 @@ export const SatellitePopup = ({
               {clickedFeature.sensor_type === "optical"
                 ? "Optical"
                 : clickedFeature.sensor_type === "SAR"
-                ? "SAR"
-                : "Hyperspectral"}
+                  ? "SAR"
+                  : "Hyperspectral"}
             </Badge>
           ) : (
             <Badge variant="outline">N/A</Badge>
@@ -97,8 +97,8 @@ export const SatellitePopup = ({
                 clickedFeature.spatial_res_m < 5
                   ? "soft-green"
                   : clickedFeature.spatial_res_m <= 30
-                  ? "soft-yellow"
-                  : "soft-orange"
+                    ? "soft-yellow"
+                    : "soft-orange"
               }
               className="flex items-center gap-1"
             >
@@ -112,8 +112,8 @@ export const SatellitePopup = ({
               {clickedFeature.spatial_res_m < 5
                 ? "High"
                 : clickedFeature.spatial_res_m <= 30
-                ? "Medium"
-                : "Low"}
+                  ? "Medium"
+                  : "Low"}
             </Badge>
           )}
         </div>
@@ -183,10 +183,12 @@ export const SatellitePopup = ({
 
         <div className="text-xs mt-2 space-y-1">
           <p>
-            Start: {formatTimeDisplay(new Date(clickedFeature.start_time).getTime())}
+            Start:{" "}
+            {formatTimeDisplay(new Date(clickedFeature.start_time).getTime())}
           </p>
           <p>
-            End: {formatTimeDisplay(new Date(clickedFeature.end_time).getTime())}
+            End:{" "}
+            {formatTimeDisplay(new Date(clickedFeature.end_time).getTime())}
           </p>
         </div>
       </div>

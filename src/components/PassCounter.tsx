@@ -93,8 +93,8 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                     pass.sensor_type === "optical"
                       ? "soft-blue"
                       : pass.sensor_type === "SAR"
-                      ? "soft-purple"
-                      : "soft-orange"
+                        ? "soft-purple"
+                        : "soft-orange"
                   }
                 >
                   {pass.sensor_type === "optical" ? (
@@ -116,8 +116,8 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
                     pass.spatial_res_cm / 100 < 5
                       ? "soft-green"
                       : pass.spatial_res_cm / 100 <= 30
-                      ? "soft-yellow"
-                      : "soft-orange"
+                        ? "soft-yellow"
+                        : "soft-orange"
                   }
                 >
                   {pass.spatial_res_cm / 100 < 5 ? (
@@ -147,9 +147,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
             </TableCell>
             <TableCell className="text-xs">
               {pass.tasking !== undefined ? (
-                <Badge
-                  variant={pass.tasking ? "soft-green" : "soft-blue"}
-                >
+                <Badge variant={pass.tasking ? "soft-green" : "soft-blue"}>
                   {pass.tasking ? <Target /> : <Navigation />}
                 </Badge>
               ) : (

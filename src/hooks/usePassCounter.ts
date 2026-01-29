@@ -51,12 +51,16 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
             spatial_res_cm: props.spatial_res_cm
               ? Number(props.spatial_res_cm)
               : props.spatial_res_m
-              ? Number(props.spatial_res_m) * 100 // Convert meters to centimeters
-              : undefined,
+                ? Number(props.spatial_res_m) * 100 // Convert meters to centimeters
+                : undefined,
             data_access: props.data_access?.toString() || undefined,
             constellation: props.constellation?.toString() || undefined,
-            tasking: props.tasking !== undefined ? Boolean(props.tasking) : undefined,
-            is_daytime: props.is_daytime !== undefined ? Boolean(props.is_daytime) : undefined,
+            tasking:
+              props.tasking !== undefined ? Boolean(props.tasking) : undefined,
+            is_daytime:
+              props.is_daytime !== undefined
+                ? Boolean(props.is_daytime)
+                : undefined,
           };
         })
         .filter((pass): pass is VisiblePass => pass !== null);

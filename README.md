@@ -175,6 +175,7 @@ scripts/
 ### Adding New Satellites
 
 1. **Copy the template:**
+
    ```bash
    cp scripts/template-constellation.json scripts/satellites/new-constellation.json
    ```

@@ -218,8 +218,8 @@ export const Controls = () => {
             const iconText = isOpen
               ? "FREE"
               : isCommercial
-              ? "PAID"
-              : value.toUpperCase();
+                ? "PAID"
+                : value.toUpperCase();
 
             return (
               <ToggleGroupItem
@@ -230,8 +230,8 @@ export const Controls = () => {
                   isOpen
                     ? "free/open access"
                     : isCommercial
-                    ? "paid/proprietary"
-                    : "unknown access"
+                      ? "paid/proprietary"
+                      : "unknown access"
                 }`}
               >
                 {getIcon()}
@@ -282,8 +282,8 @@ export const Controls = () => {
             const iconText = isTasking
               ? "TASK"
               : isNonTasking
-              ? "FIXED"
-              : value.toUpperCase();
+                ? "FIXED"
+                : value.toUpperCase();
 
             return (
               <ToggleGroupItem
@@ -294,8 +294,8 @@ export const Controls = () => {
                   isTasking
                     ? "can be pointed to specific locations"
                     : isNonTasking
-                    ? "fixed angle capture"
-                    : "unknown tasking"
+                      ? "fixed angle capture"
+                      : "unknown tasking"
                 }`}
               >
                 {getIcon()}
@@ -315,7 +315,8 @@ export const Controls = () => {
             </TooltipTrigger>
             <TooltipContent>
               <p>
-                Filter by whether satellite observations occur during daytime or nighttime
+                Filter by whether satellite observations occur during daytime or
+                nighttime
               </p>
             </TooltipContent>
           </Tooltip>
@@ -345,8 +346,8 @@ export const Controls = () => {
             const iconText = isDaytime
               ? "DAY"
               : isNighttime
-              ? "NIGHT"
-              : value.toUpperCase();
+                ? "NIGHT"
+                : value.toUpperCase();
 
             return (
               <ToggleGroupItem
@@ -357,8 +358,8 @@ export const Controls = () => {
                   isDaytime
                     ? "during daylight hours"
                     : isNighttime
-                    ? "during nighttime hours"
-                    : "unknown time"
+                      ? "during nighttime hours"
+                      : "unknown time"
                 }`}
               >
                 {getIcon()}
