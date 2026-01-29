@@ -55,26 +55,33 @@ export const SatellitePopup = ({
   );
 
   const normalizedRepoType = clickedFeature.data_repo_type?.toLowerCase();
+  const repoVariant = repoLink?.isStac
+    ? "soft-green"
+    : normalizedRepoType === "api" ||
+        normalizedRepoType === "portal" ||
+        normalizedRepoType === "bucket"
+      ? "soft-yellow"
+      : "soft-orange";
   const repoIcon = repoLink?.isStac ? (
-    <Stac width={14} height={14} />
+    <Stac width={12} height={12} />
   ) : normalizedRepoType === "api" ? (
-    <Code size={14} />
+    <Code size={12} />
   ) : normalizedRepoType === "portal" ? (
-    <MonitorCheck size={14} />
+    <MonitorCheck size={12} />
   ) : normalizedRepoType === "bucket" ? (
-    <FolderOpenDot size={14} />
+    <FolderOpenDot size={12} />
   ) : (
-    <Link2 size={14} />
+    <Link2 size={12} />
   );
   const repoLabel = repoLink?.isStac
-    ? "Open in STAC Map"
+    ? "stac-map"
     : normalizedRepoType === "api"
-      ? "Open API docs"
+      ? "API"
       : normalizedRepoType === "portal"
-        ? "Open portal"
+        ? "Portal"
         : normalizedRepoType === "bucket"
-          ? "Open bucket"
-          : "Open data source";
+          ? "Bucket"
+          : "Other";
 
   return (
     <Popup
@@ -226,15 +233,22 @@ export const SatellitePopup = ({
         </div>
 
         {repoLink && (
-          <div className="text-xs">
+          <div className="flex items-center gap-2">
+            <span className="text-xs">Data:</span>
             <a
               href={repoLink.url}
               target="_blank"
               rel="noreferrer"
-              className="text-primary underline underline-offset-2 inline-flex items-center gap-1"
+              className="inline-flex"
             >
-              {repoIcon}
-              {repoLabel}
+              <Badge
+                variant={repoVariant}
+                className="flex items-center gap-1"
+                title={repoLabel}
+              >
+                {repoIcon}
+                {repoLabel}
+              </Badge>
             </a>
           </div>
         )}
