@@ -21,6 +21,7 @@ import Stac from "@/components/icons/Stac";
 import { Badge } from "@/components/ui/badge";
 import { formatTimeDisplay } from "@/utils/timeUtils";
 import { buildDataRepoLink } from "@/utils/stacUtils";
+import type { DataRepoType } from "@/store/filterStore";
 
 interface ClickedFeature {
   lngLat: { lng: number; lat: number };
@@ -30,7 +31,7 @@ interface ClickedFeature {
   sensor_type: string;
   spatial_res_m: number;
   data_access: string;
-  data_repo_type?: string;
+  data_repo_type?: DataRepoType;
   data_repo_url?: string;
   tasking: boolean;
   start_time: string;

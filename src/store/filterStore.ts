@@ -16,6 +16,8 @@ export interface Metadata {
   // Add other properties as needed
 }
 
+export type DataRepoType = "STAC" | "portal" | "API" | "other";
+
 // Type for visible passes (used in usePassCounter)
 export interface VisiblePass {
   name: string;
@@ -23,7 +25,7 @@ export interface VisiblePass {
   sensor_type?: string;
   spatial_res_cm?: number;
   data_access?: string;
-  data_repo_type?: ["STAC" | "portal" | "API" | "other"];
+  data_repo_type?: DataRepoType;
   data_repo_url?: string;
   constellation?: string;
   tasking?: boolean;

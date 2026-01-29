@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import Stac from "@/components/icons/Stac";
 import maplibregl from "maplibre-gl";
+import type { DataRepoType } from "@/store/filterStore";
 
 interface PassCounterProps {
   mapRef: React.RefObject<maplibregl.Map | null>;
@@ -51,7 +52,7 @@ export const PassCounter = ({ mapRef }: PassCounterProps) => {
     </Badge>
   );
 
-  const renderDataRepoBadge = (repoType?: string) => {
+  const renderDataRepoBadge = (repoType?: DataRepoType) => {
     const normalizedType = repoType?.toLowerCase();
     const isStac = normalizedType === "stac";
     const isApi = normalizedType === "api";
