@@ -13,7 +13,6 @@
     "FLOCK 4BE-19",
     "FLOCK 4BE-2",
     "FLOCK 4BE-20",
-    "FLOCK 4BE-22",
     "FLOCK 4BE-23",
     "FLOCK 4BE-24",
     "FLOCK 4BE-25",
@@ -157,12 +156,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
-    "low",
     "high",
+    "low",
     "medium"
   ],
-  "minTime": "2026-02-01T03:06:29.025248+00:00",
-  "maxTime": "2026-02-03T03:06:29.025248+00:00",
-  "lastUpdated": "2026-02-01T03:09:34.074685+00:00",
+  "minTime": "2026-02-02T03:06:14.865513+00:00",
+  "maxTime": "2026-02-04T03:06:14.865513+00:00",
+  "lastUpdated": "2026-02-02T03:09:17.811093+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
