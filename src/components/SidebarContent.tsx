@@ -130,7 +130,12 @@ export function SidebarContent({
                       : undefined
                   }
                 >
-                  {predictedText}
+                  <span className="flex items-center gap-1">
+                    {predictedPercent === 100 && (
+                      <Satellite className="h-3 w-3" />
+                    )}
+                    {predictedText}
+                  </span>
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
