@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime, timedelta, timezone
 
 import geopandas as gpd
@@ -67,33 +68,102 @@ constellations = load_constellations()
 satellite_info = expand_constellations_to_satellites(constellations)
 
 # List of satellite TLE data URLs from Celestrak
-urls = []
+tle_requests = []
 for sat in satellite_info:
-    urls.append(
-        f"https://celestrak.org/NORAD/elements/gp.php?CATNR={sat['norad_id']}&FORMAT=tle"
+    tle_requests.append(
+        {
+            "norad_id": str(sat["norad_id"]),
+            "url": f"https://celestrak.org/NORAD/elements/gp.php?CATNR={sat['norad_id']}&FORMAT=tle",
+        }
     )
 
 
 # Async function to fetch a single TLE URL
-async def fetch_tle(client, url):
+async def fetch_tle(client, request):
+    url = request["url"]
+    norad_id = request["norad_id"]
     try:
         response = await client.get(url)
         response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
-        print(f"  Successfully fetched from {url}")
-        return response.text
+        content = response.text.strip()
+        if not content:
+            print(f"  Empty response for NORAD {norad_id}")
+            return {
+                "norad_id": norad_id,
+                "url": url,
+                "success": False,
+                "no_gp": False,
+                "content": "",
+            }
+        if "no gp data found" in content.lower():
+            print(f"  No GP data found for NORAD {norad_id}")
+            return {
+                "norad_id": norad_id,
+                "url": url,
+                "success": False,
+                "no_gp": True,
+                "content": "",
+            }
+        print(f"  Successfully fetched NORAD {norad_id}")
+        return {
+            "norad_id": norad_id,
+            "url": url,
+            "success": True,
+            "no_gp": False,
+            "content": response.text,
+        }
     except httpx.HTTPStatusError as e:
-        print(f"  Failed to fetch {url} (HTTP error: {e.response.status_code})")
-        return ""
+        print(
+            f"  Failed to fetch NORAD {norad_id} (HTTP error: {e.response.status_code})"
+        )
+        return {
+            "norad_id": norad_id,
+            "url": url,
+            "success": False,
+            "no_gp": False,
+            "content": "",
+        }
     except httpx.RequestError as e:
-        print(f"  Failed to fetch {url} (Request error: {e})")
-        return ""
+        print(f"  Failed to fetch NORAD {norad_id} (Request error: {e})")
+        return {
+            "norad_id": norad_id,
+            "url": url,
+            "success": False,
+            "no_gp": False,
+            "content": "",
+        }
 
 
-# Async function to fetch all TLE URLs concurrently
-async def fetch_all_tles(urls):
-    async with httpx.AsyncClient() as client:
-        tasks = [fetch_tle(client, url) for url in urls]
-        return await asyncio.gather(*tasks)
+# Async function to fetch all TLE URLs concurrently with retries
+async def fetch_all_tles(requests, max_attempts=3, base_delay=5):
+    remaining_requests = list(requests)
+    results = {}
+
+    for attempt in range(max_attempts):
+        if not remaining_requests:
+            break
+
+        print(
+            f"Fetching TLE data (attempt {attempt + 1}/{max_attempts}) for {len(remaining_requests)} satellites..."
+        )
+        async with httpx.AsyncClient() as client:
+            tasks = [fetch_tle(client, request) for request in remaining_requests]
+            attempt_results = await asyncio.gather(*tasks)
+
+        remaining_requests = []
+        for result in attempt_results:
+            results[result["norad_id"]] = result
+            if not result["success"] and not result["no_gp"]:
+                remaining_requests.append(
+                    {"norad_id": result["norad_id"], "url": result["url"]}
+                )
+
+        if remaining_requests and attempt < max_attempts - 1:
+            delay = base_delay * (2**attempt)
+            print(f"Retrying {len(remaining_requests)} failed fetches in {delay}s...")
+            await asyncio.sleep(delay)
+
+    return results
 
 
 # Fetch and combine TLE data
@@ -101,8 +171,10 @@ print("Fetching TLE data...")
 combined_tle_content = ""
 
 # Run the async fetching
-all_tle_contents = asyncio.run(fetch_all_tles(urls))
-combined_tle_content = "\n".join(all_tle_contents)
+tle_results = asyncio.run(fetch_all_tles(tle_requests))
+combined_tle_content = "\n".join(
+    [result["content"] for result in tle_results.values() if result["success"]]
+)
 
 with open(os.path.join(script_dir, "combined_tle.txt"), "w") as outfile:
     outfile.write(combined_tle_content)
@@ -137,6 +209,71 @@ for sat in satellites:
 satellites = filtered_satellites
 
 print(f"{len(satellites)} satellites loaded and filtered.")
+
+expected_norad_ids = {str(sat["norad_id"]) for sat in satellite_info}
+loaded_norad_ids = {str(sat.model.satnum) for sat in satellites}
+no_gp_norad_ids = sorted(
+    [int(norad_id) for norad_id, result in tle_results.items() if result["no_gp"]]
+)
+failed_fetch_norad_ids = sorted(
+    [
+        int(norad_id)
+        for norad_id, result in tle_results.items()
+        if not result["success"] and not result["no_gp"]
+    ]
+)
+missing_active_norad_ids = sorted(
+    [
+        int(norad_id)
+        for norad_id in expected_norad_ids
+        - loaded_norad_ids
+        - {str(norad_id) for norad_id in no_gp_norad_ids}
+    ]
+)
+expected_count = len(expected_norad_ids)
+active_expected_count = expected_count - len(no_gp_norad_ids)
+fetched_count = len(loaded_norad_ids)
+success_rate = fetched_count / active_expected_count if active_expected_count else 0
+
+
+def format_percent(value):
+    percent = value * 100
+    if percent >= 99.5:
+        return "100%"
+    if percent == 0:
+        return "0%"
+    return f"{percent:.1g}%"
+
+
+fetch_status = {
+    "expectedCount": expected_count,
+    "activeExpectedCount": active_expected_count,
+    "fetchedCount": fetched_count,
+    "missingNoradIds": missing_active_norad_ids,
+    "noGpDataNoradIds": no_gp_norad_ids,
+    "failedFetchNoradIds": failed_fetch_norad_ids,
+    "successRate": success_rate,
+    "lastUpdated": datetime.now(timezone.utc).isoformat(),
+}
+
+fetch_status_path = os.path.join(public_dir, "satellite_fetch_status.json")
+with open(fetch_status_path, "w") as f:
+    json.dump(fetch_status, f, indent=2)
+print(
+    "Fetch summary: "
+    f"{fetched_count}/{active_expected_count} satellites predicted "
+    f"({format_percent(success_rate)} of active), "
+    f"{len(no_gp_norad_ids)} no GP data, "
+    f"{len(failed_fetch_norad_ids)} failed fetches."
+)
+print(f"Fetch status saved to: {fetch_status_path}")
+
+if success_rate <= 0.9:
+    print(
+        "TLE fetch success rate for active satellites did not exceed 90%. "
+        "Aborting tile generation to prevent incomplete deploy."
+    )
+    sys.exit(1)
 
 # Set up the time range for the prediction
 ts = load.timescale()

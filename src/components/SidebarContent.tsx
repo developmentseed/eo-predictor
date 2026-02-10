@@ -9,23 +9,44 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { CardFooter } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { AlarmClock, Satellite, Settings2 } from "lucide-react";
 import { formatLastUpdated } from "@/utils/timeUtils";
+import type { FetchStatus } from "@/utils/mapUtils";
 
 interface SidebarContentProps {
   mapRef: React.RefObject<any>;
   variant?: "desktop" | "mobile";
   lastUpdated?: string;
+  fetchStatus?: FetchStatus | null;
 }
 
 export function SidebarContent({
   mapRef,
   variant = "desktop",
   lastUpdated,
+  fetchStatus,
 }: SidebarContentProps) {
   const { getPassCountText } = usePassCounter({ mapRef });
   const version = __APP_VERSION__ || "0.1.0";
 
+  const predictedPercent =
+    fetchStatus && fetchStatus.activeExpectedCount > 0
+      ? Math.round(
+          (fetchStatus.fetchedCount / fetchStatus.activeExpectedCount) * 100
+        )
+      : null;
+  const predictedText =
+    predictedPercent !== null ? `${predictedPercent}%` : null;
+  const predictedHoverText =
+    fetchStatus && fetchStatus.activeExpectedCount > 0
+      ? `${fetchStatus.fetchedCount} / ${fetchStatus.activeExpectedCount} satellites predicted successfully`
+      : undefined;
   const isDesktop = variant === "desktop";
   const triggerClass = isDesktop
     ? "text-sm font-medium"
@@ -90,26 +111,50 @@ export function SidebarContent({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      {lastUpdated && (
-        <div
-          className={
-            isDesktop
-              ? "flex justify-between items-center mt-4 pt-4 border-t"
-              : "flex justify-between items-center p-4 border-t"
-          }
-        >
+      <CardFooter
+        className={
+          isDesktop
+            ? "justify-between border-t mt-4 pt-4 px-0"
+            : "justify-between border-t px-4 py-4"
+        }
+      >
+        <div className="flex items-center gap-4">
+          {predictedText && predictedHoverText && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge
+                  variant="outline"
+                  className={
+                    predictedPercent !== null && predictedPercent < 100
+                      ? "border-red-200 text-red-600"
+                      : undefined
+                  }
+                >
+                  <span className="flex items-center gap-1">
+                    {predictedPercent === 100 && (
+                      <Satellite className="h-3 w-3" />
+                    )}
+                    {predictedText}
+                  </span>
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{predictedHoverText}</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
           <span className="text-xs text-muted-foreground">
-            Last updated: {formatLastUpdated(lastUpdated)}
+            Last updated: {formatLastUpdated(lastUpdated || "")}
           </span>
-          <a
-            href={`https://github.com/developmentseed/eo-predictor/releases/tag/${version}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Badge variant="outline">v{version}</Badge>
-          </a>
         </div>
-      )}
+        <a
+          href={`https://github.com/developmentseed/eo-predictor/releases/tag/${version}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Badge variant="outline">v{version}</Badge>
+        </a>
+      </CardFooter>
     </>
   );
 }
