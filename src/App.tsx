@@ -12,7 +12,7 @@ import { SatellitePopup } from "@/components/SatellitePopup";
 import { Header } from "@/components/Header";
 import { SidebarContent } from "@/components/SidebarContent";
 import { ZoomPrompt } from "@/components/ZoomPrompt";
-import { loadMapData } from "@/utils/mapUtils";
+import { loadMapData, type FetchStatus } from "@/utils/mapUtils";
 
 interface ClickedFeature {
   lngLat: { lng: number; lat: number };
@@ -36,6 +36,7 @@ function App() {
   );
   const [zoom, setZoom] = useState(1);
   const mapRef = useRef<MapRef | null>(null); // MapLibre map ref
+  const [fetchStatus, setFetchStatus] = useState<FetchStatus | null>(null);
 
   const { metadata, timeRange, mapFilter, setMetadata, setTimeRange } =
     useFilterStore();
@@ -43,9 +44,10 @@ function App() {
   useEffect(() => {
     // Load metadata
     loadMapData()
-      .then(({ metadata, initialTimeRange }) => {
+      .then(({ metadata, initialTimeRange, fetchStatus }) => {
         setMetadata(metadata);
         setTimeRange(initialTimeRange);
+        setFetchStatus(fetchStatus);
       })
       .catch((error) => {
         console.error("Error loading data:", error);
@@ -75,6 +77,7 @@ function App() {
             mapRef={mapRef}
             variant="desktop"
             lastUpdated={metadata?.lastUpdated}
+            fetchStatus={fetchStatus}
           />
         </div>
 
@@ -141,6 +144,7 @@ function App() {
             mapRef={mapRef}
             variant="mobile"
             lastUpdated={metadata?.lastUpdated}
+            fetchStatus={fetchStatus}
           />
         </div>
       </div>
