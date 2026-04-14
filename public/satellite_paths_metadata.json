@@ -1,7 +1,6 @@
 {
   "satellites": [
     "FLOCK 4BE-1",
-    "FLOCK 4BE-10",
     "FLOCK 4BE-11",
     "FLOCK 4BE-12",
     "FLOCK 4BE-13",
@@ -156,12 +155,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
+    "high",
     "low",
-    "medium",
-    "high"
+    "medium"
   ],
-  "minTime": "2026-04-13T03:09:48.911934+00:00",
-  "maxTime": "2026-04-15T03:09:48.911934+00:00",
-  "lastUpdated": "2026-04-13T03:12:55.872269+00:00",
+  "minTime": "2026-04-14T03:08:38.542123+00:00",
+  "maxTime": "2026-04-16T03:08:38.542123+00:00",
+  "lastUpdated": "2026-04-14T03:11:18.209084+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
