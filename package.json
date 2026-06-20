@@ -30,7 +30,7 @@
     "lucide-react": "^0.542.0",
     "maplibre-gl": "^5.7.0",
     "phosphor-react": "^1.4.1",
-    "pmtiles": "^4.3.0",
+    "pmtiles": "^4.4.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-map-gl": "^8.0.4",
