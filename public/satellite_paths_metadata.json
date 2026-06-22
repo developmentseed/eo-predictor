@@ -100,7 +100,6 @@
     "SKYSAT-C10",
     "SKYSAT-C11",
     "SKYSAT-C12",
-    "SKYSAT-C13",
     "SKYSAT-C2",
     "SKYSAT-C3",
     "SKYSAT-C4",
@@ -149,11 +148,11 @@
   ],
   "spatial_resolution_ranges": [
     "medium",
-    "low",
-    "high"
+    "high",
+    "low"
   ],
-  "minTime": "2026-06-21T03:14:33.910303+00:00",
-  "maxTime": "2026-06-23T03:14:33.910303+00:00",
-  "lastUpdated": "2026-06-21T03:17:25.520383+00:00",
+  "minTime": "2026-06-22T03:15:04.394176+00:00",
+  "maxTime": "2026-06-24T03:15:04.394176+00:00",
+  "lastUpdated": "2026-06-22T03:18:02.557538+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
