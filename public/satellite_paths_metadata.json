@@ -30,13 +30,11 @@
     "FLOCK 4BE-6",
     "FLOCK 4BE-7",
     "FLOCK 4BE-9",
-    "FLOCK 4Q-1",
     "FLOCK 4Q-11",
     "FLOCK 4Q-12",
     "FLOCK 4Q-13",
     "FLOCK 4Q-16",
     "FLOCK 4Q-2",
-    "FLOCK 4Q-21",
     "FLOCK 4Q-22",
     "FLOCK 4Q-23",
     "FLOCK 4Q-25",
@@ -151,8 +149,8 @@
     "high",
     "medium"
   ],
-  "minTime": "2026-06-24T03:12:00.678274+00:00",
-  "maxTime": "2026-06-26T03:12:00.678274+00:00",
-  "lastUpdated": "2026-06-24T03:14:55.888085+00:00",
+  "minTime": "2026-06-25T03:12:12.104531+00:00",
+  "maxTime": "2026-06-27T03:12:12.104531+00:00",
+  "lastUpdated": "2026-06-25T03:14:37.372302+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
