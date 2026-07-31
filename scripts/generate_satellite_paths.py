@@ -114,7 +114,10 @@ async def fetch_tle(client, request):
     except httpx.HTTPStatusError as e:
         # Celestrak returns 404 (instead of 200 with a "no GP data" body) for
         # catalog numbers with no GP data, e.g. decayed/deorbited satellites.
-        if e.response.status_code == 404 and "no gp data found" in e.response.text.lower():
+        if (
+            e.response.status_code == 404
+            and "no gp data found" in e.response.text.lower()
+        ):
             print(f"  No GP data found for NORAD {norad_id}")
             return {
                 "norad_id": norad_id,
