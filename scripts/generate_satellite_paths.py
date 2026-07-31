@@ -2,7 +2,6 @@ import asyncio
 import json
 import os
 import subprocess
-import sys
 from datetime import datetime, timedelta, timezone
 
 import geopandas as gpd
