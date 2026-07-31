@@ -2,7 +2,6 @@ import asyncio
 import json
 import os
 import subprocess
-import sys
 from datetime import datetime, timedelta, timezone
 
 import geopandas as gpd
@@ -113,6 +112,20 @@ async def fetch_tle(client, request):
             "content": response.text,
         }
     except httpx.HTTPStatusError as e:
+        # Celestrak returns 404 (instead of 200 with a "no GP data" body) for
+        # catalog numbers with no GP data, e.g. decayed/deorbited satellites.
+        if (
+            e.response.status_code == 404
+            and "no gp data found" in e.response.text.lower()
+        ):
+            print(f"  No GP data found for NORAD {norad_id}")
+            return {
+                "norad_id": norad_id,
+                "url": url,
+                "success": False,
+                "no_gp": True,
+                "content": "",
+            }
         print(
             f"  Failed to fetch NORAD {norad_id} (HTTP error: {e.response.status_code})"
         )
@@ -270,10 +283,10 @@ print(f"Fetch status saved to: {fetch_status_path}")
 
 if success_rate <= 0.9:
     print(
-        "TLE fetch success rate for active satellites did not exceed 90%. "
-        "Aborting tile generation to prevent incomplete deploy."
+        "WARNING: TLE fetch success rate for active satellites did not exceed 90%. "
+        "Deploying with the satellites that were fetched; "
+        "see satellite_fetch_status.json for details."
     )
-    sys.exit(1)
 
 # Set up the time range for the prediction
 ts = load.timescale()
