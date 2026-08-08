@@ -34,7 +34,6 @@
     "FLOCK 4Q-16",
     "FLOCK 4Q-2",
     "FLOCK 4Q-22",
-    "FLOCK 4Q-23",
     "FLOCK 4Q-26",
     "FLOCK 4Q-27",
     "FLOCK 4Q-28",
@@ -139,12 +138,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
-    "high",
     "medium",
-    "low"
+    "low",
+    "high"
   ],
-  "minTime": "2026-08-07T03:03:10.492887+00:00",
-  "maxTime": "2026-08-09T03:03:10.492887+00:00",
-  "lastUpdated": "2026-08-07T03:05:27.336892+00:00",
+  "minTime": "2026-08-08T02:40:20.074028+00:00",
+  "maxTime": "2026-08-10T02:40:20.074028+00:00",
+  "lastUpdated": "2026-08-08T02:42:39.897664+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
