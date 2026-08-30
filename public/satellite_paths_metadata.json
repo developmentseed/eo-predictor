@@ -1,35 +1,11 @@
 {
   "satellites": [
-    "FLOCK 4BE-1",
-    "FLOCK 4BE-11",
-    "FLOCK 4BE-13",
-    "FLOCK 4BE-14",
-    "FLOCK 4BE-15",
-    "FLOCK 4BE-17",
     "FLOCK 4BE-18",
-    "FLOCK 4BE-19",
-    "FLOCK 4BE-2",
     "FLOCK 4BE-20",
-    "FLOCK 4BE-22",
     "FLOCK 4BE-23",
-    "FLOCK 4BE-24",
-    "FLOCK 4BE-25",
-    "FLOCK 4BE-27",
-    "FLOCK 4BE-28",
-    "FLOCK 4BE-29",
     "FLOCK 4BE-3",
-    "FLOCK 4BE-30",
     "FLOCK 4BE-31",
-    "FLOCK 4BE-32",
     "FLOCK 4BE-34",
-    "FLOCK 4BE-35",
-    "FLOCK 4BE-36",
-    "FLOCK 4BE-5",
-    "FLOCK 4BE-6",
-    "FLOCK 4BE-7",
-    "FLOCK 4BE-9",
-    "FLOCK 4Q-11",
-    "FLOCK 4Q-13",
     "FLOCK 4Q-16",
     "FLOCK 4Q-2",
     "FLOCK 4Q-22",
@@ -40,10 +16,7 @@
     "FLOCK 4Q-30",
     "FLOCK 4Q-31",
     "FLOCK 4Q-33",
-    "FLOCK 4Q-35",
     "FLOCK 4Q-36",
-    "FLOCK 4Q-4",
-    "FLOCK 4Q-7",
     "FLOCK 4Q-9",
     "GEOEYE 1",
     "ICEYE-X2",
@@ -60,7 +33,6 @@
     "ICEYE-X40",
     "ICEYE-X41",
     "ICEYE-X42",
-    "ICEYE-X43",
     "ICEYE-X44",
     "ICEYE-X45",
     "ICEYE-X47",
@@ -69,7 +41,6 @@
     "ICEYE-X6",
     "ICEYE-X7",
     "LANDSAT 8",
-    "LANDSAT 9",
     "LEGION 1",
     "LEGION 2",
     "LEGION 3",
@@ -100,7 +71,6 @@
     "SKYSAT-C9",
     "TANAGER-1",
     "WORLDVIEW-1 (WV-1)",
-    "WORLDVIEW-2 (WV-2)",
     "WORLDVIEW-3 (WV-3)"
   ],
   "constellations": [
@@ -116,7 +86,6 @@
     "SkySat",
     "Tanager",
     "WorldView-1",
-    "WorldView-2",
     "WorldView-3"
   ],
   "operators": [
@@ -137,12 +106,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
+    "low",
     "high",
-    "medium",
-    "low"
+    "medium"
   ],
-  "minTime": "2026-08-29T02:14:36.393754+00:00",
-  "maxTime": "2026-08-31T02:14:36.393754+00:00",
-  "lastUpdated": "2026-08-29T02:16:52.413769+00:00",
+  "minTime": "2026-08-30T02:17:36.694693+00:00",
+  "maxTime": "2026-09-01T02:17:36.694693+00:00",
+  "lastUpdated": "2026-08-30T02:19:27.200821+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
