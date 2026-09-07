@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import type { MapRef } from "react-map-gl/maplibre";
+import bboxPolygon from "@turf/bbox-polygon";
 import booleanIntersects from "@turf/boolean-intersects";
 import { useFilterStore, type VisiblePass } from "../store/filterStore";
 
@@ -8,35 +9,29 @@ interface UsePassCounterProps {
   mapRef: React.RefObject<MapRef | null>;
 }
 
-// Build a polygon covering the map's current viewport, so pass counts can be
+// Build polygon(s) covering the map's current viewport, so pass counts can be
 // restricted to what's within view (independent of source tile granularity).
-const getViewportPolygon = (
+// Returns two boxes when the viewport crosses the antimeridian (reported as
+// west > east) instead of one inverted/incorrect rectangle.
+const getViewportPolygons = (
   map: MapRef
-): GeoJSON.Feature<GeoJSON.Polygon> | null => {
+): GeoJSON.Feature<GeoJSON.Polygon>[] => {
   const bounds = map.getBounds();
-  if (!bounds) return null;
+  if (!bounds) return [];
 
   const west = bounds.getWest();
   const south = bounds.getSouth();
   const east = bounds.getEast();
   const north = bounds.getNorth();
 
-  return {
-    type: "Feature",
-    properties: {},
-    geometry: {
-      type: "Polygon",
-      coordinates: [
-        [
-          [west, south],
-          [east, south],
-          [east, north],
-          [west, north],
-          [west, south],
-        ],
-      ],
-    },
-  };
+  if (west > east) {
+    return [
+      bboxPolygon([west, south, 180, north]),
+      bboxPolygon([-180, south, east, north]),
+    ];
+  }
+
+  return [bboxPolygon([west, south, east, north])];
 };
 
 export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
@@ -65,10 +60,12 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
       // Restrict to the current viewport so the count reflects what's on
       // screen (zooming/panning changes the result), independent of which
       // source tiles happen to be loaded.
-      const viewportPolygon = getViewportPolygon(map);
-      if (viewportPolygon) {
+      const viewportPolygons = getViewportPolygons(map);
+      if (viewportPolygons.length > 0) {
         features = features.filter((feature) =>
-          booleanIntersects(feature.geometry, viewportPolygon)
+          viewportPolygons.some((polygon) =>
+            booleanIntersects(feature.geometry, polygon)
+          )
         );
       }
 

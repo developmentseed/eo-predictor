@@ -11,6 +11,31 @@ const isPolygonGeometry = (
 ): geometry is GeoJSON.Polygon | GeoJSON.MultiPolygon =>
   geometry.type === "Polygon" || geometry.type === "MultiPolygon";
 
+// Rejects structurally-valid-but-degenerate geometries (e.g. empty
+// coordinate arrays from buggy export tools) that would otherwise pass
+// through and break downstream turf calls with obscure errors.
+const hasValidRings = (
+  geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon
+): boolean => {
+  const polygons =
+    geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+
+  return (
+    polygons.length > 0 &&
+    polygons.every(
+      (rings) => rings.length > 0 && rings.every((ring) => ring.length > 0)
+    )
+  );
+};
+
+const assertValidPolygon = (
+  geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon
+): void => {
+  if (!hasValidRings(geometry)) {
+    throw new AoiParseError("This file's polygon shape is empty or malformed.");
+  }
+};
+
 export const readAoiFile = (file: File): Promise<unknown> => {
   if (file.size > MAX_FILE_SIZE_BYTES) {
     return Promise.reject(new AoiParseError("File is too large."));
@@ -55,6 +80,7 @@ export const normalizeAoiGeoJson = (
   const geoJson = json as GeoJSON.GeoJSON;
 
   if (geoJson.type === "Polygon" || geoJson.type === "MultiPolygon") {
+    assertValidPolygon(geoJson);
     return { feature: { type: "Feature", properties: {}, geometry: geoJson } };
   }
 
@@ -64,6 +90,7 @@ export const normalizeAoiGeoJson = (
         "No polygon shape found. Please upload a GeoJSON Polygon, MultiPolygon, or a Feature/FeatureCollection containing one."
       );
     }
+    assertValidPolygon(geoJson.geometry);
     return { feature: geoJson as AoiFeature };
   }
 
@@ -72,7 +99,7 @@ export const normalizeAoiGeoJson = (
       .map((f) => f.geometry)
       .filter(
         (geometry): geometry is GeoJSON.Polygon | GeoJSON.MultiPolygon =>
-          !!geometry && isPolygonGeometry(geometry)
+          !!geometry && isPolygonGeometry(geometry) && hasValidRings(geometry)
       );
 
     if (polygonGeometries.length === 0) {

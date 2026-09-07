@@ -37,11 +37,7 @@ interface ClickedFeature {
   is_daytime?: boolean;
 }
 
-const NO_AOI_PASS_FILTER: FilterExpression = [
-  "==",
-  ["get", "satellite"],
-  "__no_intersecting_aoi_pass__",
-];
+const NO_AOI_PASS_FILTER: FilterExpression = ["boolean", false];
 
 function App() {
   const [clickedFeature, setClickedFeature] = useState<ClickedFeature | null>(
@@ -140,7 +136,10 @@ function App() {
 
         setAoiPassFilterState({ aoi: aoiGeoJSON, filter: aoiFilter });
       } catch {
-        retryTimeout = setTimeout(updateAoiPassFilter, 100);
+        // A genuine computation error (e.g. a degenerate AOI geometry) is
+        // deterministic and will never succeed on retry — unlike the
+        // "source not loaded yet" case above, don't loop forever on it.
+        setAoiPassFilterState({ aoi: aoiGeoJSON, filter: NO_AOI_PASS_FILTER });
       }
     };
 

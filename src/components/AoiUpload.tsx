@@ -27,6 +27,17 @@ export const AoiUpload = ({ mapRef }: AoiUploadProps) => {
 
     try {
       const { feature, combinedCount } = await loadAoiFromFile(file);
+
+      // Fit the map to the AOI before committing it to the store, so a
+      // failure here (e.g. an unusable bounding box) never leaves the app
+      // pointed at an AOI it couldn't actually display.
+      if (mapRef.current) {
+        mapRef.current.fitBounds(computeAoiFitBounds(feature), {
+          padding: 40,
+          duration: 800,
+        });
+      }
+
       setError(null);
       setInfoMessage(
         combinedCount
@@ -34,13 +45,6 @@ export const AoiUpload = ({ mapRef }: AoiUploadProps) => {
           : null
       );
       setAoi(feature, file.name);
-
-      if (mapRef.current) {
-        mapRef.current.fitBounds(computeAoiFitBounds(feature), {
-          padding: 40,
-          duration: 800,
-        });
-      }
     } catch (err) {
       setInfoMessage(null);
       setError(
