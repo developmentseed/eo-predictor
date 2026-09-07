@@ -7,7 +7,7 @@ on:
     # against modified workflows and fails with "401 Unauthorized - Workflow
     # validation failed".
     paths-ignore:
-      - ".github/workflows/**"
+      - '.github/workflows/**'
 
 jobs:
   review:
