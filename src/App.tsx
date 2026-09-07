@@ -102,8 +102,13 @@ function App() {
       }
 
       try {
+        // Apply mapFilter here too (mirroring usePassCounter) so the cap
+        // below is taken from the same filtered set the sidebar count is
+        // based on — otherwise the two can disagree, and passes that match
+        // the current filter can be capped out in favor of ones that don't.
         const sourceFeatures = map.querySourceFeatures("satellite-source", {
           sourceLayer: "satellite_paths",
+          filter: mapFilter && mapFilter.length > 0 ? mapFilter : undefined,
         });
         const passKeys = new globalThis.Map<
           string,
@@ -176,7 +181,7 @@ function App() {
       map?.off("moveend", scheduleUpdate);
       map?.off("sourcedata", scheduleUpdate);
     };
-  }, [aoiGeoJSON]);
+  }, [aoiGeoJSON, mapFilter]);
 
   const handleMapClick = (e: MapLayerMouseEvent) => {
     const feature = e.features?.[0];
