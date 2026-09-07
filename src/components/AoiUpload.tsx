@@ -20,9 +20,7 @@ export const AoiUpload = ({ mapRef }: AoiUploadProps) => {
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
-  const handleFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
@@ -46,9 +44,7 @@ export const AoiUpload = ({ mapRef }: AoiUploadProps) => {
     } catch (err) {
       setInfoMessage(null);
       setError(
-        err instanceof AoiParseError
-          ? err.message
-          : "Could not load this file."
+        err instanceof AoiParseError ? err.message : "Could not load this file."
       );
     }
   };

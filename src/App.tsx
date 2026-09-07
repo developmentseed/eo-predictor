@@ -55,8 +55,14 @@ function App() {
     filter: FilterExpression;
   }>({ aoi: null, filter: NO_AOI_PASS_FILTER });
 
-  const { metadata, timeRange, mapFilter, aoiGeoJSON, setMetadata, setTimeRange } =
-    useFilterStore();
+  const {
+    metadata,
+    timeRange,
+    mapFilter,
+    aoiGeoJSON,
+    setMetadata,
+    setTimeRange,
+  } = useFilterStore();
 
   const aoiPassFilter =
     aoiGeoJSON && aoiPassFilterState.aoi === aoiGeoJSON
@@ -122,11 +128,13 @@ function App() {
           passKeys.size > 0
             ? [
                 "any",
-                ...Array.from(passKeys.values()).map(({ satellite, startTime }) => [
-                  "all",
-                  ["==", ["get", "satellite"], satellite],
-                  ["==", ["get", "start_time"], startTime],
-                ]),
+                ...Array.from(passKeys.values()).map(
+                  ({ satellite, startTime }) => [
+                    "all",
+                    ["==", ["get", "satellite"], satellite],
+                    ["==", ["get", "start_time"], startTime],
+                  ]
+                ),
               ]
             : NO_AOI_PASS_FILTER;
 

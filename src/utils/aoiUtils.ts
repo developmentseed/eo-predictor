@@ -22,10 +22,13 @@ export const readAoiFile = (file: File): Promise<unknown> => {
       try {
         resolve(JSON.parse(reader.result as string));
       } catch {
-        reject(new AoiParseError("This doesn't look like a valid GeoJSON file."));
+        reject(
+          new AoiParseError("This doesn't look like a valid GeoJSON file.")
+        );
       }
     };
-    reader.onerror = () => reject(new AoiParseError("Could not read this file."));
+    reader.onerror = () =>
+      reject(new AoiParseError("Could not read this file."));
     reader.readAsText(file);
   });
 };

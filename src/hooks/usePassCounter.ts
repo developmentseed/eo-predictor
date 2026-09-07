@@ -86,7 +86,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
       // Build list of passes with deduplication
       const allPasses: VisiblePass[] = features
-        .map((feature: maplibregl.MapGeoJSONFeature): VisiblePass | null => {
+        .map((feature: maplibregl.GeoJSONFeature): VisiblePass | null => {
           const props = feature.properties || {};
           const name = (props.satellite || props.name || "").toString();
           const start = (props.start_time || "").toString();

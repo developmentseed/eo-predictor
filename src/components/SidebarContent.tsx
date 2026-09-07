@@ -59,9 +59,7 @@ export function SidebarContent({
       <Accordion
         type="multiple"
         defaultValue={
-          isDesktop
-            ? ["time-range", "filters", "passes"]
-            : ["time-range"]
+          isDesktop ? ["time-range", "filters", "passes"] : ["time-range"]
         }
         className={isDesktop ? "flex-1 flex flex-col" : undefined}
       >
