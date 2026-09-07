@@ -2,7 +2,6 @@
   "satellites": [
     "FLOCK 4BE-1",
     "FLOCK 4BE-11",
-    "FLOCK 4BE-12",
     "FLOCK 4BE-13",
     "FLOCK 4BE-14",
     "FLOCK 4BE-15",
@@ -15,16 +14,13 @@
     "FLOCK 4BE-23",
     "FLOCK 4BE-24",
     "FLOCK 4BE-25",
-    "FLOCK 4BE-26",
     "FLOCK 4BE-27",
     "FLOCK 4BE-28",
     "FLOCK 4BE-29",
     "FLOCK 4BE-3",
-    "FLOCK 4BE-30",
     "FLOCK 4BE-31",
     "FLOCK 4BE-32",
     "FLOCK 4BE-34",
-    "FLOCK 4BE-35",
     "FLOCK 4BE-36",
     "FLOCK 4BE-5",
     "FLOCK 4BE-6",
@@ -35,8 +31,6 @@
     "FLOCK 4Q-16",
     "FLOCK 4Q-2",
     "FLOCK 4Q-22",
-    "FLOCK 4Q-23",
-    "FLOCK 4Q-26",
     "FLOCK 4Q-27",
     "FLOCK 4Q-28",
     "FLOCK 4Q-29",
@@ -140,12 +134,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
-    "low",
     "high",
-    "medium"
+    "medium",
+    "low"
   ],
-  "minTime": "2026-07-31T07:59:25.153907+00:00",
-  "maxTime": "2026-08-02T07:59:25.153907+00:00",
-  "lastUpdated": "2026-07-31T08:02:04.759725+00:00",
+  "minTime": "2026-09-07T02:18:12.737026+00:00",
+  "maxTime": "2026-09-09T02:18:12.737026+00:00",
+  "lastUpdated": "2026-09-07T02:20:23.982816+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
