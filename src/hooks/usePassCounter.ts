@@ -9,6 +9,10 @@ interface UsePassCounterProps {
   mapRef: React.RefObject<MapRef | null>;
 }
 
+// Shared with App.tsx's AOI layer filter, which caps its own per-pass
+// filter clauses at the same threshold to avoid unbounded filter growth.
+export const MAX_PASSES_THRESHOLD = 100;
+
 // Build polygon(s) covering the map's current viewport, so pass counts can be
 // restricted to what's within view (independent of source tile granularity).
 // Returns two boxes when the viewport crosses the antimeridian (reported as
@@ -38,7 +42,6 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
   const [visiblePassCount, setVisiblePassCount] = useState<number | null>(null);
   const [visiblePasses, setVisiblePasses] = useState<VisiblePass[]>([]);
 
-  const MAX_PASSES_THRESHOLD = 100;
   const aoiGeoJSON = useFilterStore((s) => s.aoiGeoJSON);
   const mapFilter = useFilterStore((s) => s.mapFilter);
 

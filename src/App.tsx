@@ -19,6 +19,7 @@ import { Header } from "@/components/Header";
 import { SidebarContent } from "@/components/SidebarContent";
 import { ZoomPrompt } from "@/components/ZoomPrompt";
 import { loadMapData, type FetchStatus } from "@/utils/mapUtils";
+import { MAX_PASSES_THRESHOLD } from "@/hooks/usePassCounter";
 import booleanIntersects from "@turf/boolean-intersects";
 
 interface ClickedFeature {
@@ -120,17 +121,23 @@ function App() {
           }
         });
 
+        // Cap the number of per-pass clauses: an AOI over dense coverage can
+        // match far more passes than are worth giving MapLibre one filter
+        // clause each to evaluate per feature per frame.
+        const cappedPassKeys = Array.from(passKeys.values()).slice(
+          0,
+          MAX_PASSES_THRESHOLD
+        );
+
         const aoiFilter: FilterExpression =
-          passKeys.size > 0
+          cappedPassKeys.length > 0
             ? [
                 "any",
-                ...Array.from(passKeys.values()).map(
-                  ({ satellite, startTime }) => [
-                    "all",
-                    ["==", ["get", "satellite"], satellite],
-                    ["==", ["get", "start_time"], startTime],
-                  ]
-                ),
+                ...cappedPassKeys.map(({ satellite, startTime }) => [
+                  "all",
+                  ["==", ["get", "satellite"], satellite],
+                  ["==", ["get", "start_time"], startTime],
+                ]),
               ]
             : NO_AOI_PASS_FILTER;
 
