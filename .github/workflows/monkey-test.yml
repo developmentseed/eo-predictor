@@ -1,0 +1,17 @@
+name: Monkey Test
+
+on:
+  # Keep workflow_dispatch so the test can always be run manually.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  monkey-test:
+    uses: developmentseed/space-monkey/.github/workflows/monkey-test.yml@v0.1.0
+    with:
+      base_url: https://developmentseed.github.io/eo-predictor/
+      context: tests/monkey/context.md
+    secrets:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
