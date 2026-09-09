@@ -30,11 +30,11 @@ import {
   MonitorCheck,
 } from "lucide-react";
 import Stac from "@/components/icons/Stac";
-import maplibregl from "maplibre-gl";
+import type { MapRef } from "react-map-gl/maplibre";
 import type { DataRepoType } from "@/store/filterStore";
 
 interface PassCounterProps {
-  mapRef: React.RefObject<maplibregl.Map | null>;
+  mapRef: React.RefObject<MapRef | null>;
 }
 
 export const PassCounter = ({ mapRef }: PassCounterProps) => {

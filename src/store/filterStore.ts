@@ -46,6 +46,10 @@ interface FilterState {
   selectedTasking: string;
   selectedDaylight: string;
 
+  // AOI state (independent of the filter/mapFilter pipeline)
+  aoiGeoJSON: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon> | null;
+  aoiFileName: string | null;
+
   // Computed/derived state
   availableConstellations: Array<{ value: string; disabled: boolean }>;
   availableOperators: Array<{ value: string; disabled: boolean }>;
@@ -69,6 +73,11 @@ interface FilterState {
   setTasking: (value: string) => void;
   setDaylight: (value: string) => void;
   resetFilters: () => void;
+  setAoi: (
+    feature: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>,
+    fileName: string
+  ) => void;
+  clearAoi: () => void;
 
   // Computed filter logic
   updateDerivedState: () => void;
@@ -88,6 +97,10 @@ export const useFilterStore = create<FilterState>()(
       selectedDataAccess: "all",
       selectedTasking: "all",
       selectedDaylight: "all",
+
+      // Initial AOI state
+      aoiGeoJSON: null,
+      aoiFileName: null,
 
       // Initial computed state
       availableConstellations: [],
@@ -156,6 +169,14 @@ export const useFilterStore = create<FilterState>()(
           selectedDaylight: "all",
         });
         get().updateDerivedState();
+      },
+
+      setAoi: (feature, fileName) => {
+        set({ aoiGeoJSON: feature, aoiFileName: fileName });
+      },
+
+      clearAoi: () => {
+        set({ aoiGeoJSON: null, aoiFileName: null });
       },
 
       // Computed methods

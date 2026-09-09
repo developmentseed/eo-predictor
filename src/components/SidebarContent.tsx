@@ -18,9 +18,10 @@ import {
 import { AlarmClock, Satellite, Settings2 } from "lucide-react";
 import { formatLastUpdated } from "@/utils/timeUtils";
 import type { FetchStatus } from "@/utils/mapUtils";
+import type { MapRef } from "react-map-gl/maplibre";
 
 interface SidebarContentProps {
-  mapRef: React.RefObject<any>;
+  mapRef: React.RefObject<MapRef | null>;
   variant?: "desktop" | "mobile";
   lastUpdated?: string;
   fetchStatus?: FetchStatus | null;

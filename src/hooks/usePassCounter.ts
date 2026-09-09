@@ -1,16 +1,49 @@
 import { useState, useCallback, useEffect } from "react";
 import maplibregl from "maplibre-gl";
-import type { VisiblePass } from "../store/filterStore";
+import type { MapRef } from "react-map-gl/maplibre";
+import bboxPolygon from "@turf/bbox-polygon";
+import booleanIntersects from "@turf/boolean-intersects";
+import { useFilterStore, type VisiblePass } from "../store/filterStore";
 
 interface UsePassCounterProps {
-  mapRef: React.RefObject<maplibregl.Map | null>;
+  mapRef: React.RefObject<MapRef | null>;
 }
+
+// Shared with App.tsx's AOI layer filter, which caps its own per-pass
+// filter clauses at the same threshold to avoid unbounded filter growth.
+export const MAX_PASSES_THRESHOLD = 100;
+
+// Build polygon(s) covering the map's current viewport, so pass counts can be
+// restricted to what's within view (independent of source tile granularity).
+// Returns two boxes when the viewport crosses the antimeridian (reported as
+// west > east) instead of one inverted/incorrect rectangle.
+const getViewportPolygons = (
+  map: MapRef
+): GeoJSON.Feature<GeoJSON.Polygon>[] => {
+  const bounds = map.getBounds();
+  if (!bounds) return [];
+
+  const west = bounds.getWest();
+  const south = bounds.getSouth();
+  const east = bounds.getEast();
+  const north = bounds.getNorth();
+
+  if (west > east) {
+    return [
+      bboxPolygon([west, south, 180, north]),
+      bboxPolygon([-180, south, east, north]),
+    ];
+  }
+
+  return [bboxPolygon([west, south, east, north])];
+};
 
 export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
   const [visiblePassCount, setVisiblePassCount] = useState<number | null>(null);
   const [visiblePasses, setVisiblePasses] = useState<VisiblePass[]>([]);
 
-  const MAX_PASSES_THRESHOLD = 100;
+  const aoiGeoJSON = useFilterStore((s) => s.aoiGeoJSON);
+  const mapFilter = useFilterStore((s) => s.mapFilter);
 
   // Function to count unique satellites from rendered features
   const updateVisiblePassCount = useCallback(() => {
@@ -18,9 +51,32 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
     try {
       const map = mapRef.current;
-      const features = map.queryRenderedFeatures(undefined, {
-        layers: ["satellite_paths"],
+      // Use querySourceFeatures (not queryRenderedFeatures) so the count reflects
+      // the full loaded tile data rather than only what's currently painted on
+      // screen — queryRenderedFeatures is zoom/render-state dependent and gives
+      // inconsistent results as tiles are simplified/dropped at different zooms.
+      let features = map.querySourceFeatures("satellite-source", {
+        sourceLayer: "satellite_paths",
+        filter: mapFilter && mapFilter.length > 0 ? mapFilter : undefined,
       });
+
+      // Restrict to the current viewport so the count reflects what's on
+      // screen (zooming/panning changes the result), independent of which
+      // source tiles happen to be loaded.
+      const viewportPolygons = getViewportPolygons(map);
+      if (viewportPolygons.length > 0) {
+        features = features.filter((feature) =>
+          viewportPolygons.some((polygon) =>
+            booleanIntersects(feature.geometry, polygon)
+          )
+        );
+      }
+
+      if (aoiGeoJSON) {
+        features = features.filter((feature) =>
+          booleanIntersects(feature.geometry, aoiGeoJSON)
+        );
+      }
 
       if (features.length === 0) {
         setVisiblePassCount(0);
@@ -28,16 +84,9 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
         return;
       }
 
-      // Cap at threshold for performance
-      if (features.length > MAX_PASSES_THRESHOLD) {
-        setVisiblePassCount(101); // Indicate "100+"
-        setVisiblePasses([]);
-        return;
-      }
-
       // Build list of passes with deduplication
       const allPasses: VisiblePass[] = features
-        .map((feature: maplibregl.MapGeoJSONFeature): VisiblePass | null => {
+        .map((feature: maplibregl.GeoJSONFeature): VisiblePass | null => {
           const props = feature.properties || {};
           const name = (props.satellite || props.name || "").toString();
           const start = (props.start_time || "").toString();
@@ -91,6 +140,15 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
         }
       });
 
+      // Cap at threshold for performance — checked on deduplicated pass count,
+      // since raw tile features include multiple segments per pass and can
+      // exceed the threshold even when the real number of passes doesn't.
+      if (passGroups.size > MAX_PASSES_THRESHOLD) {
+        setVisiblePassCount(101); // Indicate "100+"
+        setVisiblePasses([]);
+        return;
+      }
+
       const passes = Array.from(passGroups.values()).sort(
         (a, b) => Date.parse(a.start_time) - Date.parse(b.start_time)
       );
@@ -101,7 +159,7 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
       setVisiblePassCount(null);
       setVisiblePasses([]);
     }
-  }, [mapRef]);
+  }, [mapRef, aoiGeoJSON, mapFilter]);
 
   // Set up event listeners when map becomes available
   useEffect(() => {
@@ -143,12 +201,13 @@ export const usePassCounter = ({ mapRef }: UsePassCounterProps) => {
 
   // Format pass count text
   const getPassCountText = () => {
+    const suffix = aoiGeoJSON ? " in AOI within Map View" : " in Map View";
     if (visiblePassCount === null) return "Loading...";
-    if (visiblePassCount === 0) return "No Predicted Passes";
-    if (visiblePassCount === 1) return "1 Predicted Pass";
+    if (visiblePassCount === 0) return `No Predicted Passes${suffix}`;
+    if (visiblePassCount === 1) return `1 Predicted Pass${suffix}`;
     if (visiblePassCount > MAX_PASSES_THRESHOLD)
-      return "Many Predicted Passes (100+)";
-    return `${visiblePassCount} Predicted Passes`;
+      return `Many Predicted Passes (100+)${suffix}`;
+    return `${visiblePassCount} Predicted Passes${suffix}`;
   };
 
   return {
