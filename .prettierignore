@@ -1,6 +1,10 @@
 .mypy_cache
 .venv
 
+# Dependabot regenerates this without running Prettier, so its formatting
+# never matches what `prettier --check` expects.
+pnpm-lock.yaml
+
 # Reusable/called workflow files must stay byte-identical to the default
 # branch (GitHub skips "modified workflow" validation otherwise), so don't
 # let Prettier reformat them out from under that constraint.

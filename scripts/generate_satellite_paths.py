@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 import subprocess
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import geopandas as gpd
 import httpx
@@ -266,7 +266,7 @@ fetch_status = {
     "noGpDataNoradIds": no_gp_norad_ids,
     "failedFetchNoradIds": failed_fetch_norad_ids,
     "successRate": success_rate,
-    "lastUpdated": datetime.now(timezone.utc).isoformat(),
+    "lastUpdated": datetime.now(UTC).isoformat(),
 }
 
 fetch_status_path = os.path.join(public_dir, "satellite_fetch_status.json")
@@ -290,7 +290,7 @@ if success_rate <= 0.9:
 
 # Set up the time range for the prediction
 ts = load.timescale()
-now = datetime.now(timezone.utc)
+now = datetime.now(UTC)
 time_1 = now
 time_2 = now + timedelta(days=2)
 
@@ -321,7 +321,7 @@ def is_daytime(lat_degrees, lon_degrees, observation_time):
 
     # Calculate solar position relative to the location
     astrometric = location.at(t).observe(sun)
-    alt, az, distance = astrometric.apparent().altaz()
+    alt, _az, _distance = astrometric.apparent().altaz()
 
     # Return True if sun is above horizon (elevation > 0°)
     return alt.degrees > 0
@@ -465,7 +465,7 @@ else:
         "spatial_resolution_ranges": list(set(spatial_resolution_ranges)),
         "minTime": path_gdf["start_time"].min().isoformat(),
         "maxTime": path_gdf["end_time"].max().isoformat(),
-        "lastUpdated": datetime.now(timezone.utc).isoformat(),
+        "lastUpdated": datetime.now(UTC).isoformat(),
         "tilesUrl": "/tiles/{z}/{x}/{y}.pbf",
     }
 
@@ -502,7 +502,8 @@ else:
             tiles_dir,
             geojson_path,
             "--force",
-        ]
+        ],
+        check=False,
     )
     print(f"\nSuccessfully generated tiles in {tiles_dir}")
 
