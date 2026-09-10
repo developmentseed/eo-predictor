@@ -14,7 +14,8 @@ Usage: uv run validate_satellites.py
 import json
 import os
 from collections import defaultdict
-from typing import Annotated, List, Literal, Optional
+from typing import Annotated, Literal
+
 from pydantic import BaseModel, Field, HttpUrl
 
 
@@ -42,16 +43,16 @@ class SatelliteConstellation(BaseModel):
     tasking: bool = Field(
         description="Whether satellites can be tasked (true) or are pre-programmed (false)"
     )
-    url: Optional[HttpUrl] = Field(
+    url: HttpUrl | None = Field(
         None, description="Optional link to constellation information page"
     )
-    norad_ids: List[Annotated[int, Field(gt=0)]] = Field(
+    norad_ids: list[Annotated[int, Field(gt=0)]] = Field(
         min_length=1, description="Array of NORAD catalog numbers"
     )
-    data_repo_type: Optional[Literal["STAC", "API", "portal", "bucket", "other"]] = (
-        Field(None, description="Type of data repository. STAC is preferred.")
+    data_repo_type: Literal["STAC", "API", "portal", "bucket", "other"] | None = Field(
+        None, description="Type of data repository. STAC is preferred."
     )
-    data_repo_url: Optional[HttpUrl] = Field(
+    data_repo_url: HttpUrl | None = Field(
         None,
         description="Link to get data. Preferred STAC catalog, can also be API, portal, bucket or other",
     )
