@@ -27,12 +27,14 @@
     "FLOCK 4BE-9",
     "FLOCK 4Q-11",
     "FLOCK 4Q-13",
+    "FLOCK 4Q-16",
     "FLOCK 4Q-2",
     "FLOCK 4Q-27",
     "FLOCK 4Q-28",
     "FLOCK 4Q-4",
     "FLOCK 4Q-7",
     "FLOCK 4Q-9",
+    "GEOEYE 1",
     "ICEYE-X2",
     "ICEYE-X25",
     "ICEYE-X31",
@@ -91,6 +93,7 @@
   ],
   "constellations": [
     "PlanetScope",
+    "GeoEye",
     "ICEYE",
     "Landsat",
     "WorldView Legion",
@@ -106,9 +109,9 @@
   ],
   "operators": [
     "Planet",
+    "Vantor",
     "ICEYE",
     "NASA/USGS",
-    "Vantor",
     "NASA/ISRO",
     "ESA"
   ],
@@ -122,12 +125,12 @@
     "open"
   ],
   "spatial_resolution_ranges": [
-    "medium",
+    "low",
     "high",
-    "low"
+    "medium"
   ],
-  "minTime": "2026-11-08T02:10:32.854328+00:00",
-  "maxTime": "2026-11-10T02:10:32.854328+00:00",
-  "lastUpdated": "2026-11-08T02:12:32.584852+00:00",
+  "minTime": "2026-11-09T02:11:17.048690+00:00",
+  "maxTime": "2026-11-11T02:11:17.048690+00:00",
+  "lastUpdated": "2026-11-09T02:13:35.683216+00:00",
   "tilesUrl": "/tiles/{z}/{x}/{y}.pbf"
 }
